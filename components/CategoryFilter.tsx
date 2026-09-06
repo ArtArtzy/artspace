@@ -1,0 +1,227 @@
+"use client";
+
+type Category = {
+  label: string;
+  lines?: readonly string[];
+  special?: boolean;
+  color: string;
+  icon: "all" | "heart" | "spark" | "bl" | "gl" | "fantasy" | "china" | "isekai" | "romance-fantasy" | "drama" | "detective" | "mystery" | "horror" | "action" | "sci-fi" | "life" | "comedy" | "anime" | "game" | "tv" | "other";
+};
+
+const categories: Category[] = [
+  { label: "ทั้งหมด", color: "text-[#45ee83]", icon: "all" },
+  { label: "โรแมนติก", color: "text-[#f04d9b]", icon: "heart" },
+  { label: "วาย", color: "text-[#478fff]", icon: "bl" },
+  { label: "ยูริ", color: "text-[#fc6680]", icon: "gl" },
+  { label: "แฟนตาซี", color: "text-[#9869ff]", icon: "fantasy" },
+  { label: "จีนโบราณ", color: "text-[#f2b84b]", icon: "china" },
+  { label: "เกิดใหม่", color: "text-[#31d6c0]", icon: "isekai" },
+  { label: "ลึกลับ", color: "text-[#c7ccd0]", icon: "mystery" },
+  { label: "สยองขวัญ", color: "text-[#bc79ff]", icon: "horror" },
+  { label: "แอ๊กชั่น", color: "text-[#ff6d55]", icon: "action" },
+  { label: "ไซไฟ", color: "text-[#42e7e0]", icon: "sci-fi" },
+  { label: "คอมเมดี้", color: "text-[#f4cf4e]", icon: "comedy" },
+];
+
+function CategoryIcon({ type }: { type: Category["icon"] }) {
+  const common = {
+    "aria-hidden": true,
+    className: "h-7 w-7",
+    fill: "none",
+    viewBox: "0 0 24 24",
+  };
+
+  switch (type) {
+    case "all":
+      return (
+        <svg {...common}>
+          <circle cx="8" cy="8" r="2.6" stroke="currentColor" strokeWidth="1.8" />
+          <circle cx="16" cy="8" r="2.6" stroke="currentColor" strokeWidth="1.8" />
+          <circle cx="8" cy="16" r="2.6" stroke="currentColor" strokeWidth="1.8" />
+          <circle cx="16" cy="16" r="2.6" stroke="currentColor" strokeWidth="1.8" />
+        </svg>
+      );
+    case "heart":
+      return (
+        <svg {...common}>
+          <path d="M12 19.2S4.2 14.8 4.2 9.3a3.7 3.7 0 0 1 6.6-2.3L12 8.3l1.2-1.3a3.7 3.7 0 0 1 6.6 2.3c0 5.5-7.8 9.9-7.8 9.9Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+        </svg>
+      );
+    case "spark":
+    case "fantasy":
+      return (
+        <svg {...common}>
+          <path d="m12 3 1.5 5.4L19 10l-5.5 1.6L12 17l-1.5-5.4L5 10l5.5-1.6L12 3Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+          <path d="m18.5 15 .6 2.1 2.1.6-2.1.6-.6 2.1-.6-2.1-2.1-.6 2.1-.6.6-2.1Z" fill="currentColor" />
+        </svg>
+      );
+    case "bl":
+      return (
+        <svg {...common}>
+          <path d="M7.2 8.2a3.1 3.1 0 1 1 4.4 4.4l-1.4 1.4a3.1 3.1 0 0 1-4.4-4.4l.6-.6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+          <path d="M16.8 15.8a3.1 3.1 0 1 1-4.4-4.4l1.4-1.4a3.1 3.1 0 0 1 4.4 4.4l-.6.6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+        </svg>
+      );
+    case "gl":
+      return (
+        <svg {...common}>
+          <path d="M12 4v16M7.5 6.5 16.5 17.5M16.5 6.5 7.5 17.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+          <circle cx="12" cy="12" r="2.8" stroke="currentColor" strokeWidth="1.7" />
+        </svg>
+      );
+    case "china":
+      return (
+        <svg {...common}>
+          <path d="M4 19.5h16M5.5 19.5v-8h13v8M4 11.5 12 5l8 6.5M8.5 11.5v8M15.5 11.5v8M7 8.9h10" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+          <path d="M10 15h4v4.5h-4z" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+      );
+    case "isekai":
+      return (
+        <svg {...common}>
+          <path d="M7.5 7.2A7 7 0 1 1 5.2 16M7.5 7.2V3.8M7.5 7.2H4.1M16.5 16.8A7 7 0 1 1 18.8 8M16.5 16.8v3.4M16.5 16.8h3.4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+          <path d="m12 8 1.2 2.8L16 12l-2.8 1.2L12 16l-1.2-2.8L8 12l2.8-1.2L12 8Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.5" />
+        </svg>
+      );
+    case "romance-fantasy":
+      return (
+        <svg {...common}>
+          <path d="M12 20s-7.5-4.4-7.5-10a3.7 3.7 0 0 1 6.7-2.2L12 9l.8-1.2a3.7 3.7 0 0 1 6.7 2.2c0 5.6-7.5 10-7.5 10Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.6" />
+          <path d="m12 3 1 2.7L16 7l-3 1.3L12 11l-1-2.7L8 7l3-1.3L12 3Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.4" />
+        </svg>
+      );
+    case "drama":
+      return (
+        <svg {...common}>
+          <path d="M6.2 17.9c.8-4.7 4.1-7.8 8.6-7.8 1.5 0 2.3.3 3 .8M7.5 19.5c2.4.7 5.6.2 7.2-1.7 1-1.2 1.4-2.7 1.2-4.2M8.2 7.9a4.1 4.1 0 1 1 7.5 2.3" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+          <path d="M12.2 7.3h.01M15.2 7.8h.01" stroke="currentColor" strokeLinecap="round" strokeWidth="2.4" />
+        </svg>
+      );
+    case "detective":
+    case "mystery":
+      return (
+        <svg {...common}>
+          <circle cx="10.7" cy="10.7" r="5.5" stroke="currentColor" strokeWidth="1.7" />
+          <path d="m15 15 4.3 4.3M8.5 10.2h.01M12.5 10.2h.01M9.1 13c1 .8 2.3.8 3.3 0" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+        </svg>
+      );
+    case "horror":
+      return (
+        <svg {...common}>
+          <path d="M5.7 18.3V10a6.3 6.3 0 0 1 12.6 0v8.3l-2.1-1.7-2.1 1.7-2.1-1.7-2.1 1.7-2.1-1.7-2.1 1.7Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+          <path d="M9.3 10.2h.01M14.7 10.2h.01" stroke="currentColor" strokeLinecap="round" strokeWidth="2.4" />
+        </svg>
+      );
+    case "action":
+      return (
+        <svg {...common}>
+          <path d="m5 19 14-14M7.2 16.8l-2.5-2.5M9.5 14.5l-2.8-2.8M16.8 7.2l2.5 2.5M14.5 9.5l2.8 2.8" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+          <path d="m4.5 19.5 4-.9M19.5 4.5l-.9 4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
+        </svg>
+      );
+    case "sci-fi":
+      return (
+        <svg {...common}>
+          <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" stroke="currentColor" strokeLinecap="round" strokeWidth="1.6" />
+          <path d="m12 7 1.7 3.3L17 12l-3.3 1.7L12 17l-1.7-3.3L7 12l3.3-1.7L12 7Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+      );
+    case "life":
+      return (
+        <svg {...common}>
+          <path d="M7 9h10v6.5a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V9ZM7 11H5.5a2.5 2.5 0 0 0 0 5H7M17 11h1.5a2.5 2.5 0 0 1 0 5H17M9 5.5c1.5.1 2.2 1 2.2 2.5M12 5.5c1.5.1 2.2 1 2.2 2.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+      );
+    case "comedy":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.2" stroke="currentColor" strokeWidth="1.7" />
+          <path d="M8.5 10.2h.01M15.5 10.2h.01" stroke="currentColor" strokeLinecap="round" strokeWidth="2.4" />
+          <path d="M8.5 14c1.9 2 5.1 2 7 0" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+        </svg>
+      );
+    case "anime":
+      return (
+        <svg {...common}>
+          <path d="m12 3 1.4 6.5L19 12l-5.6 2.5L12 21l-1.4-6.5L5 12l5.6-2.5L12 3Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+      );
+    case "game":
+      return (
+        <svg {...common}>
+          <path d="M7.5 8.2h9a4.5 4.5 0 0 1 4.2 6.2l-1.2 3.1a2.1 2.1 0 0 1-3.6.6L14 15.7h-4l-1.9 2.4a2.1 2.1 0 0 1-3.6-.6l-1.2-3.1a4.5 4.5 0 0 1 4.2-6.2Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+          <path d="M7 10.7v4M5 12.7h4M16.5 12h.01M18.5 14h.01" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+        </svg>
+      );
+    case "tv":
+      return (
+        <svg {...common}>
+          <rect height="11" rx="1.5" stroke="currentColor" strokeWidth="1.7" width="16" x="4" y="6" />
+          <path d="m9 3 3 3 3-3M9 17h6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common}>
+          <path d="M12 4.5a7.5 7.5 0 1 0 7.1 10M12 4.5l3.2 2.3M12 4.5l-.3 3.8M19.1 14.5l-3.6.8M19.1 14.5l-2.2-3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+      );
+  }
+}
+
+export type CategoryFilterProps = {
+  selected: string;
+  onSelect: (category: string) => void;
+  myCategoryCount?: number;
+  showMyCategory?: boolean;
+};
+
+export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0, showMyCategory = false }: CategoryFilterProps) {
+  const visibleCategories: Category[] = showMyCategory
+    ? [
+        {
+          label: "หมวดของฉัน",
+          lines: ["หมวดของฉัน", `${myCategoryCount} หมวด`],
+          special: true,
+          color: "text-[#45ee83]",
+          icon: "heart",
+        },
+        ...categories,
+      ]
+    : categories;
+
+  return (
+    <section aria-label="เลือกหมวดหมู่" className="mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-[#0D0F0E] px-2 pb-[18px] pt-1" id="category-filter">
+      <div className="flex w-full flex-nowrap gap-2 overflow-hidden">
+        {visibleCategories.map((category) => {
+          const isSelected = selected === category.label;
+          const buttonClass = [
+            "group flex h-[82px] min-w-0 flex-1 flex-col items-center justify-center gap-2 rounded-[7px] border px-1 py-2 transition",
+            isSelected
+              ? "border-[#1cbd55] bg-[linear-gradient(145deg,#102d19,#102017)] shadow-[0_0_12px_rgba(23,213,100,.22)]"
+              : category.special
+              ? "border-white/[0.14] bg-[linear-gradient(145deg,#1a1f1c,#141817)] hover:border-white/25 hover:bg-[#1a1f1c]"
+              : "border-white/[0.08] bg-[#151817] hover:border-white/20 hover:bg-[#1a1f1c]",
+            category.special && !isSelected ? "text-white/55" : category.color,
+          ].join(" ");
+
+          return (
+            <button
+              aria-label={"เลือกหมวด " + category.label}
+              aria-pressed={isSelected}
+              className={buttonClass}
+              key={category.label}
+              onClick={() => onSelect(category.label)}
+              type="button"
+            >
+              <CategoryIcon type={category.icon} />
+              <span className="max-w-full whitespace-pre-line text-center text-[12px] font-medium leading-tight text-white/85 group-hover:text-white">
+                {category.lines ? category.lines.map((line) => <span className="block" key={line}>{line}</span>) : category.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
