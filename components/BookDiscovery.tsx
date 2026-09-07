@@ -131,7 +131,7 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
                   <p className="mt-1 text-[12px] text-white/50">{section.subtitle}</p>
                 </div>
                 {selectedCategory !== "ทั้งหมด" && (
-                  <a href="#discover" className="mb-1 inline-flex items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">ดูทั้งหมด <span aria-hidden="true">→</span></a>
+                  <a href="/read" className="mb-1 inline-flex items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">ดูทั้งหมด <span aria-hidden="true">→</span></a>
                 )}
               </div>
               <div className="grid grid-cols-6 gap-3">
@@ -141,8 +141,8 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
           ))}
         </div>
         <aside className="flex h-full flex-col gap-3 pt-1">
-          <PromoCard href="#discover" image="/images/promo-discover-v2.webp" eyebrow="DISCOVER" quote="บางเรื่องราว อาจเป็นของคุณ..." action="เริ่มค้นหาเรื่องของคุณ" />
-          <PromoCard href="#discover" image="/images/promo-fanfiction-v2.webp" eyebrow="FANFICTION" quote="เรื่องเดิม ในมุมที่ไม่เคยเห็น..." action="สำรวจแฟนฟิค" />
+          <PromoCard href="/read" image="/images/promo-discover-v2.webp" eyebrow="DISCOVER" quote="บางเรื่องราว อาจเป็นของคุณ..." action="เริ่มค้นหาเรื่องของคุณ" />
+          <PromoCard href="/read/fanfic" image="/images/promo-fanfiction-v2.webp" eyebrow="FANFICTION" quote="เรื่องเดิม ในมุมที่ไม่เคยเห็น..." action="สำรวจแฟนฟิค" />
           <PromoCard href="/community" image="/images/promo-community-v2.webp" eyebrow="COMMUNITY" quote="ทุกบทที่คุณเล่า ได้ด้วยจินตนาการ" action="เข้าสู่หน้าชุมชน" />
         </aside>
       </div>

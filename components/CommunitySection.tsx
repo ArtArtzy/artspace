@@ -1,13 +1,10 @@
-import Image from "next/image";
+"use client";
 
-const writers = [
-  { name: "LunarBlack", type: "นิยาย", image: "/images/writers/lunarblack.webp" },
-  { name: "purplemoon", type: "แฟนฟิค", image: "/images/writers/purplemoon.webp" },
-  { name: "AkiStudio", type: "การ์ตูน", image: "/images/writers/akistudio.webp" },
-  { name: "Moonlit", type: "นิยาย", image: "/images/writers/moonlit.webp" },
-  { name: "felixs", type: "แฟนฟิค", image: "/images/writers/felixs.webp" },
-  { name: "Kuroi", type: "การ์ตูน", image: "/images/writers/kuroi.webp" },
-];
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { authStateChangedEvent } from "@/components/TopMenu";
+import Link from "next/link";
+import { recommendedWriters } from "@/components/writerData";
 
 const posts = [
   { title: "มาแนะนำเรื่องที่อ่านแล้วประทับใจกันหน่อย!", count: "128 โพสต์", image: "/images/community/community-cat.webp" },
@@ -17,6 +14,22 @@ const posts = [
 ];
 
 export default function CommunitySection() {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const syncAuthState = () => {
+      setIsLoggedIn(window.localStorage.getItem("arnspace-authenticated") !== "false");
+    };
+
+    syncAuthState();
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener(authStateChangedEvent, syncAuthState);
+    return () => {
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener(authStateChangedEvent, syncAuthState);
+    };
+  }, []);
+
   return (
     <section aria-label="นักเขียนและชุมชน" className="mx-auto max-w-[1400px] bg-[#0D0F0E] px-2 pb-12 pt-2 text-white">
       <div className="grid grid-cols-[minmax(0,1.55fr)_minmax(350px,1fr)] gap-6 border-t border-white/[0.08] pt-6">
@@ -26,22 +39,24 @@ export default function CommunitySection() {
               <h2 className="text-[21px] font-medium leading-tight">นักเขียนแนะนำ</h2>
               <p className="mt-1 text-[12px] text-white/50">พบกับนักเขียนคุณภาพจากหลากหลายแนว</p>
             </div>
-            <a href="#writers" className="mb-1 inline-flex shrink-0 items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">
+            <a href="/writers" className="mb-1 inline-flex shrink-0 items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">
               ดูทั้งหมด <span aria-hidden="true">→</span>
             </a>
           </div>
           <div className="grid grid-cols-6 gap-3" id="writers">
-            {writers.map((writer) => (
-              <article className="min-w-0 text-center" key={writer.name}>
-                <div className="relative mx-auto h-[88px] w-[88px] overflow-hidden rounded-full border border-[#1ec765] bg-[#18211d] p-0.5 shadow-[0_0_0_2px_rgba(28,198,101,.15)]">
-                  <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="rounded-full object-cover" fill sizes="88px" src={writer.image} />
+            {recommendedWriters.map((writer) => (
+              <Link className="group min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-3 text-center transition hover:-translate-y-1 hover:border-[#1ec765]/60 hover:bg-[#12231a] hover:shadow-[0_12px_30px_rgba(0,0,0,.2)]" href={`/writers/${writer.slug}`} key={writer.slug}>
+                <div className="relative mx-auto h-[72px] w-[72px] overflow-hidden rounded-full border border-[#1ec765] bg-[#18211d] p-0.5 shadow-[0_0_0_2px_rgba(28,198,101,.15)]">
+                  <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="rounded-full object-cover" fill sizes="72px" src={writer.image} />
                 </div>
                 <h3 className="mt-2 truncate text-[12px] font-medium text-white" title={writer.name}>{writer.name}</h3>
                 <p className="truncate text-[11px] text-white/50">{writer.type}</p>
-                <button className="mx-auto mt-3 block h-7 w-[82%] rounded-full border border-[#18bd55] text-[11px] font-medium text-[#26df70] transition hover:bg-[#18bd55] hover:text-[#07100b]" type="button">
-                  ติดตาม
-                </button>
-              </article>
+                {isLoggedIn === true && (
+                  <span className="mx-auto mt-3 block h-7 w-[82%] rounded-full border border-[#18bd55] pt-1.5 text-[11px] font-medium text-[#26df70] transition group-hover:bg-[#18bd55] group-hover:text-[#07100b]">
+                    ติดตาม
+                  </span>
+                )}
+              </Link>
             ))}
           </div>
         </div>
@@ -52,13 +67,13 @@ export default function CommunitySection() {
               <h2 className="text-[21px] font-medium leading-tight">ชุมชนกำลังพูดถึง</h2>
               <p className="mt-1 text-[12px] text-white/50">มาพบปะเรื่องที่น่าอ่านและประทับใจกันหน่อย!</p>
             </div>
-            <a href="#community" className="mb-1 inline-flex shrink-0 items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">
+            <a href="/community" className="mb-1 inline-flex shrink-0 items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">
               ดูทั้งหมด <span aria-hidden="true">→</span>
             </a>
           </div>
           <div className="space-y-1" id="community">
             {posts.map((post) => (
-              <a className="flex min-w-0 items-center gap-3 rounded-lg p-1 transition hover:bg-white/[0.04]" href="#community" key={post.title}>
+              <a className="flex min-w-0 items-center gap-3 rounded-lg p-1 transition hover:bg-white/[0.04]" href="/community" key={post.title}>
                 <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-[#18211d]">
                   <Image alt="" className="object-cover" fill sizes="40px" src={post.image} />
                 </div>

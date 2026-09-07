@@ -28,7 +28,7 @@ export default function CategoryCards() {
         {categories.map((category) => (
           <a
             className="group relative h-[184px] overflow-hidden rounded-[9px] border border-[#1eb55d] bg-[#101512] shadow-[0_0_0_1px_rgba(33,194,98,.16),0_8px_18px_rgba(0,0,0,.28)] transition hover:-translate-y-0.5 hover:border-[#4af58c]"
-            href="#discover"
+            href={category.image.includes("fanfic") ? "/read/fanfic" : category.image.includes("cartoon") ? "/read/cartoon" : "/read"}
             key={category.title}
           >
             <Image

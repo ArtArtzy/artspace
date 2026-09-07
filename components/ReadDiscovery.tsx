@@ -337,9 +337,10 @@ type ReadDiscoveryProps = {
   onToggleCategory: (category: string) => void;
   onSelectCategory: (category: string) => void;
   selectedCategory: string;
+  showFollowedCategories: boolean;
 };
 
-export default function ReadDiscovery({ followedCategories, mode, onToggleCategory, onSelectCategory, selectedCategory }: ReadDiscoveryProps) {
+export default function ReadDiscovery({ followedCategories, mode, onToggleCategory, onSelectCategory, selectedCategory, showFollowedCategories }: ReadDiscoveryProps) {
   const [sortOption, setSortOption] = useState<SortOption>("popular");
   const contentLabel = modeLabels[mode];
   const isAllBooks = selectedCategory === "ทั้งหมด";
@@ -398,7 +399,7 @@ export default function ReadDiscovery({ followedCategories, mode, onToggleCatego
         </div>
 
         <aside className="flex min-w-0 flex-col gap-4 border-l border-white/[0.08] pl-5">
-          <FollowedCategories followed={followedCategories} onToggle={onToggleCategory} />
+        {showFollowedCategories && <FollowedCategories followed={followedCategories} onToggle={onToggleCategory} />}
           <ReaderReviews mode={mode} />
         </aside>
       </div>
