@@ -20,6 +20,23 @@ function BellIcon() {
   );
 }
 
+function CoinIcon() {
+  return (
+    <svg aria-hidden="true" className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M14.7 9.4c-.6-.6-1.4-.9-2.5-.9-1.4 0-2.4.7-2.4 1.7 0 2.5 4.8 1.2 4.8 3.7 0 1.1-1 1.8-2.5 1.8-1.1 0-2-.3-2.8-.9M12 7.6v8.8" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function HeartIcon() {
+  return (
+    <svg aria-hidden="true" className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24">
+      <path d="M12 19.2S4.2 14.8 4.2 9.3a3.7 3.7 0 0 1 6.6-2.3L12 8.3l1.2-1.3a3.7 3.7 0 0 1 6.6 2.3c0 5.5-7.8 9.9-7.8 9.9Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 type NotificationItem = {
   title: string;
   description: string;
@@ -100,11 +117,11 @@ function ProfileMenu({ onClose, onRequestLogout }: { onClose: () => void; onRequ
           <span className="text-[13px]">ชั้นหนังสือของฉัน</span>
         </button>
         <button className="flex w-full items-center justify-between gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onClose} role="menuitem" type="button">
-          <span className="flex items-center gap-3"><span aria-hidden="true" className="text-[17px] text-[#f4c84e]">◈</span><span className="text-[13px]">จำนวนเหรียญ</span></span>
+          <span className="flex items-center gap-3 text-[#f4c84e]"><CoinIcon /><span className="text-[13px] text-white">จำนวนเหรียญ</span></span>
           <span className="text-[12px] font-semibold text-[#f4c84e]">1,250</span>
         </button>
         <button className="flex w-full items-center justify-between gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onClose} role="menuitem" type="button">
-          <span className="flex items-center gap-3"><span aria-hidden="true" className="text-[18px] text-[#e96ba6]">♡</span><span className="text-[13px]">กำลังติดตาม</span></span>
+          <span className="flex items-center gap-3 text-[#e96ba6]"><HeartIcon /><span className="text-[13px] text-white">กำลังติดตาม</span></span>
           <span className="text-[12px] font-semibold text-white/55">24</span>
         </button>
       </div>

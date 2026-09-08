@@ -1,26 +1,30 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const slides = [
  {
-  image: "/images/hero-reading.webp",
+  image: "/images/hero-1.webp",
   width: 1400,
   height: 560,
-  alt: "พื้นที่เล็ก ๆ ของทุกเรื่องราวใหญ่ ๆ — อ่าน เขียน แบ่งปัน และเป็นส่วนหนึ่งของชุมชนนักอ่าน",
+  ctaPosition: { left: "calc(24% + 10px)", bottom: "11%" },
+  alt: "ในคืนที่มนตราเริ่มตื่น — สองหัวใจออกเดินทางสู่ดินแดนลี้ลับ",
  },
  {
-  image: "/images/hero-writing.webp",
+  image: "/images/hero-2.webp",
   width: 1400,
   height: 560,
-  alt: "เปิดหน้าถัดไป แล้วออกเดินทางไปด้วยกัน — ค้นพบเรื่องราวใหม่ ๆ จากนักเขียนที่มีบางอย่างอยากเล่า",
+  ctaPosition: { left: "calc(27% - 10px)", bottom: "13%" },
+  alt: "คืนที่แสงดาวผลิบาน — สองหัวใจตัวน้อยออกเดินทางสู่สวนเวทลับ",
  },
  {
-  image: "/images/hero-community.webp",
+  image: "/images/hero-3.webp",
   width: 1400,
   height: 560,
-  alt: "ทุกเสียงมีความหมาย เมื่อเราได้แบ่งปันกัน — พบผู้คนที่รักการอ่านและการเล่าเรื่อง ในพื้นที่ที่เป็นของคุณ",
+  ctaPosition: { left: "25%", bottom: "10%" },
+  alt: "เสียงกลองศึกแห่งสวรรค์ — เมื่อเทพสงครามก้าวลงสู่สนามรบเพื่อชี้ชะตาอาณาจักร",
  },
 ];
 
@@ -75,6 +79,19 @@ export default function HeroCarousel() {
         unoptimized
         width={activeSlide.width}
       />
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
+      />
+
+      <Link
+        className="absolute z-30 inline-flex w-[220px] -translate-x-1/2 items-center justify-center rounded-full bg-[#1be27e] px-8 py-3 text-sm font-semibold text-[#07100b] shadow-[0_8px_28px_rgba(0,0,0,0.72)] ring-2 ring-black/45 transition hover:-translate-x-1/2 hover:scale-105 hover:bg-[#66f5ad] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#101411]"
+        href="/read"
+        style={{ left: activeSlide.ctaPosition.left, bottom: activeSlide.ctaPosition.bottom }}
+      >
+        อ่านนิยาย
+      </Link>
 
       <button
         aria-label="สไลด์ก่อนหน้า"

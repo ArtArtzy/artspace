@@ -8,6 +8,7 @@ import ReadDiscovery from "@/components/ReadDiscovery";
 import ReadHero from "@/components/ReadHero";
 import ReadSubMenu, { type ReadModeId } from "@/components/ReadSubMenu";
 import TopMenu, { authStateChangedEvent } from "@/components/TopMenu";
+import { categoryBooks } from "@/data/categoryBooks";
 
 type ReadModePageProps = {
   mode: ReadModeId;
@@ -21,8 +22,17 @@ export default function ReadModePage({ mode }: ReadModePageProps) {
   useEffect(() => {
     const syncAuthState = () => {
       const loggedIn = window.localStorage.getItem("arnspace-authenticated") !== "false";
+      const requestedCategory = new URLSearchParams(window.location.search).get("category");
+      const hasRequestedCategory = requestedCategory === "ทั้งหมด"
+        || (requestedCategory !== null && Object.prototype.hasOwnProperty.call(categoryBooks, requestedCategory));
+      const nextCategory = hasRequestedCategory && requestedCategory
+        ? requestedCategory
+        : loggedIn
+          ? "หมวดของฉัน"
+          : "ทั้งหมด";
+
       setIsLoggedIn(loggedIn);
-      setSelectedCategory(loggedIn ? "หมวดของฉัน" : "ทั้งหมด");
+      setSelectedCategory(nextCategory);
     };
 
     syncAuthState();
@@ -39,7 +49,7 @@ export default function ReadModePage({ mode }: ReadModePageProps) {
   };
 
   return (
-    <main className="min-h-screen bg-[#0D0F0E] pt-[146px]">
+    <main className="min-h-screen bg-[#0D0F0E] pt-[82px]">
       <TopMenu fixed />
       <ReadSubMenu activeMode={mode} fixed />
       <ReadHero activeMode={mode} />

@@ -3,7 +3,7 @@
 export type ReadModeId = "novel" | "fanfic" | "cartoon";
 
 type ReadSubMenuProps = {
-  activeMode: ReadModeId;
+  activeMode?: ReadModeId;
   fixed?: boolean;
 };
 
@@ -42,7 +42,7 @@ export default function ReadSubMenu({ activeMode, fixed = false }: ReadSubMenuPr
   return (
     <nav
       aria-label="เมนูการอ่าน"
-      className={`${fixed ? "fixed inset-x-0 top-[82px] z-40" : ""} mx-auto flex h-[64px] w-full max-w-[1400px] items-center justify-center border-t border-[#0ed77e]/30 bg-[#0c0e0d] px-10 text-white`}
+      className={`${fixed ? "fixed inset-x-0 top-[82px] z-40" : ""} mx-auto flex h-[64px] w-full max-w-[1400px] items-center justify-center border-t border-[#0ed77e]/30 bg-[#0c0e0d]/85 px-10 text-white backdrop-blur-sm`}
     >
       <div className="flex items-center gap-2">
         {items.map((item) => {

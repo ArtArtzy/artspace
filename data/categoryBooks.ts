@@ -1,3 +1,5 @@
+import type { StoryStatus } from "@/data/storyStatus";
+
 export type CategoryBook = {
   title: string;
   author: string;
@@ -6,6 +8,7 @@ export type CategoryBook = {
   views: string;
   likes: string;
   image: string;
+  status?: StoryStatus;
 };
 
 export type CategorySection = {

@@ -1,16 +1,18 @@
 "use client";
 
+import Image from "next/image";
+
 type Category = {
   label: string;
   lines?: readonly string[];
   special?: boolean;
   color: string;
-  icon: "all" | "heart" | "spark" | "bl" | "gl" | "fantasy" | "china" | "isekai" | "romance-fantasy" | "drama" | "detective" | "mystery" | "horror" | "action" | "sci-fi" | "life" | "comedy" | "anime" | "game" | "tv" | "other";
+  icon: "all" | "heart" | "double-heart" | "spark" | "bl" | "gl" | "fantasy" | "china" | "isekai" | "romance-fantasy" | "drama" | "detective" | "mystery" | "horror" | "action" | "sci-fi" | "life" | "comedy" | "anime" | "game" | "tv" | "other";
 };
 
 const categories: Category[] = [
   { label: "ทั้งหมด", color: "text-[#45ee83]", icon: "all" },
-  { label: "โรแมนติก", color: "text-[#f04d9b]", icon: "heart" },
+  { label: "โรแมนติก", color: "text-[#f04d9b]", icon: "double-heart" },
   { label: "วาย", color: "text-[#478fff]", icon: "bl" },
   { label: "ยูริ", color: "text-[#fc6680]", icon: "gl" },
   { label: "แฟนตาซี", color: "text-[#9869ff]", icon: "fantasy" },
@@ -47,6 +49,13 @@ function CategoryIcon({ type }: { type: Category["icon"] }) {
           <path d="M12 19.2S4.2 14.8 4.2 9.3a3.7 3.7 0 0 1 6.6-2.3L12 8.3l1.2-1.3a3.7 3.7 0 0 1 6.6 2.3c0 5.5-7.8 9.9-7.8 9.9Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
         </svg>
       );
+    case "double-heart":
+      return (
+        <svg {...common}>
+          <path d="M10.8 13.6S5.2 10.5 5.2 7.2a2.7 2.7 0 0 1 5.1-1.3l.7 1 .7-1a2.7 2.7 0 0 1 5.1 1.3c0 3.3-5.7 6.4-5.7 6.4Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.6" transform="translate(-1.8 -1.5) scale(.8)" />
+          <path d="M13.2 18.8S7.6 15.7 7.6 12.4a2.7 2.7 0 0 1 5.1-1.3l.7 1 .7-1a2.7 2.7 0 0 1 5.1 1.3c0 3.3-5.7 6.4-5.7 6.4Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.6" transform="translate(2.4 2.4) scale(.8)" />
+        </svg>
+      );
     case "spark":
     case "fantasy":
       return (
@@ -57,23 +66,17 @@ function CategoryIcon({ type }: { type: Category["icon"] }) {
       );
     case "bl":
       return (
-        <svg {...common}>
-          <path d="M7.2 8.2a3.1 3.1 0 1 1 4.4 4.4l-1.4 1.4a3.1 3.1 0 0 1-4.4-4.4l.6-.6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-          <path d="M16.8 15.8a3.1 3.1 0 1 1-4.4-4.4l1.4-1.4a3.1 3.1 0 0 1 4.4 4.4l-.6.6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-        </svg>
+        <Image alt="" aria-hidden="true" className="h-5 w-5 object-contain" height={737} src="/images/category-bl.png" width={737} />
       );
     case "gl":
       return (
-        <svg {...common}>
-          <path d="M12 4v16M7.5 6.5 16.5 17.5M16.5 6.5 7.5 17.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
-          <circle cx="12" cy="12" r="2.8" stroke="currentColor" strokeWidth="1.7" />
-        </svg>
+        <Image alt="" aria-hidden="true" className="h-5 w-5 object-contain" height={737} src="/images/category-yuri.png" width={737} />
       );
     case "china":
       return (
         <svg {...common}>
-          <path d="M4 19.5h16M5.5 19.5v-8h13v8M4 11.5 12 5l8 6.5M8.5 11.5v8M15.5 11.5v8M7 8.9h10" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
-          <path d="M10 15h4v4.5h-4z" stroke="currentColor" strokeWidth="1.5" />
+          <rect height="16" rx="1.5" stroke="currentColor" strokeWidth="1.6" width="16" x="4" y="4" />
+          <text fill="currentColor" fontFamily="serif" fontSize="11" fontWeight="600" textAnchor="middle" x="12" y="16.2">文</text>
         </svg>
       );
     case "isekai":
@@ -102,7 +105,7 @@ function CategoryIcon({ type }: { type: Category["icon"] }) {
       return (
         <svg {...common}>
           <circle cx="10.7" cy="10.7" r="5.5" stroke="currentColor" strokeWidth="1.7" />
-          <path d="m15 15 4.3 4.3M8.5 10.2h.01M12.5 10.2h.01M9.1 13c1 .8 2.3.8 3.3 0" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+          <path d="m15 15 4.3 4.3" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
         </svg>
       );
     case "horror":
@@ -114,16 +117,14 @@ function CategoryIcon({ type }: { type: Category["icon"] }) {
       );
     case "action":
       return (
-        <svg {...common}>
-          <path d="m5 19 14-14M7.2 16.8l-2.5-2.5M9.5 14.5l-2.8-2.8M16.8 7.2l2.5 2.5M14.5 9.5l2.8 2.8" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-          <path d="m4.5 19.5 4-.9M19.5 4.5l-.9 4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
-        </svg>
+        <Image alt="" aria-hidden="true" className="h-5 w-5 object-contain" height={737} src="/images/category-action.png" width={737} />
       );
     case "sci-fi":
       return (
         <svg {...common}>
-          <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" stroke="currentColor" strokeLinecap="round" strokeWidth="1.6" />
-          <path d="m12 7 1.7 3.3L17 12l-3.3 1.7L12 17l-1.7-3.3L7 12l3.3-1.7L12 7Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+          <path d="M7 21 15.2 8.4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+          <path d="m15.2 3.2 1.1 2.2 2.2 1.1-2.2 1.1-1.1 2.2-1.1-2.2-2.2-1.1 2.2-1.1 1.1-2.2Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.5" />
+          <path d="M5 18.5c1.3.7 2.5.7 3.8 0M17.8 12.7l1.1 1.2 1.5.3-1.5.3-1.1 1.2-.3-1.2-1.2-.3 1.2-.3.3-1.2Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.3" />
         </svg>
       );
     case "life":

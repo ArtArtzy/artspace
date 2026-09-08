@@ -11,6 +11,10 @@ const prompt = Prompt({
 export const metadata: Metadata = {
   title: "ARN SPACE",
   description: "ARN SPACE — Read, Write, Belong.",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
