@@ -6,7 +6,7 @@ import CommunitySection from "@/components/CommunitySection";
 import Footer from "@/components/Footer";
 import ReadDiscovery from "@/components/ReadDiscovery";
 import ReadHero from "@/components/ReadHero";
-import ReadSubMenu, { type ReadModeId } from "@/components/ReadSubMenu";
+import type { ReadModeId } from "@/components/ReadSubMenu";
 import TopMenu, { authStateChangedEvent } from "@/components/TopMenu";
 import { categoryBooks } from "@/data/categoryBooks";
 
@@ -51,7 +51,6 @@ export default function ReadModePage({ mode }: ReadModePageProps) {
   return (
     <main className="min-h-screen bg-[#0D0F0E] pt-[82px]">
       <TopMenu fixed />
-      <ReadSubMenu activeMode={mode} fixed />
       <ReadHero activeMode={mode} />
       <div className={isLoggedIn === null ? "invisible" : undefined}>
         <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} myCategoryCount={followedCategories.length} showMyCategory={isLoggedIn === true} />

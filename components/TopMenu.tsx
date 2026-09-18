@@ -14,7 +14,7 @@ function SearchIcon() {
 
 function BellIcon() {
   return (
-    <svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24">
+    <svg aria-hidden="true" className="h-7 w-7" fill="none" viewBox="0 0 24 24">
       <path d="M6.75 16.25h10.5l-1.1-1.67a3.75 3.75 0 0 1-.62-2.07V9.75a3.53 3.53 0 0 0-7.06 0v2.76c0 .73-.21 1.45-.62 2.07l-1.1 1.67ZM10.25 19.25h3.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
     </svg>
   );
@@ -162,9 +162,9 @@ function LogoutConfirmModal({ onCancel, onConfirm }: { onCancel: () => void; onC
 
 const links = [
   { label: "หน้าหลัก", href: "/" },
-  { label: "อ่าน", href: "/read" },
-  { label: "เขียน", href: "/write" },
-  { label: "นักเขียน", href: "/writers" },
+ { label: "นิยาย", href: "/read" },
+  { label: "แฟนฟิค", href: "/read/fanfic" },
+  { label: "การ์ตูน", href: "/read/cartoon" },
   { label: "ชุมชน", href: "/community" },
 ];
 
@@ -184,7 +184,10 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
   const [isLoggedIn, setIsLoggedIn] = useState(initialLoggedIn);
   const notificationRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const isLinkActive = (href: string) => href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+  const isLinkActive = (href: string) => {
+    if (href === "/" || href === "/read") return pathname === href;
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   useEffect(() => {
     const storedAuthState = window.localStorage.getItem(authStorageKey);
@@ -222,7 +225,7 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
   return (
     <header className={`${fixed ? "fixed inset-x-0 top-0 z-50" : ""} border-b border-white/[0.06] bg-[#0c0e0d] text-white`}>
       <div className="mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-8">
-        <a aria-label="ARN SPACE หน้าหลัก" className="flex shrink-0 items-center" href="/">
+        <a aria-label="ARN SPACE หน้าหลัก" className="-ml-4 flex shrink-0 items-center" href="/">
           <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[238px]" height={80} priority src="/images/arnspace-logo.webp" width={238} />
         </a>
 
@@ -235,11 +238,13 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
           ))}
         </nav>
 
-        <div className="ml-auto flex min-w-0 items-center gap-6">
-          <label className="flex h-10 w-[316px] items-center gap-2 rounded-[9px] border border-[#1f4e32] bg-[#141917] px-3 text-white/55 shadow-[inset_0_0_14px_rgba(20,215,126,0.05)] focus-within:border-[#0ecb78]">
+        <div className="ml-auto flex min-w-0 items-center gap-4">
+          <label className="flex h-10 w-[270px] items-center gap-2 rounded-[9px] border border-[#1f4e32] bg-[#141917] px-3 text-white/55 shadow-[inset_0_0_14px_rgba(20,215,126,0.05)] focus-within:border-[#0ecb78]">
             <span className="shrink-0"><SearchIcon /></span>
-            <input aria-label="ค้นหา" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/35" placeholder="ค้นหาเรื่อง ปากกา เรื่องที่คุณสนใจ..." type="search" />
+            <input aria-label="ค้นหา" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/35" placeholder="ค้นหาเรื่อง นามปากกา" type="search" />
           </label>
+
+          <a aria-current={pathname === "/write" ? "page" : undefined} className="flex h-10 shrink-0 items-center rounded-[8px] border border-[#20d976] px-4 text-[13px] font-semibold text-[#41ee91] transition hover:bg-[#123722] hover:text-white" href="/write">เขียนเรื่อง</a>
 
           {isLoggedIn ? (
             <>
@@ -259,9 +264,9 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
               </div>
             </>
           ) : (
-            <div className="flex items-center gap-2">
-              <a className="flex h-10 items-center rounded-[8px] border border-[#20d976] px-4 text-[13px] font-semibold text-[#41ee91] transition hover:bg-[#123722]" href="/login">เข้าสู่ระบบ</a>
-              <a className="flex h-10 items-center rounded-[8px] border border-[#20d976] bg-[#16c96b] px-4 text-[13px] font-semibold text-[#07100b] transition hover:bg-[#36ed88]" href="/register">สมัครสมาชิก</a>
+            <div className="flex shrink-0 items-center gap-2">
+              <a className="flex h-10 min-w-[100px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#20d976] px-4 text-[13px] font-semibold text-[#41ee91] transition hover:bg-[#123722]" href="/login">เข้าสู่ระบบ</a>
+              <a className="flex h-10 min-w-[108px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#20d976] bg-[#16c96b] px-4 text-[13px] font-semibold text-[#07100b] transition hover:bg-[#36ed88]" href="/register">สมัครสมาชิก</a>
             </div>
           )}
         </div>

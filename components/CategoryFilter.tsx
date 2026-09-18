@@ -7,7 +7,7 @@ type Category = {
   lines?: readonly string[];
   special?: boolean;
   color: string;
-  icon: "all" | "heart" | "double-heart" | "spark" | "bl" | "gl" | "fantasy" | "china" | "isekai" | "romance-fantasy" | "drama" | "detective" | "mystery" | "horror" | "action" | "sci-fi" | "life" | "comedy" | "anime" | "game" | "tv" | "other";
+  icon: "all" | "heart" | "double-heart" | "spark" | "bookmark" | "trending" | "flame" | "book" | "check" | "bl" | "gl" | "fantasy" | "china" | "isekai" | "romance-fantasy" | "drama" | "detective" | "mystery" | "horror" | "action" | "sci-fi" | "life" | "comedy" | "anime" | "game" | "tv" | "other";
 };
 
 const categories: Category[] = [
@@ -23,6 +23,14 @@ const categories: Category[] = [
   { label: "แอ๊กชั่น", color: "text-[#ff6d55]", icon: "action" },
   { label: "ไซไฟ", color: "text-[#42e7e0]", icon: "sci-fi" },
   { label: "คอมเมดี้", color: "text-[#f4cf4e]", icon: "comedy" },
+];
+
+const homeCategories: Category[] = [
+  { label: "สำหรับคุณ", lines: ["สำหรับคุณ", "คัดสรรพิเศษเพื่อคุณ"], color: "text-[#20e99a]", icon: "heart" },
+  { label: "อ่านต่อ", lines: ["อ่านต่อ", "คลิกไปที่เรื่องที่ค้างไว้"], color: "text-white/80", icon: "bookmark" },
+  { label: "กำลังมาแรง", lines: ["กำลังมาแรง", "เรื่องที่เป็นกระแสนิยม"], color: "text-white/80", icon: "trending" },
+  { label: "จากที่ติดตาม", lines: ["จากที่ติดตาม", "อัปเดตจากนักเขียนที่คุณติดตาม"], color: "text-white/80", icon: "book" },
+  { label: "เรื่องจบแล้ว", lines: ["เรื่องจบแล้ว", "เรื่องที่จบไปแล้ว"], color: "text-white/80", icon: "check" },
 ];
 
 function CategoryIcon({ type }: { type: Category["icon"] }) {
@@ -47,6 +55,39 @@ function CategoryIcon({ type }: { type: Category["icon"] }) {
       return (
         <svg {...common}>
           <path d="M12 19.2S4.2 14.8 4.2 9.3a3.7 3.7 0 0 1 6.6-2.3L12 8.3l1.2-1.3a3.7 3.7 0 0 1 6.6 2.3c0 5.5-7.8 9.9-7.8 9.9Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+        </svg>
+      );
+    case "bookmark":
+      return (
+        <svg {...common}>
+          <path d="M7 4.5h10a1.5 1.5 0 0 1 1.5 1.5v13l-6.5-3.8-6.5 3.8V6A1.5 1.5 0 0 1 7 4.5Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+      );
+    case "trending":
+      return (
+        <svg {...common}>
+          <path d="m4.5 17.5 4.8-4.7 3.2 2.8 6.9-7.1" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+          <path d="M15.8 8.5h3.6v3.6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+        </svg>
+      );
+    case "flame":
+      return (
+        <svg {...common}>
+          <path d="M13.7 3.2c.3 3.1-1 4.4-2.4 5.7-1.2 1.1-2.3 2.2-2.3 4.4 0 1.4.9 2.6 2.2 3.1-.7-1.6-.1-3.2 1.1-4.2.2 1.5 1.6 2.2 2.2 3.3.3.5.5 1.1.5 1.8 0 .7-.2 1.4-.6 2 2.1-.8 3.6-2.8 3.6-5.2 0-3.7-2.2-6.8-4.3-10.9Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+          <path d="M9.2 20.2a5.2 5.2 0 0 1-1.5-3.6c0-1.2.4-2.2 1.2-3.2-.1 2.1 1 3.2 2.1 4.1.4.4.7.9.8 1.5.2-.8.1-1.5-.2-2.2 1.4.8 2.1 2.1 2.1 3.5 0 .6-.1 1.1-.3 1.6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.4" />
+        </svg>
+      );
+    case "book":
+      return (
+        <svg {...common}>
+          <path d="M4.5 5.5h5.2a2.3 2.3 0 0 1 2.3 2.3v11a2.3 2.3 0 0 0-2.3-2.3H4.5v-11ZM19.5 5.5h-5.2A2.3 2.3 0 0 0 12 7.8v11a2.3 2.3 0 0 1 2.3-2.3h5.2v-11Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+      );
+    case "check":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.2" stroke="currentColor" strokeWidth="1.7" />
+          <path d="m8.3 12.1 2.4 2.4 5-5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
         </svg>
       );
     case "double-heart":
@@ -175,10 +216,13 @@ export type CategoryFilterProps = {
   onSelect: (category: string) => void;
   myCategoryCount?: number;
   showMyCategory?: boolean;
+  variant?: "categories" | "home";
 };
 
-export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0, showMyCategory = false }: CategoryFilterProps) {
-  const visibleCategories: Category[] = showMyCategory
+export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0, showMyCategory = false, variant = "categories" }: CategoryFilterProps) {
+  const visibleCategories: Category[] = variant === "home"
+    ? homeCategories
+    : showMyCategory
     ? [
         {
           label: "หมวดของฉัน",
@@ -192,19 +236,26 @@ export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0
     : categories;
 
   return (
-    <section aria-label="เลือกหมวดหมู่" className="mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-[#0D0F0E] px-2 pb-[18px] pt-1" id="category-filter">
-      <div className="flex w-full flex-nowrap gap-2 overflow-hidden">
+    <section aria-label={variant === "home" ? "เลือกการสำรวจ" : "เลือกหมวดหมู่"} className="sticky top-[82px] z-40 mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-[#0D0F0E] px-2 pb-[18px] pt-1 shadow-[0_8px_20px_rgba(0,0,0,.24)]" id="category-filter">
+      <div className={`flex w-full flex-nowrap gap-2 overflow-hidden ${variant === "home" ? "grid grid-cols-5" : ""}`}>
         {visibleCategories.map((category) => {
           const isSelected = selected === category.label;
-          const buttonClass = [
-            "group flex h-[82px] min-w-0 flex-1 flex-col items-center justify-center gap-2 rounded-[7px] border px-1 py-2 transition",
-            isSelected
-              ? "border-[#1cbd55] bg-[linear-gradient(145deg,#102d19,#102017)] shadow-[0_0_12px_rgba(23,213,100,.22)]"
-              : category.special
-              ? "border-white/[0.14] bg-[linear-gradient(145deg,#1a1f1c,#141817)] hover:border-white/25 hover:bg-[#1a1f1c]"
-              : "border-white/[0.08] bg-[#151817] hover:border-white/20 hover:bg-[#1a1f1c]",
-            category.special && !isSelected ? "text-white/55" : category.color,
-          ].join(" ");
+          const buttonClass = variant === "home"
+            ? [
+                "group flex h-[72px] min-w-0 flex-1 items-center justify-center gap-3 rounded-[8px] border px-3 py-2 text-left transition",
+                isSelected
+                  ? "border-[#10d89a] bg-[linear-gradient(145deg,#0d3028,#10221d)] shadow-[0_0_12px_rgba(23,213,160,.18)]"
+                  : "border-[#14332f] bg-[#101a18] hover:border-[#1b5a4c] hover:bg-[#12231f]",
+              ].join(" ")
+            : [
+                "group flex h-[82px] min-w-0 flex-1 flex-col items-center justify-center gap-2 rounded-[7px] border px-1 py-2 transition",
+                isSelected
+                  ? "border-[#1cbd55] bg-[linear-gradient(145deg,#102d19,#102017)] shadow-[0_0_12px_rgba(23,213,100,.22)]"
+                  : category.special
+                  ? "border-white/[0.14] bg-[linear-gradient(145deg,#1a1f1c,#141817)] hover:border-white/25 hover:bg-[#1a1f1c]"
+                  : "border-white/[0.08] bg-[#151817] hover:border-white/20 hover:bg-[#1a1f1c]",
+                category.special && !isSelected ? "text-white/55" : category.color,
+              ].join(" ");
 
           return (
             <button
@@ -215,10 +266,22 @@ export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0
               onClick={() => onSelect(category.label)}
               type="button"
             >
-              <CategoryIcon type={category.icon} />
-              <span className="max-w-full whitespace-pre-line text-center text-[12px] font-medium leading-tight text-white/85 group-hover:text-white">
-                {category.lines ? category.lines.map((line) => <span className="block" key={line}>{line}</span>) : category.label}
-              </span>
+              {variant === "home" ? (
+                <>
+                  <span className={isSelected ? "text-[#20e99a]" : "text-white/80"}><CategoryIcon type={category.icon} /></span>
+                  <span className="min-w-0 max-w-full whitespace-pre-line leading-tight">
+                    <span className={`block truncate text-[14px] font-semibold ${isSelected ? "text-[#20e99a]" : "text-white/90"}`}>{category.lines?.[0] ?? category.label}</span>
+                    <span className="mt-1 block truncate text-[10px] font-normal text-white/45">{category.lines?.[1]}</span>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <CategoryIcon type={category.icon} />
+                  <span className="max-w-full whitespace-pre-line text-center text-[12px] font-medium leading-tight text-white/85 group-hover:text-white">
+                    {category.lines ? category.lines.map((line) => <span className="block" key={line}>{line}</span>) : category.label}
+                  </span>
+                </>
+              )}
             </button>
           );
         })}

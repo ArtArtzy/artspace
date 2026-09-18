@@ -6,24 +6,24 @@ import { useEffect, useState } from "react";
 
 const slides = [
  {
-  image: "/images/hero-1.webp",
+  image: "/images/hero-1-compact.webp",
   width: 1400,
-  height: 560,
-  ctaPosition: { left: "calc(24% + 10px)", bottom: "11%" },
+  height: 383,
+  ctaPosition: { left: "calc(24% + 10px)", bottom: "12%" },
   alt: "ในคืนที่มนตราเริ่มตื่น — สองหัวใจออกเดินทางสู่ดินแดนลี้ลับ",
  },
  {
-  image: "/images/hero-2.webp",
+  image: "/images/hero-2-compact.webp",
   width: 1400,
-  height: 560,
-  ctaPosition: { left: "calc(27% - 10px)", bottom: "13%" },
+  height: 383,
+  ctaPosition: { left: "calc(24% + 10px)", bottom: "12%" },
   alt: "คืนที่แสงดาวผลิบาน — สองหัวใจตัวน้อยออกเดินทางสู่สวนเวทลับ",
  },
  {
-  image: "/images/hero-3.webp",
+  image: "/images/hero-3-compact.webp",
   width: 1400,
-  height: 560,
-  ctaPosition: { left: "25%", bottom: "10%" },
+  height: 383,
+  ctaPosition: { left: "calc(24% + 10px)", bottom: "12%" },
   alt: "เสียงกลองศึกแห่งสวรรค์ — เมื่อเทพสงครามก้าวลงสู่สนามรบเพื่อชี้ชะตาอาณาจักร",
  },
 ];
@@ -38,6 +38,14 @@ function ArrowIcon({ direction }: { direction: "left" | "right" }) {
         strokeLinejoin="round"
         strokeWidth="2"
       />
+    </svg>
+  );
+}
+
+function BookmarkIcon() {
+  return (
+    <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
+      <path d="M6.75 4.75A1.75 1.75 0 0 1 8.5 3h7a1.75 1.75 0 0 1 1.75 1.75v16l-5.25-3.25-5.25 3.25v-16Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
     </svg>
   );
 }
@@ -82,16 +90,27 @@ export default function HeroCarousel() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
       />
 
-      <Link
-        className="absolute z-30 inline-flex w-[220px] -translate-x-1/2 items-center justify-center rounded-full bg-[#1be27e] px-8 py-3 text-sm font-semibold text-[#07100b] shadow-[0_8px_28px_rgba(0,0,0,0.72)] ring-2 ring-black/45 transition hover:-translate-x-1/2 hover:scale-105 hover:bg-[#66f5ad] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#101411]"
-        href="/read"
+      <div
+        className="absolute z-30 flex -translate-x-1/2 items-center gap-3"
         style={{ left: activeSlide.ctaPosition.left, bottom: activeSlide.ctaPosition.bottom }}
       >
-        อ่านนิยาย
-      </Link>
+        <Link
+          className="inline-flex h-12 w-[220px] items-center justify-center gap-2 rounded-full bg-[#1be27e] px-8 text-base font-semibold text-[#07100b] shadow-[0_8px_28px_rgba(0,0,0,0.72)] ring-2 ring-black/45 transition hover:scale-105 hover:bg-[#66f5ad] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#101411]"
+          href="/read"
+        >
+          อ่านเลย <span aria-hidden="true" className="text-xl leading-none">→</span>
+        </Link>
+        <button
+          className="inline-flex h-12 w-[250px] items-center justify-center gap-3 rounded-full border-2 border-white/80 bg-[#07100b]/70 px-7 text-base font-semibold text-white shadow-[0_8px_28px_rgba(0,0,0,0.62)] transition hover:border-white hover:bg-[#13231c]/90 focus:outline-none focus:ring-2 focus:ring-[#1be27e] focus:ring-offset-2 focus:ring-offset-[#101411]"
+          type="button"
+        >
+          <BookmarkIcon />
+          เพิ่มเข้าชั้นหนังสือ
+        </button>
+      </div>
 
       <button
         aria-label="สไลด์ก่อนหน้า"

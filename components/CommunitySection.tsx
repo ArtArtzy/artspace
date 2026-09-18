@@ -1,39 +1,50 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { authStateChangedEvent } from "@/components/TopMenu";
 import Link from "next/link";
 import { recommendedWriters } from "@/components/writerData";
 
-const posts = [
-  { title: "มาแนะนำเรื่องที่อ่านแล้วประทับใจกันหน่อย!", count: "128 โพสต์", image: "/images/community/community-cat.webp" },
-  { title: "ถ้าเจอตัวละครได้ด้วยกัน คุณอยากให้เกิดอะไรขึ้น?", count: "94 โพสต์", image: "/images/community/community-artist.webp" },
-  { title: "รีวิวอนิเม/นิยายที่ชอบ", count: "76 โพสต์", image: "/images/community/community-pink.webp" },
-  { title: "มุมมองการเขียน สำหรับนักเขียนมือใหม่", count: "112 โพสต์", image: "/images/community/community-hood.webp" },
+const exploreCategories = [
+  { image: "/images/category-novel.webp", title: "นิยาย", description: "เรื่องราวจินตนาการหลากหลายแนว\nจากนักเขียนอิสระ", action: "เข้าสู่หมวดนิยาย", href: "/read" },
+  { image: "/images/category-fanfic.webp", title: "แฟนฟิค", description: "ต่อยอดเรื่องราวที่คุณรัก\nด้วยมุมมองใหม่", action: "เข้าสู่หมวดแฟนฟิค", href: "/read/fanfic" },
+  { image: "/images/category-cartoon.webp", title: "การ์ตูน", description: "โลกแห่งภาพเล่าเรื่อง\nที่พาคุณออกเดินทาง", action: "เข้าสู่หมวดการ์ตูน", href: "/read/cartoon" },
 ];
 
 export default function CommunitySection() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const syncAuthState = () => {
-      setIsLoggedIn(window.localStorage.getItem("arnspace-authenticated") !== "false");
-    };
-
-    syncAuthState();
-    window.addEventListener("storage", syncAuthState);
-    window.addEventListener(authStateChangedEvent, syncAuthState);
-    return () => {
-      window.removeEventListener("storage", syncAuthState);
-      window.removeEventListener(authStateChangedEvent, syncAuthState);
-    };
-  }, []);
-
   return (
     <section aria-label="นักเขียนและชุมชน" className="mx-auto max-w-[1400px] bg-[#0D0F0E] px-2 pb-12 pt-2 text-white">
-      <div className="grid grid-cols-[minmax(0,1.55fr)_minmax(350px,1fr)] gap-6 border-t border-white/[0.08] pt-6">
+      <div className="grid grid-cols-[minmax(0,2.4fr)_minmax(300px,1fr)] gap-6 border-t border-white/[0.08] pt-6">
         <div className="min-w-0">
+          <div className="mb-8">
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <h2 className="text-[21px] font-medium leading-tight">สำรวจเพิ่มเติม</h2>
+                <p className="mt-1 text-[12px] text-white/50">ค้นพบเรื่องราวในแบบที่เป็นคุณ</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {exploreCategories.map((category) => (
+                <Link
+                  className="group relative h-[140px] overflow-hidden rounded-[9px] border border-[#1eb55d] bg-[#101512] shadow-[0_0_0_1px_rgba(33,194,98,.1),0_8px_18px_rgba(0,0,0,.22)] transition hover:-translate-y-0.5 hover:border-[#4af58c]"
+                  href={category.href}
+                  key={category.title}
+                >
+                  <Image alt="" className="object-cover object-[center_44%] transition duration-700 group-hover:scale-[1.03]" fill sizes="(max-width: 1400px) 33vw, 467px" src={category.image} />
+                  <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,8,6,.9)_0%,rgba(4,8,6,.64)_42%,rgba(4,8,6,.1)_100%)]" />
+                  <div className="relative z-10 flex h-full max-w-[230px] flex-col items-start px-5 py-4 text-white">
+                    <h3 className="text-[23px] font-medium leading-none tracking-tight">{category.title}</h3>
+                    <p className="mt-2 whitespace-pre-line text-[12px] leading-[1.4] text-white/85">{category.description}</p>
+                    <span className="mt-auto inline-flex items-center gap-2 rounded-full border border-[#12d66f] px-4 py-1.5 text-[11px] font-semibold text-[#12d66f] transition group-hover:bg-[#12d66f] group-hover:text-[#07100b]">
+                      {category.action}
+                      <span aria-hidden="true" className="text-base leading-none">→</span>
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-2">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
               <h2 className="text-[21px] font-medium leading-tight">นักเขียนแนะนำ</h2>
@@ -51,39 +62,24 @@ export default function CommunitySection() {
                 </div>
                 <h3 className="mt-2 truncate text-[12px] font-medium text-white" title={writer.name}>{writer.name}</h3>
                 <p className="truncate text-[11px] text-white/50">{writer.type}</p>
-                {isLoggedIn === true && (
-                  <span className="mx-auto mt-3 block h-7 w-[82%] rounded-full border border-[#18bd55] pt-1.5 text-[11px] font-medium text-[#26df70] transition group-hover:bg-[#18bd55] group-hover:text-[#07100b]">
-                    ติดตาม
-                  </span>
-                )}
               </Link>
             ))}
+          </div>
           </div>
         </div>
 
         <div className="min-w-0 border-l border-white/[0.08] pl-5">
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-[21px] font-medium leading-tight">ชุมชนกำลังพูดถึง</h2>
-              <p className="mt-1 text-[12px] text-white/50">มาพบปะเรื่องที่น่าอ่านและประทับใจกันหน่อย!</p>
+          <Link aria-label="เข้าสู่ชุมชน ARN SPACE" className="group relative block h-full min-h-[430px] overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href="/community" id="community">
+            <Image alt="ภูมิทัศน์แฟนตาซีของ ARN SPACE" className="object-cover transition duration-700 group-hover:scale-105" fill sizes="(max-width: 1400px) 35vw, 520px" src="/images/community-banner.webp" />
+            <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,20,13,.74),rgba(3,20,13,.34),rgba(3,20,13,.76))]" />
+            <div className="relative flex h-full items-center justify-center px-8 text-center">
+              <div className="text-[17px] font-medium leading-[1.7] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,.8)] sm:text-[20px]">
+                เพราะทุกคนมีเรื่องราว<br />
+                และทุกเรื่องราว...มีที่ของมัน
+                <span className="mx-auto mt-3 block w-fit border-t border-b border-white/55 px-4 py-1.5 text-[10px] font-normal tracking-[0.28em] text-[#b5d5c3]">ARN SPACE</span>
+              </div>
             </div>
-            <a href="/community" className="mb-1 inline-flex shrink-0 items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">
-              ดูทั้งหมด <span aria-hidden="true">→</span>
-            </a>
-          </div>
-          <div className="space-y-1" id="community">
-            {posts.map((post) => (
-              <a className="flex min-w-0 items-center gap-3 rounded-lg p-1 transition hover:bg-white/[0.04]" href="/community" key={post.title}>
-                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-[#18211d]">
-                  <Image alt="" className="object-cover" fill sizes="40px" src={post.image} />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="truncate text-[12px] font-medium text-white/90" title={post.title}>{post.title}</h3>
-                  <p className="mt-0.5 text-[11px] text-white/45">{post.count}</p>
-                </div>
-              </a>
-            ))}
-          </div>
+          </Link>
         </div>
       </div>
     </section>
