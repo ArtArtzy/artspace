@@ -3,25 +3,31 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import BookshelfToggleButton from "@/components/BookshelfToggleButton";
 
 const slides = [
  {
+  hrefTitle: "Sky of Tomorrow",
   image: "/images/hero-home-full-1.webp",
   alt: "ในคืนที่มนตราเริ่มตื่น — สองหัวใจออกเดินทางสู่ดินแดนลี้ลับ",
  },
  {
+  hrefTitle: "Lemon Days",
   image: "/images/hero-home-full-2.webp",
   alt: "คืนที่แสงดาวผลิบาน — สองหัวใจตัวน้อยออกเดินทางสู่สวนเวทลับ",
  },
  {
+  hrefTitle: "Blood Moon",
   image: "/images/hero-home-full-3.webp",
   alt: "เสียงกลองศึกแห่งสวรรค์ — เมื่อเทพสงครามก้าวลงสู่สนามรบเพื่อชี้ชะตาอาณาจักร",
  },
  {
+  hrefTitle: "The Starless Archive",
   image: "/images/hero-home-full-4.webp",
   alt: "ประตูสู่โลกใบใหม่ — ทุกหน้ากระดาษคือการผจญภัย",
  },
  {
+  hrefTitle: "The Clockwork Garden",
   image: "/images/hero-home-full-5.webp",
   alt: "เรื่องเล่าที่รอคุณค้นพบ — เปิดหน้าต่อไป แล้วออกเดินทางด้วยกัน",
  },
@@ -71,7 +77,7 @@ export default function HeroCarousel() {
   return (
     <section
       aria-label="เรื่องราวแนะนำ"
-      className="relative mx-auto w-full max-w-[1400px] bg-[#101411]"
+      className="relative mx-auto w-full max-w-[1400px] bg-arn-raised"
      onMouseEnter={() => setIsPaused(true)}
      onMouseLeave={() => setIsPaused(false)}
    >
@@ -97,17 +103,15 @@ export default function HeroCarousel() {
       >
         <Link
           className="inline-flex h-9 w-[130px] items-center justify-center gap-2 rounded-full bg-[#1be27e] px-3 text-sm font-semibold text-[#07100b] shadow-[0_8px_28px_rgba(0,0,0,0.72)] ring-2 ring-black/45 transition hover:scale-105 hover:bg-[#66f5ad] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#101411] lg:h-12 lg:w-[220px] lg:px-8 lg:text-base"
-          href="/read"
+          href={`/read?title=${encodeURIComponent(activeSlide.hrefTitle)}`}
         >
           อ่านเลย <span aria-hidden="true" className="text-xl leading-none">→</span>
         </Link>
-        <button
+        <BookshelfToggleButton
           className="hidden h-12 w-[250px] items-center justify-center gap-3 rounded-full border-2 border-white/80 bg-[#07100b]/70 px-7 text-base font-semibold text-white shadow-[0_8px_28px_rgba(0,0,0,0.62)] transition hover:border-white hover:bg-[#13231c]/90 focus:outline-none focus:ring-2 focus:ring-[#1be27e] focus:ring-offset-2 focus:ring-offset-[#101411] lg:inline-flex"
-          type="button"
-        >
-          <BookmarkIcon />
-          เพิ่มเข้าชั้นหนังสือ
-        </button>
+          icon={<BookmarkIcon />}
+          title={activeSlide.hrefTitle}
+        />
       </div>
 
       <button

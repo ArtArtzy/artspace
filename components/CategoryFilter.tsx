@@ -361,7 +361,7 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
   };
 
   return (
-    <section aria-label={variant === "home" ? "เลือกการสำรวจ" : "เลือกหมวดหมู่"} className={`${stickyOffset === "read" ? "top-[142px] mt-0" : "top-[82px] mt-3"} sticky z-40 mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-[#0D0F0E] px-2 pb-[18px] pt-1 shadow-[0_8px_20px_rgba(0,0,0,.24)]`} id="category-filter">
+    <section aria-label={variant === "home" ? "เลือกการสำรวจ" : "เลือกหมวดหมู่"} className={`${stickyOffset === "read" ? "top-[142px] mt-0" : "top-[82px] mt-3"} sticky z-40 mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-arn-canvas px-2 pb-[18px] pt-1 shadow-[0_8px_20px_rgba(0,0,0,.24)]`} id="category-filter">
       <div className={`flex w-full flex-nowrap gap-2 overflow-hidden ${variant === "home" ? "grid grid-cols-5" : ""}`}>
         {orderedVisibleCategories.map((category) => {
           const isSelected = selected === category.label;

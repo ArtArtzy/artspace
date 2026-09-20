@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import BookshelfToggleButton from "@/components/BookshelfToggleButton";
 
 export type ReadModeId = "novel" | "fanfic" | "cartoon";
 
@@ -172,7 +173,7 @@ function HeroCarousel({ ariaLabel, modePath, slides }: { ariaLabel: string; mode
   return (
     <section
       aria-label={ariaLabel}
-      className="relative mx-auto w-full max-w-[1400px] overflow-hidden bg-[#101411] text-white"
+      className="relative mx-auto w-full max-w-[1400px] overflow-hidden bg-arn-raised text-arn-text"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -202,13 +203,11 @@ function HeroCarousel({ ariaLabel, modePath, slides }: { ariaLabel: string; mode
         >
           อ่านเลย <span aria-hidden="true" className="text-xl leading-none">→</span>
         </Link>
-        <button
+        <BookshelfToggleButton
           className="hidden h-12 w-[250px] items-center justify-center gap-3 rounded-full border-2 border-white/80 bg-[#07100b]/70 px-7 text-base font-semibold text-white shadow-[0_8px_28px_rgba(0,0,0,0.62)] transition hover:border-white hover:bg-[#13231c]/90 focus:outline-none focus:ring-2 focus:ring-[#1be27e] focus:ring-offset-2 focus:ring-offset-[#101411] sm:inline-flex"
-          type="button"
-        >
-          <BookmarkIcon />
-          เพิ่มเข้าชั้นหนังสือ
-        </button>
+          icon={<BookmarkIcon />}
+          title={activeSlide.hrefTitle}
+        />
       </div>
 
       <button
@@ -332,15 +331,15 @@ export default function ReadHero({ activeMode }: ReadHeroProps) {
   return (
     <>
       {hero}
-      <div className="sticky top-[82px] z-40 mx-auto w-full max-w-[1400px] bg-[#0D0F0E] px-2 pb-1 pt-2">
+      <div className="sticky top-[82px] z-40 mx-auto w-full max-w-[1400px] bg-arn-canvas px-2 pb-1 pt-2">
         <div className={`relative flex min-h-[48px] items-center gap-2.5 overflow-hidden rounded-[8px] border px-3 py-1.5 ${activeBanner.borderClass} ${activeBanner.backgroundClass} ${activeBanner.shadowClass}`}>
           <div aria-hidden="true" className={`pointer-events-none absolute -right-10 top-1/2 h-24 w-48 -translate-y-1/2 rounded-full border blur-[1px] ${activeBanner.accentBorderClass}`} />
           <ReadBannerIcon className={`relative h-8 w-8 shrink-0 ${activeBanner.accentClass}`} icon={activeBanner.icon} />
           <h1 className="relative shrink-0 text-[23px] font-semibold leading-tight text-white sm:text-[25px]">{activeBanner.label}</h1>
           <p className="relative min-w-0 flex-1 truncate text-[10px] text-white/55 sm:text-[11px]">{activeBanner.description}</p>
           <div className="relative ml-auto hidden shrink-0 text-right leading-[1.45] sm:block">
-            <p className="text-[9px] text-white/45">“จินตนาการของคุณ</p>
-            <p className="text-[9px] text-white/45">อาจเป็นโลกใบใหม่หนึ่งเดียวในคราวหน้า”</p>
+            <p className="text-[10px] text-white/45">“จินตนาการของคุณ</p>
+            <p className="text-[10px] text-white/45">อาจเป็นโลกใบใหม่หนึ่งเดียวในคราวหน้า”</p>
           </div>
         </div>
       </div>

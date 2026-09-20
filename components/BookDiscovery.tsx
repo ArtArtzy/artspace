@@ -267,18 +267,20 @@ const featuredReaderReviews = [
 ];
 
 const communityTopics = [
-  { title: "จากไหนในนิยายที่ทำให้คุณร้องไห้ที่สุด?", comments: "1.2K ความคิดเห็น", time: "3 ชั่วโมงที่แล้ว", image: "/images/community/community-cat.webp" },
-  { title: "แนะนำมู้ดของ Slow Burn หน่อยค่ะ...", comments: "892 ความคิดเห็น", time: "5 ชั่วโมงที่แล้ว", image: "/images/community/community-hood.webp" },
-  { title: "ตัวละครไหนที่คุณอยากให้มากอด?", comments: "645 ความคิดเห็น", time: "1 วันที่แล้ว", image: "/images/community/community-artist.webp" },
-  { title: "ถ้ามีอยากกอดในนิยาย อยากให้เรื่องไหนถูกกอด?", comments: "521 ความคิดเห็น", time: "2 วันที่แล้ว", image: "/images/community/community-pink.webp" },
-  { title: "นิยายเรื่องไหนที่คุณอยากให้ถูกสร้างเป็นซีรีส์?", comments: "438 ความคิดเห็น", time: "2 วันที่แล้ว", image: "/images/community/community-library.webp" },
-  { title: "ช่วยแนะนำนิยายแฟนตาซีอ่านยาว ๆ หน่อยครับ", comments: "367 ความคิดเห็น", time: "3 วันที่แล้ว", image: "/images/community/community-mage.webp" },
-  { title: "คุณชอบอ่านตอนใหม่ในช่วงเวลาไหนกันบ้าง?", comments: "294 ความคิดเห็น", time: "4 วันที่แล้ว", image: "/images/community/community-portal.webp" },
-  { title: "มีเรื่องไหนที่อ่านซ้ำแล้วไม่เคยเบื่อบ้าง?", comments: "186 ความคิดเห็น", time: "5 วันที่แล้ว", image: "/images/community/community-tree.webp" },
+  { slug: "most-emotional-novel-moment", title: "จากไหนในนิยายที่ทำให้คุณร้องไห้ที่สุด?", comments: "1.2K ความคิดเห็น", time: "3 ชั่วโมงที่แล้ว", image: "/images/community/community-cat.webp" },
+  { slug: "slow-burn-mood-recommendations", title: "แนะนำมู้ดของ Slow Burn หน่อยค่ะ...", comments: "892 ความคิดเห็น", time: "5 ชั่วโมงที่แล้ว", image: "/images/community/community-hood.webp" },
+  { slug: "character-you-want-to-hug", title: "ตัวละครไหนที่คุณอยากให้มากอด?", comments: "645 ความคิดเห็น", time: "1 วันที่แล้ว", image: "/images/community/community-artist.webp" },
+  { slug: "story-that-needs-a-hug", title: "ถ้ามีอยากกอดในนิยาย อยากให้เรื่องไหนถูกกอด?", comments: "521 ความคิดเห็น", time: "2 วันที่แล้ว", image: "/images/community/community-pink.webp" },
+  { slug: "novel-to-become-series", title: "นิยายเรื่องไหนที่คุณอยากให้ถูกสร้างเป็นซีรีส์?", comments: "438 ความคิดเห็น", time: "2 วันที่แล้ว", image: "/images/community/community-library.webp" },
+  { slug: "long-fantasy-novel-recommendations", title: "ช่วยแนะนำนิยายแฟนตาซีอ่านยาว ๆ หน่อยครับ", comments: "367 ความคิดเห็น", time: "3 วันที่แล้ว", image: "/images/community/community-mage.webp" },
+  { slug: "best-time-to-read-new-episodes", title: "คุณชอบอ่านตอนใหม่ในช่วงเวลาไหนกันบ้าง?", comments: "294 ความคิดเห็น", time: "4 วันที่แล้ว", image: "/images/community/community-portal.webp" },
+  { slug: "favorite-novel-to-reread", title: "มีเรื่องไหนที่อ่านซ้ำแล้วไม่เคยเบื่อบ้าง?", comments: "186 ความคิดเห็น", time: "5 วันที่แล้ว", image: "/images/community/community-tree.webp" },
 ];
 
 function getSectionHref(title: string, selectedCategory: string) {
   const categoryQuery = `?category=${encodeURIComponent(selectedCategory)}`;
+
+  if (selectedCategory === "สำหรับคุณ" && title === "อ่านต่อ") return "/read?category=อ่านต่อ";
 
   if (title.startsWith("นิยาย")) return `/read${categoryQuery}`;
 
@@ -442,7 +444,7 @@ const trendingWriters: RecommendedWriter[] = recommendedWriters.slice(0, 5).map(
 
 function ReaderWelcomeCard() {
   return (
-    <section aria-labelledby="reader-welcome-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="reader-welcome-title" className="ds-section">
       <div className="relative overflow-hidden px-4 pb-4 pt-4">
         <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-[#0f9b64]/20 blur-3xl" />
         <div className="relative flex items-center gap-3">
@@ -487,7 +489,7 @@ function ReadingStatusCard() {
   ];
 
   return (
-    <section aria-labelledby="reading-status-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="reading-status-title" className="ds-section p-3">
       <div className="flex items-center gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="play" />
@@ -516,7 +518,7 @@ function ReaderStatsCard() {
   ];
 
   return (
-    <section aria-labelledby="reader-stats-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="reader-stats-title" className="ds-section p-3">
       <div className="flex items-center gap-[7px]">
         <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="chart" />
         <h2 className="sidebar-title" id="reader-stats-title">สถิติหนังสือของคุณ</h2>
@@ -550,7 +552,7 @@ function PopularRankingCard() {
   const rankedBooks = popularRankingBooks[selectedRange];
 
   return (
-    <section aria-labelledby="popular-ranking-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="popular-ranking-title" className="ds-section p-2.5">
       <div className="flex items-center gap-[7px]">
         <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="flame" />
         <h2 className="sidebar-title" id="popular-ranking-title">อันดับยอดนิยม 10 อันดับแรก</h2>
@@ -592,7 +594,7 @@ function PopularRankingCard() {
 
 function TrendingWritersCard() {
   return (
-    <section aria-labelledby="trending-writers-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="trending-writers-title" className="ds-section p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-[7px]">
           <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="users" />
@@ -624,7 +626,7 @@ function CompletedReadingStatsCard() {
   ];
 
   return (
-    <section aria-labelledby="completed-reading-stats-title" className="overflow-hidden rounded-[8px] border border-white/[0.1] bg-[#07130f] p-2 shadow-[0_0_0_1px_rgba(33,194,98,.08),0_10px_24px_rgba(0,0,0,.22)]">
+    <section aria-labelledby="completed-reading-stats-title" className="ds-section p-2">
       <div className="flex items-center gap-2 px-0.5">
         <div className="flex min-w-0 items-center gap-1.5">
           <SimpleTitleIcon className="h-[18px] w-[18px] shrink-0" name="chart" />
@@ -659,7 +661,7 @@ function LatestCompletedReviewsCard() {
   const completedBooks = completedSections[0].books?.slice(0, 3) ?? [];
 
   return (
-    <section aria-labelledby="latest-completed-reviews-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="latest-completed-reviews-title" className="ds-section p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <SimpleTitleIcon className="h-5 w-5 shrink-0" name="star" />
@@ -697,7 +699,7 @@ function CompletedSavedCard() {
   const savedBooks = completedSections[0].books?.slice(3, 6) ?? [];
 
   return (
-    <section aria-labelledby="completed-saved-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="completed-saved-title" className="ds-section p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <SimpleTitleIcon className="h-5 w-5 shrink-0" name="bookmark" />
@@ -724,13 +726,13 @@ function CompletedSavedCard() {
 
 function BookshelfCard({ useSimpleSidebarIcon = false }: { useSimpleSidebarIcon?: boolean }) {
   return (
-    <section aria-labelledby="bookshelf-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="bookshelf-title" className="ds-section">
       <div className="flex items-center justify-between px-3.5 pb-2.5 pt-3">
         <div className="flex min-w-0 items-center gap-[7px]">
           <SimpleTitleIcon className={useSimpleSidebarIcon ? "h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" : "h-5 w-5 shrink-0 sm:h-[21px] sm:w-[21px]"} name={useSimpleSidebarIcon ? "books" : "library"} />
           <h2 className="sidebar-title truncate" id="bookshelf-title">ชั้นหนังสือของคุณ</h2>
         </div>
-        <Link aria-label="ดูชั้นหนังสือทั้งหมด" className="sidebar-link ml-2 inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูชั้นหนังสือทั้งหมด" className="sidebar-link ml-2 inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read?bookshelf=all">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="grid grid-cols-2 gap-1.5 px-3 pb-3">
@@ -755,7 +757,7 @@ function LatestReadingCard() {
   const progress = 60;
 
   return (
-    <section aria-labelledby="latest-reading-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="latest-reading-title" className="ds-section p-3">
       <div className="flex items-center gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="book" />
@@ -792,7 +794,7 @@ function LatestReadingCard() {
 
 function NewEpisodesCard() {
   return (
-    <section aria-labelledby="new-episodes-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="new-episodes-title" className="ds-section p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="bell" />
@@ -819,7 +821,7 @@ function NewEpisodesCard() {
 
 function LatestReadingNotesCard() {
   return (
-    <section aria-labelledby="latest-reading-notes-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="latest-reading-notes-title" className="ds-section p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="note" />
@@ -848,9 +850,9 @@ function NewsIcon() {
 }
 
 const arnSpaceNews = [
-  { title: "เปิดพื้นที่ต้อนรับนักเขียนและเรื่องราวใหม่บน ARN SPACE", label: "ประกาศจาก ARN SPACE", time: "วันนี้" },
-  { title: "พบกับเรื่องเด่นและนักเขียนแนะนำประจำสัปดาห์", label: "คัดสรรโดย ARN SPACE", time: "เมื่อวาน" },
-  { title: "อัปเดตฟีเจอร์ใหม่ ช่วยให้ค้นหาเรื่องที่ชอบได้ง่ายขึ้น", label: "อัปเดตแพลตฟอร์ม", time: "3 วันที่แล้ว" },
+  { slug: "welcome-new-writers-and-stories", title: "เปิดพื้นที่ต้อนรับนักเขียนและเรื่องราวใหม่บน ARN SPACE", label: "ประกาศจาก ARN SPACE", time: "วันนี้" },
+  { slug: "weekly-featured-writers-and-stories", title: "พบกับเรื่องเด่นและนักเขียนแนะนำประจำสัปดาห์", label: "คัดสรรโดย ARN SPACE", time: "เมื่อวาน" },
+  { slug: "new-platform-discovery-features", title: "อัปเดตฟีเจอร์ใหม่ ช่วยให้ค้นหาเรื่องที่ชอบได้ง่ายขึ้น", label: "อัปเดตแพลตฟอร์ม", time: "3 วันที่แล้ว" },
 ];
 
 const latestFollowingUpdates = [
@@ -894,7 +896,7 @@ function FollowedSummaryCard() {
   ];
 
   return (
-    <section aria-labelledby="followed-summary-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="followed-summary-title" className="ds-section p-2.5">
       <div className="flex items-center gap-[7px]">
         <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="chart" />
         <h2 className="sidebar-title" id="followed-summary-title">สรุปการติดตาม</h2>
@@ -915,7 +917,7 @@ function FollowedSummaryCard() {
 
 function LatestFollowingUpdatesCard() {
   return (
-    <section aria-labelledby="latest-following-updates-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="latest-following-updates-title" className="ds-section p-2.5">
       <div className="flex items-center gap-[7px]">
         <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="bell" />
         <h2 className="sidebar-title" id="latest-following-updates-title">กิจกรรมล่าสุด</h2>
@@ -949,7 +951,7 @@ function FollowedManagementCard() {
   ];
 
   return (
-    <section aria-labelledby="followed-management-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="followed-management-title" className="ds-section p-2.5">
       <div className="flex items-center gap-[7px]">
         <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="gear" />
         <h2 className="sidebar-title" id="followed-management-title">จัดการการติดตาม</h2>
@@ -1012,7 +1014,7 @@ function TodayFollowingUpdatesCard() {
   ];
 
   return (
-    <section aria-labelledby="today-following-updates-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="today-following-updates-title" className="ds-section p-2.5">
       <div className="flex items-center gap-[7px]">
         <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="clock" />
         <h2 className="sidebar-title" id="today-following-updates-title">อัปเดตวันนี้</h2>
@@ -1032,7 +1034,7 @@ function TodayFollowingUpdatesCard() {
 
 function FollowedWritersCard() {
   return (
-    <section aria-labelledby="followed-writers-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="followed-writers-title" className="ds-section p-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="sidebar-title" id="followed-writers-title">นักเขียนที่คุณติดตาม</h2>
         <Link aria-label="ดูนักเขียนที่ติดตามทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/writers">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
@@ -1065,7 +1067,7 @@ function FollowedWritersCard() {
 
 function FollowedStoriesCard() {
   return (
-    <section aria-labelledby="followed-stories-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="followed-stories-title" className="ds-section p-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="sidebar-title" id="followed-stories-title">เรื่องที่คุณติดตาม</h2>
         <Link aria-label="ดูเรื่องที่ติดตามทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
@@ -1088,7 +1090,7 @@ function FollowedStoriesCard() {
 
 function UnreadFollowedStoriesCard() {
   return (
-    <section aria-labelledby="unread-followed-stories-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="unread-followed-stories-title" className="ds-section p-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="sidebar-title" id="unread-followed-stories-title">ยังไม่ได้อ่านจากที่ติดตาม</h2>
         <Link aria-label="ดูเรื่องที่ยังไม่ได้อ่านทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
@@ -1113,7 +1115,7 @@ function UnreadFollowedStoriesCard() {
 
 function ReaderReviewsCard() {
   return (
-    <section aria-labelledby="homepage-reader-reviews-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]" id="homepage-reader-reviews">
+    <section aria-labelledby="homepage-reader-reviews-title" className="ds-section p-3" id="homepage-reader-reviews">
       <div className="flex items-center gap-2">
         <span className="text-[#eafff3]"><MessageBubbleIcon /></span>
         <h2 className="sidebar-title" id="homepage-reader-reviews-title">รีวิวจากผู้อ่าน</h2>
@@ -1163,16 +1165,16 @@ function ReaderReviewsCard() {
 
 function ArnSpaceNewsCard() {
   return (
-    <section aria-labelledby="homepage-arn-space-news-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]" id="homepage-arn-space-news">
+    <section aria-labelledby="homepage-arn-space-news-title" className="ds-section p-3" id="homepage-arn-space-news">
       <div className="flex items-center gap-[7px]">
         <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="news" />
         <h2 className="sidebar-title" id="homepage-arn-space-news-title">ข่าวจาก ARN SPACE</h2>
-        <Link aria-label="ดูข่าวจาก ARN SPACE ทั้งหมด" className="sidebar-link ml-auto inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/community">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูข่าวจาก ARN SPACE ทั้งหมด" className="sidebar-link ml-auto inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/community?section=events">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
         {arnSpaceNews.map((news) => (
-          <Link className="group flex min-w-0 items-start gap-2.5 py-3 first:pt-2 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href="/community" key={news.title}>
+          <Link className="group flex min-w-0 items-start gap-2.5 py-3 first:pt-2 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/community/news/${news.slug}`} key={news.title}>
             <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#20e987] shadow-[0_0_10px_rgba(32,233,135,.55)]" />
             <div className="min-w-0 flex-1">
               <h3 className="sidebar-item-title line-clamp-2 transition group-hover:text-white">{news.title}</h3>
@@ -1190,7 +1192,7 @@ function ArnSpaceNewsCard() {
 
 function CommunityTopicsCard({ title = "ชุมชนกำลังพูดถึง", limit = 5, compact = false, useSimpleSidebarIcon = false }: { title?: string; limit?: number; compact?: boolean; useSimpleSidebarIcon?: boolean }) {
   return (
-    <section aria-labelledby="homepage-community-topics-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]" id="homepage-community-topics">
+    <section aria-labelledby="homepage-community-topics-title" className="ds-section p-3" id="homepage-community-topics">
       <div className="flex items-center gap-[7px]">
         <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="community" />
         <h2 className="sidebar-title" id="homepage-community-topics-title">{title}</h2>
@@ -1199,7 +1201,7 @@ function CommunityTopicsCard({ title = "ชุมชนกำลังพูด�
 
       <div className="mt-2 divide-y divide-white/[0.08]">
         {communityTopics.slice(0, limit).map((topic) => (
-          <Link className="group flex min-w-0 items-center gap-2.5 py-2 first:pt-1 last:pb-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href="/community" key={topic.title}>
+          <Link className="group flex min-w-0 items-center gap-2.5 py-2 first:pt-1 last:pb-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/community/topics/${topic.slug}`} key={topic.title}>
             <div className={`relative shrink-0 overflow-hidden rounded-[6px] border border-white/[0.1] bg-[#18211d] ${compact ? "h-[48px] w-[58px]" : "h-[54px] w-[70px]"}`}>
               <Image alt="" className="object-cover transition duration-300 group-hover:scale-105" fill sizes="70px" src={topic.image} />
             </div>
@@ -1317,7 +1319,7 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
       : getCategorySections(selectedCategory);
 
   return (
-    <section className="mx-auto max-w-[1400px] bg-[#0D0F0E] px-2 pb-12 pt-7 text-white" id="discover">
+    <section className="mx-auto max-w-[1400px] bg-arn-canvas px-2 pb-12 pt-7 text-arn-text" id="discover">
       <div className="grid grid-cols-[minmax(0,1fr)_290px] gap-6">
         <div className="space-y-8">
           {visibleSections.map((section, sectionIndex) => {
@@ -1333,6 +1335,8 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
                       ? completedSectionIcons[section.title]
                     : undefined;
 
+            const hideViewAll = selectedCategory === "สำหรับคุณ" && ["คัดมาให้คุณ", 'เพราะคุณอ่าน "Sky of Tomorrow"', "เรื่องที่น่าจะชอบ"].includes(section.title);
+
             return (
             <div key={section.title}>
               <div className="mb-3 flex items-end justify-between">
@@ -1343,7 +1347,7 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
                   </div>
                   <p className="mt-1 text-[12px] text-white/50">{section.subtitle}</p>
                 </div>
-                <Link href={section.writers ? "/writers" : getSectionHref(section.title, selectedCategory)} className="mb-1 inline-flex items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+                {!hideViewAll && <Link href={section.writers ? "/writers" : getSectionHref(section.title, selectedCategory)} className="mb-1 inline-flex items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">ดูทั้งหมด <span aria-hidden="true">→</span></Link>}
               </div>
               <div className={section.writers ? "grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8" : "grid grid-cols-6 gap-3"}>
                 {section.writers ? (

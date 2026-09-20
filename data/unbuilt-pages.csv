@@ -1,0 +1,31 @@
+code,name,url,trigger,status
+SEARCH-001,หน้าผลการค้นหา,/search?q=:query,กด Enter หลังพิมพ์ข้อความในช่องค้นหา,ยังไม่ได้ทำ
+NOTIFICATIONS-LIST-001,หน้าการแจ้งเตือนทั้งหมด,/notifications,กดอ่านทั้งหมดในเมนูกระดิ่ง,ยังไม่ได้ทำ
+NOTIFICATION-ITEM-001,หน้ารายละเอียดการแจ้งเตือน,/notifications/:id,กดรายการ Notification ในเมนูกระดิ่ง,ยังไม่ได้ทำ
+PROFILE-001,หน้าจัดการโปรไฟล์ของฉัน,/profile,กด Block โปรไฟล์ของฉันในเมนู Profile,ยังไม่ได้ทำ
+FOLLOWING-001,หน้าจัดการการติดตาม,/following,กดกำลังติดตามในเมนู Profile,ยังไม่ได้ทำ
+READ-NOVEL-001,หน้าสำหรับอ่านนิยาย,/read?title=:title,อ่านเลย หรือกดปกนิยาย,ยังไม่ได้ทำ
+READ-FANFIC-001,หน้าสำหรับอ่านแฟนฟิค,/read/fanfic?title=:title,อ่านเลย หรือกดปกแฟนฟิค,ยังไม่ได้ทำ
+READ-CARTOON-001,หน้าสำหรับอ่านการ์ตูน,/read/cartoon?title=:title,อ่านเลย หรือกดปกการ์ตูน,ยังไม่ได้ทำ
+READ-BOOKSHELF-001,ชั้นหนังสือของคุณ,/read?bookshelf=all,ดูทั้งหมดใน Sidebar หรือชั้นหนังสือของฉันใน Profile,ยังไม่ได้ทำ
+WRITER-PROFILE-001,หน้าโปรไฟล์นักเขียน,/writers/:slug,กดการ์ดนักเขียนใน Section นักเขียนแนะนำ,ยังไม่ได้ทำ
+WRITERS-LIST-001,หน้ารวมนักเขียน,/writers,เมนูนักเขียน หรือดูทั้งหมดใน Section นักเขียนแนะนำ,ยังไม่ได้ทำ
+WRITE-001,หน้าสร้างผลงาน,/write,ปุ่มเขียนเรื่อง หรือเริ่มต้นเขียน,ยังไม่ได้ทำ
+FOOTER-ABOUT-001,หน้าเกี่ยวกับ ARN SPACE,/about,Footer: ARN SPACE,ยังไม่ได้ทำ
+FOOTER-VISION-001,หน้าวิสัยทัศน์,/vision,Footer: วิสัยทัศน์,ยังไม่ได้ทำ
+FOOTER-CAREERS-001,หน้าร่วมงานกับเรา,/careers,Footer: ร่วมงานกับเรา,ยังไม่ได้ทำ
+FOOTER-GUIDE-001,หน้าคู่มือการใช้งาน,/help/guide,Footer: คู่มือการใช้งาน,ยังไม่ได้ทำ
+FOOTER-RULES-001,หน้ากฎและข้อตกลง,/rules,Footer: กฎและข้อตกลง,ยังไม่ได้ทำ
+FOOTER-HELP-001,หน้าศูนย์ช่วยเหลือ,/help,Footer: ศูนย์ช่วยเหลือ,ยังไม่ได้ทำ
+FOOTER-CONTACT-001,หน้าติดต่อเรา,/contact,Footer: ติดต่อเรา,ยังไม่ได้ทำ
+FOOTER-PRIVACY-001,หน้านโยบายความเป็นส่วนตัว,/privacy,Footer: นโยบายความเป็นส่วนตัว,ยังไม่ได้ทำ
+FOOTER-TERMS-001,หน้าเงื่อนไขการใช้งาน,/terms,Footer: เงื่อนไขการใช้งาน,ยังไม่ได้ทำ
+SOCIAL-LINK-001,หน้าลิงก์โซเชียลของ ARN SPACE,/social/:network,ไอคอน Social ใน Footer,ยังไม่ได้ทำ
+COMMUNITY-CREATE-POST-001,หน้าสร้างโพสต์ชุมชน,/community/create-post,ปุ่มสร้างโพสต์ใน Hero ชุมชน,ยังไม่ได้ทำ
+COMMUNITY-EVENTS-LIST-001,หน้ารวมกิจกรรมชุมชน,/community/events,ดูรายละเอียดหรือดูทั้งหมดของกิจกรรม,ยังไม่ได้ทำ
+COMMUNITY-EVENT-RULES-001,หน้ากติกาการเข้าร่วมกิจกรรม,/community/events/rules,ดูรายละเอียดกติกาการเข้าร่วมกิจกรรม,ยังไม่ได้ทำ
+COMMUNITY-EVENT-001,หน้ารายละเอียดกิจกรรมชุมชน,/community/events/:slug,ปุ่มเข้าร่วม/ดูรายละเอียดกิจกรรม หรือกิจกรรมใน Sidebar,ยังไม่ได้ทำ
+COMMUNITY-WRITER-TOPICS-001,หน้ารวมกระทู้ห้องนักเขียน,/community/writers/topics?filter=:filter,ดูทั้งหมดในแต่ละ Section ของห้องนักเขียน,ยังไม่ได้ทำ
+COMMUNITY-WRITER-RESOURCES-001,หน้ารวมแหล่งช่วยเขียน,/community/writers/resources/:slug,แหล่งช่วยเขียนใน Sidebar ห้องนักเขียน,ยังไม่ได้ทำ
+COMMUNITY-TOPIC-001,หน้ารายละเอียดกระทู้ชุมชน,/community/topics/:slug,กดกระทู้ใน Sidebar ชุมชนที่คุณสนใจ,ยังไม่ได้ทำ
+ARN-NEWS-001,หน้ารายละเอียดข่าว ARN SPACE,/community/news/:slug,กดรายการข่าวใน Sidebar ข่าวจาก ARN SPACE,ยังไม่ได้ทำ

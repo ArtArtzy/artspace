@@ -2,13 +2,13 @@ import TopMenu from "@/components/TopMenu";
 
 export default function WritersPage() {
   return (
-    <main className="min-h-screen bg-[#0D0F0E]">
+    <main className="ds-page-shell min-h-screen">
       <TopMenu />
-      <section className="mx-auto flex min-h-[calc(100vh-82px)] max-w-[1400px] items-center justify-center bg-[#f6f7f4] px-8 py-20">
+      <section className="mx-auto flex min-h-[calc(100vh-82px)] max-w-[1400px] items-center justify-center bg-arn-canvas px-8 py-20">
         <div className="text-center">
-          <p className="mb-3 font-sans text-xs uppercase tracking-[0.35em] text-[#0aa965]">ARN SPACE</p>
-          <h1 className="text-5xl font-bold tracking-tight text-[#172019]">นักเขียน</h1>
-          <p className="mt-4 text-base text-[#172019]/55">พื้นที่สำหรับค้นพบนักเขียนและเรื่องราวใหม่ ๆ</p>
+          <p className="mb-3 font-sans text-xs uppercase tracking-[0.35em] text-arn-accent-strong">ARN SPACE</p>
+          <h1 className="text-ds-h1 tracking-tight text-arn-text">นักเขียน</h1>
+          <p className="mt-4 text-ds-body text-arn-muted">พื้นที่สำหรับค้นพบนักเขียนและเรื่องราวใหม่ ๆ</p>
         </div>
       </section>
     </main>

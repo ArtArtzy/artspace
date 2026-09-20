@@ -151,7 +151,7 @@ function DiscussionRowView({ row, pinned = false, badge, badgeClass }: { row: Di
 
 function DiscussionCard({ section }: { section: DiscussionSection }) {
   return (
-    <section className="overflow-hidden rounded-lg border border-[#1c332a] bg-[linear-gradient(135deg,#0f2119_0%,#0b1512_100%)] px-3 sm:px-4" aria-labelledby={`discussion-${section.title}`}>
+    <section className="ds-section px-3 sm:px-4" aria-labelledby={`discussion-${section.title}`}>
       <div className="flex items-center gap-2 py-2.5">
         <span aria-hidden="true" className="text-base leading-none">{section.icon}</span>
         <h2 id={`discussion-${section.title}`} className="text-[16px] font-semibold leading-tight text-white">{section.title}</h2>
@@ -162,14 +162,28 @@ function DiscussionCard({ section }: { section: DiscussionSection }) {
   );
 }
 
+const discussionThreadFollowUps = [
+  "มีใครคิดเหมือนกันบ้างครับ",
+  "อยากชวนทุกคนมาแชร์มุมมองกันครับ",
+  "ขอคำแนะนำจากคนที่เคยอ่านแนวนี้หน่อยค่ะ",
+  "ใครมีเรื่องใกล้เคียงกันแนะนำบ้างไหมครับ",
+  "มาเล่าประสบการณ์ของทุกคนกันหน่อยครับ",
+  "อยากฟังความเห็นที่หลากหลายกว่านี้ค่ะ",
+  "มีวิธีรับมือกับเรื่องนี้อย่างไรกันบ้างครับ",
+  "ลองชวนคุยในมุมที่ต่างออกไปกันไหมครับ",
+  "อ่านแล้วรู้สึกอย่างไรกันบ้าง มาแชร์กันได้เลย",
+  "ขอแลกเปลี่ยนความคิดเห็นกับทุกคนหน่อยครับ",
+];
+
 function createSimulatedThreadPage(section: DiscussionSection) {
   return Array.from({ length: 50 }, (_, index) => {
     const source = section.rows[index % section.rows.length];
     const round = Math.floor(index / section.rows.length) + 1;
+    const followUp = discussionThreadFollowUps[index % discussionThreadFollowUps.length];
 
     return {
       ...source,
-      title: `${source.title} · กระทู้ที่ ${index + 1}`,
+      title: `${source.title} ${followUp}`,
       excerpt: round > 1 ? `${source.excerpt} มาแชร์มุมมองกันต่อได้เลยครับ` : source.excerpt,
       age: index < 5 ? source.age : `${round} วันที่แล้ว`,
       stats: [String(Number.parseInt(source.stats[0], 10) + index), String(Number.parseInt(source.stats[1], 10) + index * 3), `${(Number.parseFloat(source.stats[2]) + index / 10).toFixed(1)}K`] as [string, string, string],
@@ -238,7 +252,7 @@ export default function CommunityDiscussion() {
           </>
         ) : (
           <>
-        <section className="overflow-hidden rounded-lg border border-[#1c332a] bg-[linear-gradient(135deg,#0f2119_0%,#0b1512_100%)] px-3 sm:px-4" aria-labelledby="pinned-discussions-title">
+        <section className="ds-section px-3 sm:px-4" aria-labelledby="pinned-discussions-title">
           <div className="flex items-center gap-2 py-2.5">
             <span aria-hidden="true" className="text-base leading-none">📌</span>
             <h2 id="pinned-discussions-title" className="text-[16px] font-semibold leading-tight text-white">กระทู้ปักหมุด</h2>

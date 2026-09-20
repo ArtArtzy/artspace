@@ -122,7 +122,7 @@ function PostStats({ stats }: { stats: FeedPost["stats"] }) {
 function FeedCard({ post }: { post: FeedPost }) {
   return (
     <Link aria-label={`เปิดโพสต์ ${post.title}`} className="group block cursor-pointer" href={`/community/posts/${post.slug}`}>
-      <article className="rounded-lg border border-[#1c332a] bg-[linear-gradient(120deg,#101e18_0%,#0b1512_100%)] p-3 shadow-[0_8px_22px_rgba(0,0,0,.12)] transition hover:-translate-y-0.5 hover:border-[#2abf72] hover:bg-[linear-gradient(120deg,#12251c_0%,#0d1914_100%)] hover:shadow-[0_12px_28px_rgba(0,0,0,.2)] sm:p-4">
+      <article className="ds-card p-3 transition hover:-translate-y-0.5 hover:border-arn-accent sm:p-4">
       <header className="flex items-center gap-2.5">
         <Image alt={`รูปโปรไฟล์ ${post.user}`} className="h-8 w-8 rounded-full border border-white/20 object-cover" height={32} src={post.avatar} width={32} />
         <span className="text-xs font-medium text-white">{post.user}</span>

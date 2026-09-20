@@ -76,7 +76,7 @@ function AppleIcon() {
 }
 
 function LineIcon() {
-  return <span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[7px] font-bold tracking-[-.1em] text-[#08ae36]">LINE</span>;
+  return <span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[9px] font-bold tracking-[-.1em] text-[#08ae36]">LINE</span>;
 }
 
 function DecorativeLeaves() {
@@ -111,7 +111,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="login-page h-screen overflow-hidden bg-[#07100c] pt-[82px] text-white">
+    <main className="login-page ds-page-shell h-screen overflow-hidden pt-[82px]">
       <TopMenu fixed initialLoggedIn={false} />
 
       {registrationNotice && (
@@ -141,18 +141,18 @@ export default function LoginPage() {
 
         <div className="relative z-10 flex min-h-0 items-center justify-center overflow-hidden px-5 py-2 sm:px-10 sm:py-4 lg:px-12">
           <DecorativeLeaves />
-          <form className="relative z-10 h-[632px] w-full max-w-[440px] rounded-[14px] border border-[#214738] bg-[#0d1914]/95 px-7 py-3 shadow-[0_20px_70px_rgba(0,0,0,.4)] sm:px-9 sm:py-4" onSubmit={handleSubmit}>
+          <form className="ds-card relative z-10 h-[632px] w-full max-w-[440px] overflow-hidden px-7 py-3 sm:px-9 sm:py-4" onSubmit={handleSubmit}>
             <div className="text-center">
               <h2 className="text-[27px] font-semibold leading-tight tracking-tight text-[#fffdf2]">&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a;</h2>
               <p className="mt-1 text-[12px] leading-5 text-white/55">&#xe22;&#xe34;&#xe19;&#xe14;&#xe35;&#xe15;&#xe49;&#xe2d;&#xe19;&#xe23;&#xe31;&#xe1a;&#xe01;&#xe25;&#xe31;&#xe1a;&#xe2a;&#xe39;&#xe48; ArnSpace<br />&#xe43;&#xe0a;&#xe49;&#xe1a;&#xe31;&#xe0d;&#xe0a;&#xe35;&#xe02;&#xe2d;&#xe07;&#xe04;&#xe38;&#xe13;&#xe40;&#xe1e;&#xe37;&#xe48;&#xe2d;&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe42;&#xe25;&#xe01;&#xe41;&#xe2b;&#xe48;&#xe07;&#xe40;&#xe23;&#xe37;&#xe48;&#xe2d;&#xe07;&#xe23;&#xe32;&#xe27;</p>
             </div>
 
             <div className="mt-4 space-y-3">
-              <label className="flex h-9 items-center gap-3 rounded-[8px] border border-[#2c594b] bg-[#0c291f] px-3 text-white/75 transition focus-within:border-[#20dc7a] focus-within:text-[#36e98a]">
+              <label className="ds-input flex h-9 items-center gap-3 px-3 text-white/75 focus-within:text-[#36e98a]">
                 <MailIcon />
                 <input aria-label="&#xe2d;&#xe35;&#xe40;&#xe21;&#xe25; &#xe2b;&#xe23;&#xe37;&#xe2d;&#xe0a;&#xe37;&#xe48;&#xe2d;&#xe1c;&#xe39;&#xe49;&#xe43;&#xe0a;&#xe49;" autoComplete="username" className="min-w-0 flex-1 bg-transparent text-[12px] text-white outline-none placeholder:text-white/40" placeholder="&#xe2d;&#xe35;&#xe40;&#xe21;&#xe25; / &#xe0a;&#xe37;&#xe48;&#xe2d;&#xe1c;&#xe39;&#xe49;&#xe43;&#xe0a;&#xe49;" required type="text" />
               </label>
-              <label className="flex h-9 items-center gap-3 rounded-[8px] border border-[#2c594b] bg-[#0c291f] px-3 text-white/75 transition focus-within:border-[#20dc7a] focus-within:text-[#36e98a]">
+              <label className="ds-input flex h-9 items-center gap-3 px-3 text-white/75 focus-within:text-[#36e98a]">
                 <LockIcon />
                 <input aria-label="&#xe23;&#xe2b;&#xe31;&#xe2a;&#xe1c;&#xe48;&#xe32;&#xe19;" autoComplete="current-password" className="min-w-0 flex-1 bg-transparent text-[12px] text-white outline-none placeholder:text-white/40" placeholder="&#xe23;&#xe2b;&#xe31;&#xe2a;&#xe1c;&#xe48;&#xe32;&#xe19;" required type={showPassword ? "text" : "password"} />
                 <button aria-label={showPassword ? "\u0e0b\u0e48\u0e2d\u0e19\u0e23\u0e2b\u0e31\u0e2a\u0e1c\u0e48\u0e32\u0e19" : "\u0e41\u0e2a\u0e14\u0e07\u0e23\u0e2b\u0e31\u0e2a\u0e1c\u0e48\u0e32\u0e19"} className="transition hover:text-white" onClick={() => setShowPassword((visible) => !visible)} type="button"><EyeIcon visible={showPassword} /></button>

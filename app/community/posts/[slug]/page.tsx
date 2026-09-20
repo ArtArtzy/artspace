@@ -21,10 +21,10 @@ export default async function CommunityPostPage({ params }: CommunityPostPagePro
   if (!post) notFound();
 
   return (
-    <main className="min-h-screen bg-[#080d0b] pt-[82px] text-white">
+    <main className="ds-page-shell min-h-screen pt-[82px]">
       <TopMenu fixed />
       <section className="mx-auto grid max-w-[1400px] gap-5 px-4 pb-12 pt-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_330px] lg:px-8">
-        <article className="min-w-0 rounded-xl border border-[#1c332a] bg-[linear-gradient(140deg,#101e18_0%,#0b1512_100%)] p-5 sm:p-7">
+        <article className="ds-card min-w-0 p-5 sm:p-7">
           <Link className="inline-flex items-center gap-2 text-xs text-white/50 transition hover:text-[#2ee77b]" href="/community">
             <span aria-hidden="true">←</span> กลับไปหน้าชุมชน
           </Link>

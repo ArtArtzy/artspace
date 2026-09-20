@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="h-screen overflow-hidden bg-[#07100c] pt-[82px] text-white">
+    <main className="ds-page-shell h-screen overflow-hidden pt-[82px]">
       <TopMenu fixed initialLoggedIn={false} />
       <section className="relative mx-auto grid h-[calc(100vh-82px)] min-h-0 w-full max-w-[1400px] grid-cols-1 overflow-hidden lg:grid-cols-[1.08fr_.92fr]">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="relative z-10 flex min-h-0 items-center justify-center overflow-hidden px-5 py-2 sm:px-10 sm:py-4 lg:px-12">
-          <form className="relative h-[632px] w-full max-w-[440px] rounded-[14px] border border-[#214738] bg-[#0d1914]/95 px-7 py-4 shadow-[0_20px_70px_rgba(0,0,0,.4)] sm:px-9 sm:py-4" onSubmit={handleSubmit}>
+          <form className="ds-card relative h-[632px] w-full max-w-[440px] overflow-hidden px-7 py-4 sm:px-9 sm:py-4" onSubmit={handleSubmit}>
             <DecorativeLeaves />
             <div className="relative z-10 flex h-full flex-col">
               <div className="text-center">

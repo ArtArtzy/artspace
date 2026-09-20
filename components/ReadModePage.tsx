@@ -7,6 +7,7 @@ import ReadDiscovery from "@/components/ReadDiscovery";
 import ReadHero from "@/components/ReadHero";
 import type { ReadModeId } from "@/components/ReadSubMenu";
 import TopMenu, { authStateChangedEvent } from "@/components/TopMenu";
+import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 import { categoryBooks } from "@/data/categoryBooks";
 
 type ReadModePageProps = {
@@ -90,22 +91,24 @@ export default function ReadModePage({ mode }: ReadModePageProps) {
   };
 
   return (
-    <main className="min-h-screen bg-[#0D0F0E] pt-[82px]">
+    <main className="ds-page-shell min-h-screen pt-[82px]">
       <TopMenu fixed />
-      <ReadHero activeMode={mode} />
-      <div className={isLoggedIn === null ? "invisible" : undefined}>
-        <CategoryFilter onSelect={selectCategory} onSelectGenres={selectGenres} selected={selectedCategory} selectedGenres={selectedGenres} myCategoryCount={followedCategories.length} showMyCategory={isLoggedIn === true} stickyOffset="read" />
-        <ReadDiscovery
-          followedCategories={followedCategories}
-          mode={mode}
-          onSelectCategory={selectCategory}
-          onToggleCategory={toggleFollowedCategory}
-          selectedCategory={selectedCategory}
-          selectedGenres={selectedGenres}
-          showFollowedCategories={isLoggedIn === true}
-        />
-      </div>
-      <Footer />
+      <UnbuiltPageGuard>
+        <ReadHero activeMode={mode} />
+        <div className={isLoggedIn === null ? "invisible" : undefined}>
+          <CategoryFilter onSelect={selectCategory} onSelectGenres={selectGenres} selected={selectedCategory} selectedGenres={selectedGenres} myCategoryCount={followedCategories.length} showMyCategory={isLoggedIn === true} stickyOffset="read" />
+          <ReadDiscovery
+            followedCategories={followedCategories}
+            mode={mode}
+            onSelectCategory={selectCategory}
+            onToggleCategory={toggleFollowedCategory}
+            selectedCategory={selectedCategory}
+            selectedGenres={selectedGenres}
+            showFollowedCategories={isLoggedIn === true}
+          />
+        </div>
+        <Footer />
+      </UnbuiltPageGuard>
     </main>
   );
 }

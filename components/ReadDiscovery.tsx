@@ -176,7 +176,7 @@ function FollowedCategories({ followed, onToggle }: FollowedCategoriesProps) {
     "คอมเมดี้",
   ];
   return (
-    <section className="rounded-[9px] border border-white/[0.08] bg-[#121715] p-4" aria-labelledby="followed-categories-title">
+    <section className="ds-section p-4" aria-labelledby="followed-categories-title">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
           <h2 className="sidebar-title" id="followed-categories-title">หมวดของฉัน</h2>
@@ -234,13 +234,13 @@ function MyBookshelfCard({ mode }: { mode: ReadModeId }) {
     : myShelfBooks;
 
   return (
-    <section aria-labelledby="my-bookshelf-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="my-bookshelf-title" className="ds-section p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="sidebar-title" id="my-bookshelf-title">จากชั้นหนังสือของคุณ</h2>
           <p className="sidebar-meta mt-1 text-white/45">เรื่องที่คุณกำลังอ่านอยู่</p>
         </div>
-        <Link aria-label="ดูชั้นหนังสือของคุณทั้งหมด" className="sidebar-link mt-1 inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href={modePaths[mode]}>
+        <Link aria-label="ดูชั้นหนังสือของคุณทั้งหมด" className="sidebar-link mt-1 inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href={`${modePaths[mode]}?bookshelf=all`}>
           ดูทั้งหมด <span aria-hidden="true">→</span>
         </Link>
       </div>
@@ -271,7 +271,7 @@ function MyBookshelfCard({ mode }: { mode: ReadModeId }) {
 
 function InterestedTags({ selectedGenres, onSelectCategory }: { selectedGenres: string[]; onSelectCategory: (category: string) => void }) {
   return (
-    <section aria-labelledby="interested-tags-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="interested-tags-title" className="ds-section p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="sidebar-title" id="interested-tags-title">แท็กที่คุณสนใจ</h2>
@@ -325,7 +325,7 @@ function ReaderReviews({ mode, selectedCategory }: { mode: ReadModeId; selectedC
   const isNovelReviews = mode === "novel";
 
   return (
-    <section className={`rounded-[9px] border border-white/[0.08] bg-[#121715] ${isNovelReviews ? "p-3" : "p-4"}`} aria-labelledby="reader-reviews-title" id="reader-reviews">
+    <section className={`ds-section ${isNovelReviews ? "p-3" : "p-4"}`} aria-labelledby="reader-reviews-title" id="reader-reviews">
       <div className="mb-3">
         <div className="flex items-center gap-3">
           <h2 className="sidebar-title" id="reader-reviews-title">รีวิวจากผู้อ่าน</h2>
@@ -346,7 +346,7 @@ function ReaderReviews({ mode, selectedCategory }: { mode: ReadModeId; selectedC
             <Image alt={`รูปโปรไฟล์ ${review.name}`} className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/[0.18]" height={36} src={review.avatar} width={36} />
             <div className="min-w-0 flex-1">
               <p className="line-clamp-2 text-[11px] leading-[1.35] text-white/80">“{review.quote}”</p>
-              <div className="mt-1.5 flex items-center justify-between gap-2 text-[9px] leading-none">
+              <div className="mt-1.5 flex items-center justify-between gap-2 text-[10px] leading-none">
                 <span className="truncate text-[#36e77e]">{review.name}</span>
                 <span className="shrink-0 text-white/45">{review.time}</span>
               </div>
@@ -514,7 +514,7 @@ function PopularRankingCard({ mode }: { mode: ReadModeId }) {
   const contentLabel = modeLabels[mode];
 
   return (
-    <section aria-labelledby="popular-ranking-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
+    <section aria-labelledby="popular-ranking-title" className="ds-section p-2.5">
       <div className="flex items-center gap-[7px]">
         <svg aria-hidden="true" className="h-[19px] w-[19px] shrink-0 text-[#2ee77b] sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24"><path d="M12.2 20.2c3.3 0 5.7-2.1 5.7-5.2 0-2.4-1.3-4.2-2.9-5.9-.1 1.8-.8 2.8-2 3.5.1-2.8-1.1-5.4-3.3-7.1.1 2.7-2.3 4.5-2.3 7.6 0 4 2.4 7.1 4.8 7.1Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" /></svg>
         <h2 className="sidebar-title" id="popular-ranking-title">10 อันดับ{contentLabel}ยอดนิยม</h2>
@@ -573,7 +573,7 @@ function TrendingStories({ mode, selectedCategory, selectedCategories }: { mode:
   const trendingBooks = sortBooks(sourceBooks, "trending").slice(0, 5);
 
   return (
-    <section aria-labelledby="trending-stories-title" className="rounded-[9px] border border-white/[0.08] bg-[#121715] p-4">
+    <section aria-labelledby="trending-stories-title" className="ds-section p-4">
       <div className="mb-3">
         <h2 className="sidebar-title" id="trending-stories-title">{trendingTitle}</h2>
         <p className="sidebar-meta mt-1 leading-relaxed text-white/45">อันดับเรื่องที่กำลังได้รับความสนใจ</p>
@@ -758,7 +758,7 @@ export default function ReadDiscovery({ followedCategories, mode, onToggleCatego
     : bookSections;
 
   return (
-    <section className="mx-auto max-w-[1400px] bg-[#0D0F0E] px-2 pb-12 pt-7 text-white" id="read-discovery">
+    <section className="mx-auto max-w-[1400px] bg-arn-canvas px-2 pb-12 pt-7 text-arn-text" id="read-discovery">
       <div className="grid grid-cols-[minmax(0,1fr)_290px] gap-6">
         <div className="min-w-0 space-y-8">
           {isCategoryCatalog ? (

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
 const linkGroups = [
   {
@@ -15,13 +16,32 @@ const linkGroups = [
   },
   {
     title: "ชุมชน",
-    links: ["ฟอรั่ม", "กิจกรรม", "ประกาศ"],
+    links: ["พูดคุย", "กิจกรรม"],
   },
   {
     title: "ช่วยเหลือ",
     links: ["ศูนย์ช่วยเหลือ", "ติดต่อเรา", "นโยบายความเป็นส่วนตัว", "เงื่อนไขการใช้งาน"],
   },
 ];
+
+const footerHrefs: Record<string, string> = {
+  "ARN SPACE": "/about",
+  "วิสัยทัศน์": "/vision",
+  "ร่วมงานกับเรา": "/careers",
+  "นิยาย": "/read",
+  "แฟนฟิค": "/read/fanfic",
+  "การ์ตูน": "/read/cartoon",
+  "เริ่มต้นเขียน": "/write",
+  "คู่มือการใช้งาน": "/help/guide",
+  "กฎและข้อตกลง": "/rules",
+  "พูดคุย": "/community?section=discussion",
+  "กิจกรรม": "/community",
+  "ประกาศ": "/community",
+  "ศูนย์ช่วยเหลือ": "/help",
+  "ติดต่อเรา": "/contact",
+  "นโยบายความเป็นส่วนตัว": "/privacy",
+  "เงื่อนไขการใช้งาน": "/terms",
+};
 
 function SocialIcon({ type }: { type: "chat" | "x" | "facebook" | "instagram" | "youtube" | "tiktok" }) {
   if (type === "x") return <span aria-hidden="true" className="text-[18px] leading-none">𝕏</span>;
@@ -50,18 +70,19 @@ function BrandSocialIcon({ type }: { type: "chat" | "x" | "facebook" | "instagra
   );
 }
 
-const socials: { label: string; image: string }[] = [
-  { label: "LINE", image: "/images/sc1.svg" },
-  { label: "X", image: "/images/sc2.svg" },
-  { label: "Facebook", image: "/images/sc3.svg" },
-  { label: "Instagram", image: "/images/sc4.svg" },
-  { label: "YouTube", image: "/images/sc5.svg" },
-  { label: "TikTok", image: "/images/sc6.svg" },
+const socials: { label: string; slug: string; image: string }[] = [
+  { label: "LINE", slug: "line", image: "/images/sc1.svg" },
+  { label: "X", slug: "x", image: "/images/sc2.svg" },
+  { label: "Facebook", slug: "facebook", image: "/images/sc3.svg" },
+  { label: "Instagram", slug: "instagram", image: "/images/sc4.svg" },
+  { label: "YouTube", slug: "youtube", image: "/images/sc5.svg" },
+  { label: "TikTok", slug: "tiktok", image: "/images/sc6.svg" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#1f5134] bg-[#0b0e0d] text-white">
+    <UnbuiltPageGuard>
+      <footer className="border-t border-arn-border-strong bg-arn-surface text-arn-text">
       <div className="mx-auto grid max-w-[1400px] grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] gap-6 px-2 py-6">
         <div className="flex items-start">
           <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[166px]" height={80} src="/images/arnspace-logo.webp" width={238} />
@@ -72,7 +93,7 @@ export default function Footer() {
             <h2 className="mb-2 text-[12px] font-semibold text-white/90">{group.title}</h2>
             <nav aria-label={group.title} className="space-y-1">
               {group.links.map((link) => (
-                <a className="block truncate text-[11px] leading-4 text-white/55 transition hover:text-[#2ee77b]" href="#" key={link}>
+                <a className="block truncate text-[11px] leading-4 text-white/55 transition hover:text-[#2ee77b]" href={footerHrefs[link] ?? "/about"} key={link}>
                   {link}
                 </a>
               ))}
@@ -83,7 +104,7 @@ export default function Footer() {
         <div className="flex min-w-0 flex-col items-end">
           <div className="flex items-center gap-4 text-white/80">
             {socials.map((social) => (
-              <a aria-label={social.label} className="transition hover:text-[#2ee77b]" href="#" key={social.label}>
+              <a aria-label={social.label} className="transition hover:text-[#2ee77b]" href={`/social/${social.slug}`} key={social.label}>
                 <Image alt="" className="h-[18px] w-[18px] object-contain transition-transform hover:scale-110" height={18} src={social.image} unoptimized width={18} />
               </a>
             ))}
@@ -91,6 +112,7 @@ export default function Footer() {
           <p className="mt-5 text-right text-[10px] text-white/45">© 2026 ARN SPACE. All rights reserved.</p>
         </div>
       </div>
-    </footer>
+      </footer>
+    </UnbuiltPageGuard>
   );
 }

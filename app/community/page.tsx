@@ -2,13 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CommunityDiscussion from "@/components/CommunityDiscussion";
 import CommunityDiscussionSidebar from "@/components/CommunityDiscussionSidebar";
+import CommunityEvents from "@/components/CommunityEvents";
+import CommunityEventsSidebar from "@/components/CommunityEventsSidebar";
 import CommunityFeed from "@/components/CommunityFeed";
 import CommunitySidebar from "@/components/CommunitySidebar";
+import CommunityWriters from "@/components/CommunityWriters";
+import CommunityWritersSidebar from "@/components/CommunityWritersSidebar";
 import Footer from "@/components/Footer";
 import TopMenu from "@/components/TopMenu";
+import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
 function HomeIcon() {
   return (
@@ -56,10 +61,18 @@ const communityLinks = [
 export default function CommunityPage() {
   const [activeSection, setActiveSection] = useState<(typeof communityLinks)[number]["id"]>("home");
 
+  useEffect(() => {
+    const requestedSection = new URLSearchParams(window.location.search).get("section");
+    if (communityLinks.some(({ id }) => id === requestedSection)) {
+      setActiveSection(requestedSection as (typeof communityLinks)[number]["id"]);
+    }
+  }, []);
+
   return (
-    <main className="min-h-screen bg-[#080d0b] pt-[82px] text-white">
+    <main className="ds-page-shell min-h-screen pt-[82px]">
       <TopMenu fixed />
 
+      <UnbuiltPageGuard>
       <section className="mx-auto max-w-[1400px] overflow-hidden bg-[#101a16]">
         <div className="relative min-h-[300px] sm:min-h-[360px]">
           <Image
@@ -80,7 +93,7 @@ export default function CommunityPage() {
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
-                  href="#community-content"
+                  href="/community/create-post"
                   className="inline-flex h-11 items-center justify-center rounded-full bg-[#12df8a] px-6 text-sm font-semibold text-[#06140e] shadow-[0_8px_24px_rgba(18,223,138,.2)] transition hover:bg-[#39f0a0]"
                 >
                   + สร้างโพสต์
@@ -105,7 +118,10 @@ export default function CommunityPage() {
               <Link
                 key={label}
                 href={id === "discussion" ? "#community-discussion" : "#community-content"}
-                onClick={() => setActiveSection(id)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setActiveSection(id);
+                }}
                 className={`flex h-[58px] min-w-0 items-center justify-center gap-2 rounded-[7px] border px-2 py-2 text-sm transition ${
                   activeSection === id
                     ? "border-[#1cbd55] bg-[linear-gradient(145deg,#102d19,#102017)] text-[#45ee83] shadow-[0_0_12px_rgba(23,213,100,.22)]"
@@ -121,11 +137,12 @@ export default function CommunityPage() {
       </div>
 
       <section className="mx-auto grid max-w-[1400px] gap-4 px-4 pb-12 pt-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_330px] lg:gap-5 lg:px-8">
-        {activeSection === "discussion" ? <CommunityDiscussion /> : <CommunityFeed />}
-        {activeSection === "discussion" ? <CommunityDiscussionSidebar /> : <CommunitySidebar />}
+        {activeSection === "discussion" ? <CommunityDiscussion /> : activeSection === "writers" ? <CommunityWriters /> : activeSection === "events" ? <CommunityEvents /> : <CommunityFeed />}
+        {activeSection === "writers" ? <CommunityWritersSidebar /> : activeSection === "events" ? <CommunityEventsSidebar /> : <CommunitySidebar />}
       </section>
 
       <Footer />
+      </UnbuiltPageGuard>
     </main>
   );
 }

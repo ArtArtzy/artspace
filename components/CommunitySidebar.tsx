@@ -29,7 +29,7 @@ const events = [
 ];
 
 function SidebarCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <section className={`rounded-lg border border-[#1c332a] bg-[linear-gradient(140deg,#101e18_0%,#0b1512_100%)] p-3 ${className}`}>{children}</section>;
+  return <section className={`ds-card p-3 ${className}`}>{children}</section>;
 }
 
 function CardHeader({ icon, title, showAll = true }: { icon: string; title: string; showAll?: boolean }) {

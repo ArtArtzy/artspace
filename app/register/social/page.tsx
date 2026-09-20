@@ -60,7 +60,7 @@ export default function SocialRegisterPage() {
   };
 
   return (
-    <main className="h-screen overflow-hidden bg-[#07100c] pt-[82px] text-white">
+    <main className="ds-page-shell h-screen overflow-hidden pt-[82px]">
       <TopMenu fixed initialLoggedIn={false} />
       <section className="relative mx-auto grid h-[calc(100vh-82px)] min-h-0 w-full max-w-[1400px] grid-cols-1 overflow-hidden lg:grid-cols-[1.08fr_.92fr]">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -79,7 +79,7 @@ export default function SocialRegisterPage() {
         </div>
 
         <div className="relative z-10 flex min-h-0 items-center justify-center overflow-hidden px-5 py-2 sm:px-10 sm:py-4 lg:px-12">
-          <form className="relative h-[632px] w-full max-w-[440px] overflow-hidden rounded-[14px] border border-[#087351] bg-[#031d14]/95 px-7 py-4 shadow-[0_18px_55px_rgba(0,0,0,.3)] sm:px-9 sm:py-4" onSubmit={handleSubmit}>
+          <form className="ds-card relative h-[632px] w-full max-w-[440px] overflow-hidden px-7 py-4 sm:px-9 sm:py-4" onSubmit={handleSubmit}>
             <DecorativeLeaves />
             <div className="relative z-10">
               <div className="flex items-center justify-between">
@@ -92,7 +92,7 @@ export default function SocialRegisterPage() {
                 <p className="mt-2 text-[15px] leading-5 text-white/75">&#xe2d;&#xe35;&#xe01;&#xe40;&#xe1e;&#xe35;&#xe22;&#xe07;&#xe40;&#xe25;&#xe47;&#xe01;&#xe19;&#xe49;&#xe2d;&#xe22; &#xe01;&#xe47;&#xe1e;&#xe23;&#xe49;&#xe2d;&#xe21;&#xe40;&#xe1b;&#xe47;&#xe19;&#xe2a;&#xe48;&#xe27;&#xe19;&#xe2b;&#xe19;&#xe36;&#xe48;&#xe07;&#xe02;&#xe2d;&#xe07; ArnSpace</p>
               </div>
 
-              <div className="mt-5 flex h-14 items-center justify-between rounded-[8px] border border-[#216554] bg-[#09271e] px-3 text-[12px] text-white/75">
+              <div className="ds-input mt-5 flex h-14 items-center justify-between px-3 text-[12px] text-white/75">
                 <span>&#xe40;&#xe0a;&#xe37;&#xe48;&#xe2d;&#xe21;&#xe15;&#xe48;&#xe2d;&#xe41;&#xe25;&#xe49;&#xe27;&#xe14;&#xe49;&#xe27;&#xe22;</span>
                 <span className={`flex h-10 items-center gap-2 rounded-full px-3 text-[12px] font-semibold ${selectedProvider.pillClass}`}><SocialIcon src={selectedProvider.icon} />{selectedProvider.label}<span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#08d982] text-[14px] font-bold text-[#03120b]">&#x2713;</span></span>
               </div>
@@ -104,7 +104,7 @@ export default function SocialRegisterPage() {
                 </label>
                 <label className="block">
                   <span className="block text-[12px] font-medium leading-4 text-white/85">&#xe2d;&#xe35;&#xe40;&#xe21;&#xe25;</span>
-                  <span className="mt-1 flex h-11 items-center gap-3 rounded-[8px] border border-[#216554] bg-[#09271e] px-3 text-white/65 transition focus-within:border-[#20dc7a] focus-within:text-[#36e98a]"><MailIcon /><input aria-label="&#xe2d;&#xe35;&#xe40;&#xe21;&#xe25;" autoComplete="email" className="min-w-0 flex-1 bg-transparent text-[12px] text-white outline-none placeholder:text-white/40" placeholder="example@gmail.com" required type="email" /><span className="flex shrink-0 items-center gap-1 rounded-full bg-[#19372d] px-2 py-1 text-[9px] text-white/75"><span aria-hidden="true">&#x1f512;</span>&#xe21;&#xe32;&#xe08;&#xe32;&#xe01; {selectedProvider.label}</span></span>
+                  <span className="ds-input mt-1 flex h-11 items-center gap-3 px-3 text-white/65 focus-within:text-[#36e98a]"><MailIcon /><input aria-label="&#xe2d;&#xe35;&#xe40;&#xe21;&#xe25;" autoComplete="email" className="min-w-0 flex-1 bg-transparent text-[12px] text-white outline-none placeholder:text-white/40" placeholder="example@gmail.com" required type="email" /><span className="flex shrink-0 items-center gap-1 rounded-full bg-[#19372d] px-2 py-1 text-[10px] text-white/75"><span aria-hidden="true">&#x1f512;</span>&#xe21;&#xe32;&#xe08;&#xe32;&#xe01; {selectedProvider.label}</span></span>
                 </label>
               </div>
 

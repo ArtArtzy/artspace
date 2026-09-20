@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
+import { unbuiltPages, type UnbuiltPage } from "@/data/unbuilt-pages";
+import UnbuiltPageModal from "@/components/UnbuiltPageModal";
+import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
 function SearchIcon() {
   return (
@@ -16,15 +19,6 @@ function BellIcon() {
   return (
     <svg aria-hidden="true" className="h-7 w-7" fill="none" viewBox="0 0 24 24">
       <path d="M6.75 16.25h10.5l-1.1-1.67a3.75 3.75 0 0 1-.62-2.07V9.75a3.53 3.53 0 0 0-7.06 0v2.76c0 .73-.21 1.45-.62 2.07l-1.1 1.67ZM10.25 19.25h3.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-function CoinIcon() {
-  return (
-    <svg aria-hidden="true" className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M14.7 9.4c-.6-.6-1.4-.9-2.5-.9-1.4 0-2.4.7-2.4 1.7 0 2.5 4.8 1.2 4.8 3.7 0 1.1-1 1.8-2.5 1.8-1.1 0-2-.3-2.8-.9M12 7.6v8.8" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -78,16 +72,16 @@ function NotificationIcon({ icon }: { icon: NonNullable<NotificationItem["icon"]
   return <svg aria-hidden="true" className="h-8 w-8" fill="none" viewBox="0 0 24 24"><path d="m12 3 1.25 1.8 2.2-.15.65 2.1 2.05.8-.55 2.15 1.55 1.55-1.55 1.55.55 2.15-2.05.8-.65 2.1-2.2-.15L12 21l-1.25-1.8-2.2.15-.65-2.1-2.05-.8.55-2.15L4.85 12l1.55-1.55-.55-2.15 2.05-.8.65-2.1 2.2.15L12 3Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.6" /><circle cx="12" cy="12" r="2.2" stroke="currentColor" strokeWidth="1.6" /></svg>;
 }
 
-function NotificationMenu({ onClose }: { onClose: () => void }) {
+function NotificationMenu({ onOpenAll, onOpenNotification }: { onOpenAll: () => void; onOpenNotification: (index: number) => void }) {
   return (
-    <div aria-label="รายการแจ้งเตือน" className="absolute right-0 top-[calc(100%+28px)] z-50 w-[410px] overflow-hidden rounded-[10px] border border-white/[0.12] bg-[#111715] text-white shadow-[0_18px_50px_rgba(0,0,0,.55)]" role="dialog">
+    <div aria-label="รายการแจ้งเตือน" className="ds-card absolute right-0 top-[calc(100%+28px)] z-50 w-[410px] overflow-hidden text-arn-text" role="dialog">
       <div className="flex items-center justify-between border-b border-white/[0.09] px-5 py-4">
         <h2 className="text-[17px] font-semibold">การแจ้งเตือน</h2>
-        <button className="text-[11px] text-[#31e985] transition hover:text-white" onClick={onClose} type="button">อ่านทั้งหมด</button>
+        <button className="text-[11px] text-[#31e985] transition hover:text-white" onClick={onOpenAll} type="button">อ่านทั้งหมด</button>
       </div>
       <div className="max-h-[calc(100vh-150px)] overflow-y-auto">
-        {notifications.map((notification) => (
-          <button className="group flex w-full items-center gap-4 border-b border-white/[0.08] px-4 py-3 text-left transition last:border-b-0 hover:bg-white/[0.04]" key={notification.title} onClick={onClose} type="button">
+        {notifications.map((notification, index) => (
+          <button className="group flex w-full items-center gap-4 border-b border-white/[0.08] px-4 py-3 text-left transition last:border-b-0 hover:bg-white/[0.04]" key={notification.title} onClick={() => onOpenNotification(index)} type="button">
             {notification.image ? (
               <Image alt="" className="h-[58px] w-[58px] shrink-0 rounded-full object-cover ring-1 ring-white/[0.12]" height={58} src={notification.image} width={58} />
             ) : (
@@ -108,27 +102,23 @@ function NotificationMenu({ onClose }: { onClose: () => void }) {
   );
 }
 
-function ProfileMenu({ onClose, onRequestLogout }: { onClose: () => void; onRequestLogout: () => void }) {
+function ProfileMenu({ onClose, onOpenBookshelf, onOpenFollowing, onOpenProfile, onRequestLogout }: { onClose: () => void; onOpenBookshelf: () => void; onOpenFollowing: () => void; onOpenProfile: () => void; onRequestLogout: () => void }) {
   return (
-    <div aria-label="เมนูโปรไฟล์" className="absolute right-0 top-[calc(100%+18px)] z-50 w-[270px] overflow-hidden rounded-[10px] border border-white/[0.12] bg-[#111715] p-2 text-white shadow-[0_18px_50px_rgba(0,0,0,.55)]" role="menu">
-      <div className="flex items-center gap-3 border-b border-white/[0.09] px-3 pb-3 pt-2">
+    <div aria-label="เมนูโปรไฟล์" className="ds-card absolute right-0 top-[calc(100%+18px)] z-50 w-[270px] overflow-hidden p-2 text-arn-text" role="menu">
+      <button className="flex w-full items-center gap-3 border-b border-white/[0.09] px-3 pb-3 pt-2 text-left transition hover:bg-white/[0.04]" onClick={onOpenProfile} role="menuitem" type="button">
         <Image alt="โปรไฟล์" className="h-10 w-10 rounded-full object-cover ring-1 ring-[#27e982]" height={40} src="/images/profile-arn.webp" width={40} />
         <div className="min-w-0">
           <p className="truncate text-[13px] font-semibold">โปรไฟล์ของฉัน</p>
           <p className="text-[11px] text-white/40">จัดการบัญชีของคุณ</p>
         </div>
-      </div>
+      </button>
 
       <div className="pt-2">
-        <button className="flex w-full items-center gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onClose} role="menuitem" type="button">
+        <button className="flex w-full items-center gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onOpenBookshelf} role="menuitem" type="button">
           <span aria-hidden="true" className="text-[17px] text-[#41e993]">▤</span>
           <span className="text-[13px]">ชั้นหนังสือของฉัน</span>
         </button>
-        <button className="flex w-full items-center justify-between gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onClose} role="menuitem" type="button">
-          <span className="flex items-center gap-3 text-[#f4c84e]"><CoinIcon /><span className="text-[13px] text-white">จำนวนเหรียญ</span></span>
-          <span className="text-[12px] font-semibold text-[#f4c84e]">1,250</span>
-        </button>
-        <button className="flex w-full items-center justify-between gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onClose} role="menuitem" type="button">
+        <button className="flex w-full items-center justify-between gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onOpenFollowing} role="menuitem" type="button">
           <span className="flex items-center gap-3 text-[#e96ba6]"><HeartIcon /><span className="text-[13px] text-white">กำลังติดตาม</span></span>
           <span className="text-[12px] font-semibold text-white/55">24</span>
         </button>
@@ -147,7 +137,7 @@ function ProfileMenu({ onClose, onRequestLogout }: { onClose: () => void; onRequ
 function LogoutConfirmModal({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
   return (
     <div aria-label="ยืนยันการออกจากระบบ" aria-modal="true" className="fixed inset-0 z-[70] flex items-center justify-center bg-[#020504]/75 px-5 backdrop-blur-[3px]" onClick={onCancel} role="dialog">
-      <div className="w-full max-w-[390px] overflow-hidden rounded-[14px] border border-[#1ed873]/30 bg-[#101714] shadow-[0_22px_70px_rgba(0,0,0,.65)]" onClick={(event) => event.stopPropagation()}>
+      <div className="ds-card w-full max-w-[390px] overflow-hidden" onClick={(event) => event.stopPropagation()}>
         <div className="flex justify-center pt-7">
           <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#ff7277]/40 bg-[#3a171b] text-[#ff8589] shadow-[0_0_22px_rgba(255,90,97,.14)]">
             <svg aria-hidden="true" className="h-7 w-7" fill="none" viewBox="0 0 24 24">
@@ -189,12 +179,23 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const [pendingUnbuiltPage, setPendingUnbuiltPage] = useState<{ page: UnbuiltPage; href: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(initialLoggedIn);
   const notificationRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const isLinkActive = (href: string) => {
     if (href === "/" || href === "/read") return pathname === href;
     return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+
+    const page = unbuiltPages.find((item) => item.code === "SEARCH-001");
+    if (page) setPendingUnbuiltPage({ page, href: `/search?q=${encodeURIComponent(query)}` });
   };
 
   useEffect(() => {
@@ -231,7 +232,8 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
   }, [isNotificationsOpen, isProfileOpen, isLogoutConfirmOpen]);
 
   return (
-    <header className={`${fixed ? "fixed inset-x-0 top-0 z-50" : ""} border-b border-white/[0.06] bg-[#0c0e0d] text-white`}>
+    <UnbuiltPageGuard>
+      <header className={`${fixed ? "fixed inset-x-0 top-0 z-50" : ""} border-b border-arn-border bg-arn-canvas text-arn-text`}>
       <div className="mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-8">
         <a aria-label="ARN SPACE หน้าหลัก" className="-ml-4 flex shrink-0 items-center" href="/">
           <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[238px]" height={80} priority src="/images/arnspace-logo.webp" width={238} />
@@ -242,20 +244,22 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
             const isActive = isLinkActive(link.href);
 
             return (
-              <a aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-[15px] font-semibold transition-colors ${isActive ? "border-[#176b4a] bg-[linear-gradient(145deg,#0d3028,#10221d)] text-[#0ed77e] shadow-[0_0_14px_rgba(23,213,125,.12)]" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
+              <a aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-[15px] font-semibold transition-colors ${isActive ? "border-arn-border-strong bg-arn-raised text-arn-accent shadow-ds-glow" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
                 {isActive && <MenuBookIcon />}
                 <span>{link.label}</span>
-                <span className={`absolute bottom-0.5 left-2 right-2 block h-0.5 rounded-full ${isActive ? "bg-[#0ed77e]" : "opacity-0"}`} />
+                <span className={`absolute bottom-0.5 left-2 right-2 block h-0.5 rounded-full ${isActive ? "bg-arn-accent" : "opacity-0"}`} />
               </a>
             );
           })}
         </nav>
 
         <div className="ml-auto flex min-w-0 items-center gap-4">
-          <label className="flex h-10 w-[270px] items-center gap-2 rounded-[9px] border border-[#1f4e32] bg-[#141917] px-3 text-white/55 shadow-[inset_0_0_14px_rgba(20,215,126,0.05)] focus-within:border-[#0ecb78]">
+          <form className="w-[270px]" onSubmit={handleSearchSubmit}>
+            <label className="ds-input flex h-10 w-full items-center gap-2 px-3 text-white/55">
             <span className="shrink-0"><SearchIcon /></span>
-            <input aria-label="ค้นหา" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/35" placeholder="ค้นหาเรื่อง นามปากกา" type="search" />
-          </label>
+            <input aria-label="ค้นหา" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/35" onChange={(event) => setSearchQuery(event.target.value)} placeholder="ค้นหาเรื่อง นามปากกา" type="search" value={searchQuery} />
+            </label>
+          </form>
 
           <a aria-current={pathname === "/write" ? "page" : undefined} className="flex h-10 shrink-0 items-center rounded-[8px] border border-[#20d976] px-4 text-[13px] font-semibold text-[#41ee91] transition hover:bg-[#123722] hover:text-white" href="/write">เขียนเรื่อง</a>
 
@@ -264,16 +268,29 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
               <div className="relative" ref={notificationRef}>
                 <button aria-expanded={isNotificationsOpen} aria-haspopup="dialog" aria-label="การแจ้งเตือน" className="relative text-white/90 transition hover:text-[#0ed77e]" onClick={() => { setIsNotificationsOpen((open) => !open); setIsProfileOpen(false); }} type="button">
                   <BellIcon />
-                  <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#ef4a4f] text-[9px] font-bold text-white">6</span>
+                  <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#ef4a4f] text-[10px] font-bold text-white">6</span>
                 </button>
-                {isNotificationsOpen && <NotificationMenu onClose={() => setIsNotificationsOpen(false)} />}
+                {isNotificationsOpen && (
+                  <NotificationMenu
+                    onOpenAll={() => {
+                      setIsNotificationsOpen(false);
+                      const page = unbuiltPages.find((item) => item.code === "NOTIFICATIONS-LIST-001");
+                      if (page) setPendingUnbuiltPage({ page, href: page.url });
+                    }}
+                    onOpenNotification={(index) => {
+                      setIsNotificationsOpen(false);
+                      const page = unbuiltPages.find((item) => item.code === "NOTIFICATION-ITEM-001");
+                      if (page) setPendingUnbuiltPage({ page, href: `/notifications/${index + 1}` });
+                    }}
+                  />
+                )}
               </div>
 
               <div className="relative" ref={profileRef}>
                 <button aria-expanded={isProfileOpen} aria-haspopup="menu" aria-label="โปรไฟล์" className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-[#ccebbf] bg-[#967260] p-0 shadow-[0_0_0_3px_rgba(81,164,109,0.3)] transition hover:scale-105" onClick={() => { setIsProfileOpen((open) => !open); setIsNotificationsOpen(false); }} type="button">
                   <Image alt="โปรไฟล์" className="h-full w-full object-cover" height={44} src="/images/profile-arn.webp" width={44} />
                 </button>
-                {isProfileOpen && <ProfileMenu onClose={() => setIsProfileOpen(false)} onRequestLogout={() => { setIsProfileOpen(false); setIsLogoutConfirmOpen(true); }} />}
+                {isProfileOpen && <ProfileMenu onClose={() => setIsProfileOpen(false)} onOpenBookshelf={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "READ-BOOKSHELF-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenFollowing={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "FOLLOWING-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenProfile={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "PROFILE-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onRequestLogout={() => { setIsProfileOpen(false); setIsLogoutConfirmOpen(true); }} />}
               </div>
             </>
           ) : (
@@ -285,6 +302,8 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
         </div>
       </div>
       {isLogoutConfirmOpen && <LogoutConfirmModal onCancel={() => setIsLogoutConfirmOpen(false)} onConfirm={() => { setIsLogoutConfirmOpen(false); setIsNotificationsOpen(false); setIsProfileOpen(false); setIsLoggedIn(false); window.localStorage.setItem(authStorageKey, "false"); window.dispatchEvent(new Event(authStateChangedEvent)); }} />}
-    </header>
+      {pendingUnbuiltPage && <UnbuiltPageModal href={pendingUnbuiltPage.href} onClose={() => setPendingUnbuiltPage(null)} page={pendingUnbuiltPage.page} />}
+      </header>
+    </UnbuiltPageGuard>
   );
 }

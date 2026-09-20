@@ -43,7 +43,7 @@ function AppleIcon() {
 
 
 function LineIcon() {
-  return <span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[7px] font-bold tracking-[-.1em] text-[#08ae36]">LINE</span>;
+  return <span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[9px] font-bold tracking-[-.1em] text-[#08ae36]">LINE</span>;
 }
 
 function SocialIcon({ src }: { src: string }) {
@@ -81,7 +81,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="h-screen overflow-hidden bg-[#07100c] pt-[82px] text-white">
+    <main className="ds-page-shell h-screen overflow-hidden pt-[82px]">
       <TopMenu fixed initialLoggedIn={false} />
       {registrationNotice && <div aria-live="polite" className="fixed right-6 top-[102px] z-[60] flex items-center gap-3 rounded-[9px] border border-[#22df7d]/40 bg-[#10281b]/95 px-4 py-3 text-[13px] font-medium text-[#72f5a9] shadow-[0_12px_35px_rgba(0,0,0,.45)]" role="status"><span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full bg-[#17cf70] text-[12px] font-bold text-[#06100a]">&#x2713;</span>&#xe2a;&#xe21;&#xe31;&#xe04;&#xe23;&#xe2a;&#xe21;&#xe32;&#xe0a;&#xe34;&#xe01;&#xe2a;&#xe33;&#xe40;&#xe23;&#xe47;&#xe08;</div>}
       <section className="relative mx-auto grid h-[calc(100vh-82px)] min-h-0 w-full max-w-[1400px] grid-cols-1 overflow-hidden lg:grid-cols-[1.08fr_.92fr]">
@@ -107,7 +107,7 @@ export default function RegisterPage() {
 
         <div className="relative z-10 flex min-h-0 items-center justify-center overflow-hidden px-5 py-2 sm:px-10 sm:py-4 lg:px-12">
 
-          <form className="relative h-[632px] w-full max-w-[440px] overflow-hidden rounded-[14px] border border-[#087351] bg-[#031d14]/95 px-7 py-4 shadow-[0_18px_55px_rgba(0,0,0,.3)] sm:px-9 sm:py-4" onSubmit={handleSubmit}>
+          <form className="ds-card relative h-[632px] w-full max-w-[440px] overflow-hidden px-7 py-4 sm:px-9 sm:py-4" onSubmit={handleSubmit}>
             <RegisterLeaves />
             <div className="relative z-10">
               <div>
