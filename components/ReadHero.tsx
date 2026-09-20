@@ -172,7 +172,7 @@ function HeroCarousel({ ariaLabel, modePath, slides }: { ariaLabel: string; mode
   return (
     <section
       aria-label={ariaLabel}
-      className="relative w-full overflow-hidden bg-[#101411] text-white"
+      className="relative mx-auto w-full max-w-[1400px] overflow-hidden bg-[#101411] text-white"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

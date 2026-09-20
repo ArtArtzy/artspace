@@ -71,7 +71,7 @@ export default function HeroCarousel() {
   return (
     <section
       aria-label="เรื่องราวแนะนำ"
-      className="relative w-full bg-[#101411]"
+      className="relative mx-auto w-full max-w-[1400px] bg-[#101411]"
      onMouseEnter={() => setIsPaused(true)}
      onMouseLeave={() => setIsPaused(false)}
    >
