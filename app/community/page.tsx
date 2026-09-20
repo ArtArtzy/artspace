@@ -60,12 +60,16 @@ const communityLinks = [
 
 export default function CommunityPage() {
   const [activeSection, setActiveSection] = useState<(typeof communityLinks)[number]["id"]>("home");
+  const [discussionFilter, setDiscussionFilter] = useState<string | undefined>();
 
   useEffect(() => {
-    const requestedSection = new URLSearchParams(window.location.search).get("section");
+    const searchParams = new URLSearchParams(window.location.search);
+    const requestedSection = searchParams.get("section");
+    const requestedDiscussionFilter = searchParams.get("filter");
     if (communityLinks.some(({ id }) => id === requestedSection)) {
       setActiveSection(requestedSection as (typeof communityLinks)[number]["id"]);
     }
+    setDiscussionFilter(requestedDiscussionFilter ?? undefined);
   }, []);
 
   return (
@@ -137,7 +141,7 @@ export default function CommunityPage() {
       </div>
 
       <section className="mx-auto grid max-w-[1400px] gap-4 px-4 pb-12 pt-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_330px] lg:gap-5 lg:px-8">
-        {activeSection === "discussion" ? <CommunityDiscussion /> : activeSection === "writers" ? <CommunityWriters /> : activeSection === "events" ? <CommunityEvents /> : <CommunityFeed />}
+        {activeSection === "discussion" ? <CommunityDiscussion initialFilter={discussionFilter} /> : activeSection === "writers" ? <CommunityWriters /> : activeSection === "events" ? <CommunityEvents /> : <CommunityFeed />}
         {activeSection === "writers" ? <CommunityWritersSidebar /> : activeSection === "events" ? <CommunityEventsSidebar /> : <CommunitySidebar />}
       </section>
 

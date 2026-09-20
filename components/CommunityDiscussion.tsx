@@ -210,8 +210,8 @@ function DiscussionPagination() {
   );
 }
 
-export default function CommunityDiscussion() {
-  const [selectedFilter, setSelectedFilter] = useState("ทั้งหมด");
+export default function CommunityDiscussion({ initialFilter }: { initialFilter?: string }) {
+  const [selectedFilter, setSelectedFilter] = useState(filters.includes(initialFilter ?? "") ? initialFilter! : "ทั้งหมด");
   const [sortOrder, setSortOrder] = useState<SortOrder>("latest");
   const selectedSection = discussionSections.find((section) => section.title === selectedFilter);
   const simulatedRows = useMemo(() => {

@@ -15,6 +15,15 @@ function SearchIcon() {
   );
 }
 
+function PenIcon() {
+  return (
+    <svg aria-hidden="true" className="h-[19px] w-[19px]" fill="none" viewBox="0 0 24 24">
+      <path d="m14.5 5.5 4 4M4 20l1.4-5.2L15.8 4.4a2.1 2.1 0 0 1 3 3L8.4 17.8 4 20Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+      <path d="M13 7.5 16.5 11" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 function BellIcon() {
   return (
     <svg aria-hidden="true" className="h-7 w-7" fill="none" viewBox="0 0 24 24">
@@ -261,7 +270,9 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
             </label>
           </form>
 
-          <a aria-current={pathname === "/write" ? "page" : undefined} className="flex h-10 shrink-0 items-center rounded-[8px] border border-[#20d976] px-4 text-[13px] font-semibold text-[#41ee91] transition hover:bg-[#123722] hover:text-white" href="/write">เขียนเรื่อง</a>
+          <a aria-label="เขียนเรื่อง" aria-current={pathname === "/write" ? "page" : undefined} className={`group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-[#41ee91] transition ${pathname === "/write" ? "border-[#20d976] bg-[#123722] shadow-[0_0_16px_rgba(32,217,118,.2)]" : "border-[#20d976] bg-transparent hover:bg-[#123722]"}`} href="/write" title="เขียนเรื่อง">
+            <PenIcon />
+          </a>
 
           {isLoggedIn ? (
             <>

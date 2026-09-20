@@ -800,7 +800,7 @@ function NewEpisodesCard() {
           <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="bell" />
           <h2 className="sidebar-title" id="new-episodes-title">มีตอนใหม่</h2>
         </div>
-        <Link aria-label="ดูตอนใหม่ทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 text-[#2ee27b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูตอนใหม่ทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 text-[#2ee27b] transition hover:text-[#9bffc0]" href="/read?section=new-episodes">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
@@ -1335,7 +1335,8 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
                       ? completedSectionIcons[section.title]
                     : undefined;
 
-            const hideViewAll = selectedCategory === "สำหรับคุณ" && ["คัดมาให้คุณ", 'เพราะคุณอ่าน "Sky of Tomorrow"', "เรื่องที่น่าจะชอบ"].includes(section.title);
+            const hideViewAll = (selectedCategory === "สำหรับคุณ" && ["คัดมาให้คุณ", 'เพราะคุณอ่าน "Sky of Tomorrow"', "เรื่องที่น่าจะชอบ"].includes(section.title))
+              || (selectedCategory === "อ่านต่อ" && ["ใกล้อ่านจบ", "กลับไปเรื่องโปรด", "อัปเดตจากเรื่องที่กำลังอ่าน"].includes(section.title));
 
             return (
             <div key={section.title}>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import TopMenu from "@/components/TopMenu";
+import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
 const authStorageKey = "arnspace-authenticated";
 
@@ -111,7 +112,8 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="login-page ds-page-shell h-screen overflow-hidden pt-[82px]">
+    <UnbuiltPageGuard>
+      <main className="login-page ds-page-shell h-screen overflow-hidden pt-[82px]">
       <TopMenu fixed initialLoggedIn={false} />
 
       {registrationNotice && (
@@ -175,10 +177,11 @@ export default function LoginPage() {
 
             <div className="my-4 flex items-center gap-3 text-[10px] text-white/40"><span className="h-px flex-1 bg-white/[0.14]" />&#xe22;&#xe31;&#xe07;&#xe44;&#xe21;&#xe48;&#xe21;&#xe35;&#xe1a;&#xe31;&#xe0d;&#xe0a;&#xe35;&#xe43;&#xe0a;&#xe48;&#xe44;&#xe2b;&#xe21;?<span className="h-px flex-1 bg-white/[0.14]" /></div>
             <a className="flex h-9 w-full items-center justify-center rounded-[8px] border border-[#08d982] text-[12px] font-semibold text-[#1ce98a] transition hover:bg-[#123722]" href="/register">&#xe2a;&#xe21;&#xe31;&#xe04;&#xe23;&#xe2a;&#xe21;&#xe32;&#xe0a;&#xe34;&#xe01;&#xe1f;&#xe23;&#xe35;</a>
-            <p className="mt-6 text-center text-[10px] text-white/45">&#xe2b;&#xe32;&#xe01;&#xe1e;&#xe1a;&#xe1b;&#xe31;&#xe0d;&#xe2b;&#xe32;&#xe43;&#xe19;&#xe01;&#xe32;&#xe23;&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a; <a className="font-medium text-[#2ee77b] hover:text-white" href="/community">&#xe15;&#xe34;&#xe14;&#xe15;&#xe48;&#xe2d;&#xe40;&#xe23;&#xe32;</a></p>
+            <p className="mt-6 text-center text-[10px] text-white/45">&#xe2b;&#xe32;&#xe01;&#xe1e;&#xe1a;&#xe1b;&#xe31;&#xe0d;&#xe2b;&#xe32;&#xe43;&#xe19;&#xe01;&#xe32;&#xe23;&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a; <a className="font-medium text-[#2ee77b] hover:text-white" href="/contact">&#xe15;&#xe34;&#xe14;&#xe15;&#xe48;&#xe2d;&#xe40;&#xe23;&#xe32;</a></p>
           </form>
         </div>
       </section>
-    </main>
+      </main>
+    </UnbuiltPageGuard>
   );
 }

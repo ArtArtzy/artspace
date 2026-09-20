@@ -4,10 +4,19 @@ NOTIFICATIONS-LIST-001,หน้าการแจ้งเตือนทั้
 NOTIFICATION-ITEM-001,หน้ารายละเอียดการแจ้งเตือน,/notifications/:id,กดรายการ Notification ในเมนูกระดิ่ง,ยังไม่ได้ทำ
 PROFILE-001,หน้าจัดการโปรไฟล์ของฉัน,/profile,กด Block โปรไฟล์ของฉันในเมนู Profile,ยังไม่ได้ทำ
 FOLLOWING-001,หน้าจัดการการติดตาม,/following,กดกำลังติดตามในเมนู Profile,ยังไม่ได้ทำ
+VERIFY-IDENTITY-001,หน้ายืนยันตัวตน,/verify-identity,ปุ่มยืนยันตัวตนเพิ่มใน Popup เลือกหมวดที่คุณสนใจ,ยังไม่ได้ทำ
 READ-NOVEL-001,หน้าสำหรับอ่านนิยาย,/read?title=:title,อ่านเลย หรือกดปกนิยาย,ยังไม่ได้ทำ
 READ-FANFIC-001,หน้าสำหรับอ่านแฟนฟิค,/read/fanfic?title=:title,อ่านเลย หรือกดปกแฟนฟิค,ยังไม่ได้ทำ
 READ-CARTOON-001,หน้าสำหรับอ่านการ์ตูน,/read/cartoon?title=:title,อ่านเลย หรือกดปกการ์ตูน,ยังไม่ได้ทำ
+READ-TAG-MANAGE-NOVEL-001,หน้าจัดการแท็กนิยาย,/read?tag-settings=manage,จัดการแท็กที่คุณสนใจใน Sidebar นิยาย,ยังไม่ได้ทำ
+READ-TAG-MANAGE-FANFIC-001,หน้าจัดการแท็กแฟนฟิค,/read/fanfic?tag-settings=manage,จัดการแท็กที่คุณสนใจใน Sidebar แฟนฟิค,ยังไม่ได้ทำ
+READ-TAG-MANAGE-CARTOON-001,หน้าจัดการแท็กการ์ตูน,/read/cartoon?tag-settings=manage,จัดการแท็กที่คุณสนใจใน Sidebar การ์ตูน,ยังไม่ได้ทำ
+READ-TAG-NOVEL-001,หน้ารวมเรื่องตามแท็กนิยาย,/read?tag=:tag,กดแท็กใน Sidebar นิยาย,ยังไม่ได้ทำ
+READ-TAG-FANFIC-001,หน้ารวมเรื่องตามแท็กแฟนฟิค,/read/fanfic?tag=:tag,กดแท็กใน Sidebar แฟนฟิค,ยังไม่ได้ทำ
+READ-TAG-CARTOON-001,หน้ารวมเรื่องตามแท็กการ์ตูน,/read/cartoon?tag=:tag,กดแท็กใน Sidebar การ์ตูน,ยังไม่ได้ทำ
 READ-BOOKSHELF-001,ชั้นหนังสือของคุณ,/read?bookshelf=all,ดูทั้งหมดใน Sidebar หรือชั้นหนังสือของฉันใน Profile,ยังไม่ได้ทำ
+HOME-CONTINUE-001,หน้ารวมเรื่องอ่านต่อ,/read?category=อ่านต่อ,ดูทั้งหมดใน Section อ่านต่อจากที่ค้างไว้ หน้าแรก,ยังไม่ได้ทำ
+HOME-NEW-EPISODES-001,หน้ารวมตอนใหม่,/read?section=new-episodes,ดูทั้งหมดใน Sidebar มีตอนใหม่ หน้าแรก,ยังไม่ได้ทำ
 WRITER-PROFILE-001,หน้าโปรไฟล์นักเขียน,/writers/:slug,กดการ์ดนักเขียนใน Section นักเขียนแนะนำ,ยังไม่ได้ทำ
 WRITERS-LIST-001,หน้ารวมนักเขียน,/writers,เมนูนักเขียน หรือดูทั้งหมดใน Section นักเขียนแนะนำ,ยังไม่ได้ทำ
 WRITE-001,หน้าสร้างผลงาน,/write,ปุ่มเขียนเรื่อง หรือเริ่มต้นเขียน,ยังไม่ได้ทำ

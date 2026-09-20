@@ -274,7 +274,6 @@ export type CategoryFilterProps = {
 export default function CategoryFilter({ selected, onSelect, onSelectGenres, selectedGenres = [], myCategoryCount = 0, showMyCategory = false, variant = "categories", stickyOffset = "menu" }: CategoryFilterProps) {
   const [isGenreMenuOpen, setIsGenreMenuOpen] = useState(false);
   const [draftGenres, setDraftGenres] = useState<string[]>(orderGenresWithProtectedLast(selectedGenres.length > 0 ? selectedGenres : defaultGenreSelection));
-  const [isVerified, setIsVerified] = useState(false);
   const [draggedGenreIndex, setDraggedGenreIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -318,7 +317,7 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
       ];
 
   const toggleGenre = (category: Category) => {
-    if (category.requiresVerification && !isVerified) return;
+    if (category.requiresVerification) return;
 
     setDraftGenres((current) => orderGenresWithProtectedLast(
       current.includes(category.label)
@@ -429,9 +428,9 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
                 <p className="text-[13px] font-semibold text-white">บางหมวดมีเนื้อหาที่ต้องยืนยันตัวตนก่อนเข้าใช้งาน</p>
                 <p className="mt-1 text-[11px] leading-relaxed text-white/50">เพื่อความปลอดภัยของผู้ใช้งาน กรุณายืนยันตัวตนก่อนเลือกหมวดที่มีการจำกัดอายุ</p>
               </div>
-              <button className={`shrink-0 rounded-[6px] border px-2.5 py-1.5 text-[11px] font-medium transition ${isVerified ? "border-[#1be27e] bg-[#123722] text-[#58eaa9]" : "border-[#1be27e] text-[#58eaa9] hover:bg-[#123722]"}`} onClick={() => setIsVerified((current) => !current)} type="button">
-                {isVerified ? "ยืนยันแล้ว ✓" : "ยืนยันตัวตนเพิ่ม →"}
-              </button>
+              <a aria-label="ไปหน้ายืนยันตัวตน" className="shrink-0 rounded-[6px] border border-[#1be27e] px-2.5 py-1.5 text-[11px] font-medium text-[#58eaa9] transition hover:bg-[#123722]" href="/verify-identity">
+                ยืนยันตัวตนเพิ่ม →
+              </a>
             </div>
 
             <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -442,7 +441,7 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
                 </div>
                 <div className="mt-2 max-h-[330px] space-y-1.5 overflow-y-auto pr-1">
                   {orderedAvailableGenres.filter((category) => !draftGenres.includes(category.label)).map((category) => {
-                    const isLocked = Boolean(category.requiresVerification && !isVerified);
+                    const isLocked = Boolean(category.requiresVerification);
                     const isLimitReached = draftGenres.length >= 10;
 
                     return (

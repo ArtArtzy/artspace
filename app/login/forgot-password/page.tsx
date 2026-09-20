@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import TopMenu from "@/components/TopMenu";
+import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
 function MailIcon() {
   return <svg aria-hidden="true" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24"><rect height="14" rx="2" stroke="currentColor" strokeWidth="1.6" width="18" x="3" y="5" /><path d="m4 7 8 6 8-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" /></svg>;
@@ -40,7 +41,8 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="ds-page-shell h-screen overflow-hidden pt-[82px]">
+    <UnbuiltPageGuard>
+      <main className="ds-page-shell h-screen overflow-hidden pt-[82px]">
       <TopMenu fixed initialLoggedIn={false} />
       <section className="relative mx-auto grid h-[calc(100vh-82px)] min-h-0 w-full max-w-[1400px] grid-cols-1 overflow-hidden lg:grid-cols-[1.08fr_.92fr]">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -78,12 +80,13 @@ export default function ForgotPasswordPage() {
 
               <div className="mt-auto pb-2">
                 <div className="my-5 flex items-center gap-3 text-[12px] text-white/65"><span className="h-px flex-1 bg-white/[0.18]" /><a className="flex items-center gap-1 hover:text-white" href="/login"><BackIcon />&#xe01;&#xe25;&#xe31;&#xe1a;&#xe44;&#xe1b;&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a;</a><span className="h-px flex-1 bg-white/[0.18]" /></div>
-                <p className="text-center text-[11px] text-white/55">&#xe2b;&#xe32;&#xe01;&#xe22;&#xe31;&#xe07;&#xe40;&#xe02;&#xe49;&#xe32;&#xe43;&#xe0a;&#xe49;&#xe07;&#xe32;&#xe19;&#xe44;&#xe21;&#xe48;&#xe44;&#xe14;&#xe49; <a className="font-medium text-[#2ee77b] hover:text-white" href="/community">&#xe15;&#xe34;&#xe14;&#xe15;&#xe48;&#xe2d;&#xe40;&#xe23;&#xe32;</a></p>
+                <p className="text-center text-[11px] text-white/55">&#xe2b;&#xe32;&#xe01;&#xe22;&#xe31;&#xe07;&#xe40;&#xe02;&#xe49;&#xe32;&#xe43;&#xe0a;&#xe49;&#xe07;&#xe32;&#xe19;&#xe44;&#xe21;&#xe48;&#xe44;&#xe14;&#xe49; <a className="font-medium text-[#2ee77b] hover:text-white" href="/contact">&#xe15;&#xe34;&#xe14;&#xe15;&#xe48;&#xe2d;&#xe40;&#xe23;&#xe32;</a></p>
               </div>
             </div>
           </form>
         </div>
       </section>
-    </main>
+      </main>
+    </UnbuiltPageGuard>
   );
 }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import TopMenu from "@/components/TopMenu";
+import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
 function UserIcon() {
   return <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.6" /><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor" strokeLinecap="round" strokeWidth="1.6" /></svg>;
@@ -81,7 +82,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="ds-page-shell h-screen overflow-hidden pt-[82px]">
+    <UnbuiltPageGuard>
+      <main className="ds-page-shell h-screen overflow-hidden pt-[82px]">
       <TopMenu fixed initialLoggedIn={false} />
       {registrationNotice && <div aria-live="polite" className="fixed right-6 top-[102px] z-[60] flex items-center gap-3 rounded-[9px] border border-[#22df7d]/40 bg-[#10281b]/95 px-4 py-3 text-[13px] font-medium text-[#72f5a9] shadow-[0_12px_35px_rgba(0,0,0,.45)]" role="status"><span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full bg-[#17cf70] text-[12px] font-bold text-[#06100a]">&#x2713;</span>&#xe2a;&#xe21;&#xe31;&#xe04;&#xe23;&#xe2a;&#xe21;&#xe32;&#xe0a;&#xe34;&#xe01;&#xe2a;&#xe33;&#xe40;&#xe23;&#xe47;&#xe08;</div>}
       <section className="relative mx-auto grid h-[calc(100vh-82px)] min-h-0 w-full max-w-[1400px] grid-cols-1 overflow-hidden lg:grid-cols-[1.08fr_.92fr]">
@@ -143,13 +145,14 @@ export default function RegisterPage() {
                 </label>
               </div>
 
-              <label className="mt-3 flex items-start gap-2 text-[10px] leading-4 text-white/75"><input className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[#15d875]" required type="checkbox" /><span>&#xe09;&#xe31;&#xe19;&#xe22;&#xe2d;&#xe21;&#xe23;&#xe31;&#xe1a; <a className="font-medium text-[#20e987] hover:text-white" href="/community">&#xe02;&#xe49;&#xe2d;&#xe01;&#xe33;&#xe2b;&#xe19;&#xe14;&#xe01;&#xe32;&#xe23;&#xe43;&#xe0a;&#xe49;&#xe07;&#xe32;&#xe19;</a> &#xe41;&#xe25;&#xe30; <a className="font-medium text-[#20e987] hover:text-white" href="/community">&#xe19;&#xe42;&#xe22;&#xe1a;&#xe32;&#xe22;&#xe04;&#xe27;&#xe32;&#xe21;&#xe40;&#xe1b;&#xe47;&#xe19;&#xe2a;&#xe48;&#xe27;&#xe19;&#xe15;&#xe31;&#xe27;</a> <span className="whitespace-nowrap">&#xe02;&#xe2d;&#xe07; ArnSpace</span></span></label>
+              <label className="mt-3 flex items-start gap-2 text-[10px] leading-4 text-white/75"><input className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[#15d875]" required type="checkbox" /><span>&#xe09;&#xe31;&#xe19;&#xe22;&#xe2d;&#xe21;&#xe23;&#xe31;&#xe1a; <a className="font-medium text-[#20e987] hover:text-white" href="/terms">&#xe02;&#xe49;&#xe2d;&#xe01;&#xe33;&#xe2b;&#xe19;&#xe14;&#xe01;&#xe32;&#xe23;&#xe43;&#xe0a;&#xe49;&#xe07;&#xe32;&#xe19;</a> &#xe41;&#xe25;&#xe30; <a className="font-medium text-[#20e987] hover:text-white" href="/privacy">&#xe19;&#xe42;&#xe22;&#xe1a;&#xe32;&#xe22;&#xe04;&#xe27;&#xe32;&#xe21;&#xe40;&#xe1b;&#xe47;&#xe19;&#xe2a;&#xe48;&#xe27;&#xe19;&#xe15;&#xe31;&#xe27;</a> <span className="whitespace-nowrap">&#xe02;&#xe2d;&#xe07; ArnSpace</span></span></label>
               <button className="mt-3 flex h-11 w-full items-center justify-center gap-3 rounded-[8px] bg-[#08e394] text-[14px] font-semibold text-[#03120b] transition hover:bg-[#35eba0]" onClick={mockRegister} type="submit">&#xe2a;&#xe21;&#xe31;&#xe04;&#xe23;&#xe2a;&#xe21;&#xe32;&#xe0a;&#xe34;&#xe01; <ArrowIcon /></button>
               <p className="mt-4 text-center text-[11px] text-white/60">&#xe21;&#xe35;&#xe1a;&#xe31;&#xe0d;&#xe0a;&#xe35;&#xe2d;&#xe22;&#xe39;&#xe48;&#xe41;&#xe25;&#xe49;&#xe27;? <a className="font-semibold text-[#20e987] hover:text-white" href="/login">&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a;</a></p>
             </div>
           </form>
         </div>
       </section>
-    </main>
+      </main>
+    </UnbuiltPageGuard>
   );
 }

@@ -269,7 +269,7 @@ function MyBookshelfCard({ mode }: { mode: ReadModeId }) {
   );
 }
 
-function InterestedTags({ selectedGenres, onSelectCategory }: { selectedGenres: string[]; onSelectCategory: (category: string) => void }) {
+function InterestedTags({ mode, selectedGenres }: { mode: ReadModeId; selectedGenres: string[] }) {
   return (
     <section aria-labelledby="interested-tags-title" className="ds-section p-3">
       <div className="flex items-start justify-between gap-3">
@@ -277,21 +277,20 @@ function InterestedTags({ selectedGenres, onSelectCategory }: { selectedGenres: 
           <h2 className="sidebar-title" id="interested-tags-title">แท็กที่คุณสนใจ</h2>
           <p className="sidebar-meta mt-1 text-white/45">เรื่องราวในแบบที่คุณชอบ</p>
         </div>
-        <a className="sidebar-link mt-1 inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="#category-filter">
+        <Link aria-label="จัดการแท็กที่คุณสนใจ" className="sidebar-link mt-1 inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href={`${modePaths[mode]}?tag-settings=manage`}>
           จัดการแท็ก <span aria-hidden="true">→</span>
-        </a>
+        </Link>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {selectedGenres.map((tag, index) => (
-          <button
+          <Link
             aria-label={`เลือกหมวด ${tag}`}
             className={`rounded-full border px-2.5 py-1 text-[10px] leading-none transition hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82] ${interestTagStyles[index % interestTagStyles.length]}`}
+            href={`${modePaths[mode]}?tag=${encodeURIComponent(tag)}`}
             key={tag}
-            onClick={() => onSelectCategory(tag)}
-            type="button"
           >
             #{tag}
-          </button>
+          </Link>
         ))}
       </div>
     </section>
@@ -329,9 +328,9 @@ function ReaderReviews({ mode, selectedCategory }: { mode: ReadModeId; selectedC
       <div className="mb-3">
         <div className="flex items-center gap-3">
           <h2 className="sidebar-title" id="reader-reviews-title">รีวิวจากผู้อ่าน</h2>
-          <a className="sidebar-link ml-auto inline-flex items-center gap-1 transition hover:text-[#9bffc0]" href="#reader-reviews">
+          <Link aria-label="ดูรีวิวจากผู้อ่านทั้งหมด" className="sidebar-link ml-auto inline-flex items-center gap-1 transition hover:text-[#9bffc0]" href="/community?section=discussion&filter=%E0%B8%A3%E0%B8%B5%E0%B8%A7%E0%B8%B4%E0%B8%A7">
             ดูทั้งหมด <span aria-hidden="true">→</span>
-          </a>
+          </Link>
         </div>
         <p className="sidebar-meta mt-1 text-white/45">{isNovelReviews ? "เสียงจากนักอ่านที่ประทับใจในนิยายคุณ" : `เสียงจากคนที่ชอบ${contextLabel}`}</p>
       </div>
@@ -808,7 +807,7 @@ export default function ReadDiscovery({ followedCategories, mode, onToggleCatego
           {selectedCategory === "หมวดของฉัน" && (
             <>
               <MyBookshelfCard mode={mode} />
-              <InterestedTags onSelectCategory={onSelectCategory} selectedGenres={selectedGenres} />
+              <InterestedTags mode={mode} selectedGenres={selectedGenres} />
             </>
           )}
           <ReaderReviews mode={mode} selectedCategory={selectedCategory} />
