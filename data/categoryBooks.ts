@@ -176,6 +176,250 @@ const freshSectionBooks: Record<string, { fanfic: CategoryBook; cartoon: Categor
   },
 };
 
+export const fanficFandomByCategory: Record<string, string> = {
+  "โรแมนติก": "Harry Potter",
+  "วาย": "BTS",
+  "ยูริ": "Genshin Impact",
+  "แฟนตาซี": "The Lord of the Rings",
+  "จีนโบราณ": "ปรมาจารย์ลัทธิมาร",
+  "เกิดใหม่": "Solo Leveling",
+  "ลึกลับ": "Sherlock Holmes",
+  "สยองขวัญ": "The Conjuring",
+  "แอ๊กชั่น": "Marvel",
+  "ไซไฟ": "Star Wars",
+  "คอมเมดี้": "SEVENTEEN",
+  "รักผู้ใหญ่": "Bridgerton",
+  "วายห้องลับ": "BTS",
+  "ยูริห้องลับ": "The Last of Us",
+  "ดราม่าเข้มข้น": "Taylor Swift",
+  "โรแมนซ์แฟนตาซี": "Twilight",
+  "เกมและโลกเสมือน": "Final Fantasy",
+  "อนิเมะ": "One Piece",
+  "แฟชั่นและไลฟ์สไตล์": "BLACKPINK",
+  "เรทผู้ใหญ่": "Wednesday",
+  "โรแมนติกผู้ใหญ่": "Bridgerton",
+  "อนิเมะผู้ใหญ่": "Attack on Titan",
+};
+
+const fanficStoryTitlesByCategory: Record<string, string[]> = {
+  โรแมนติก: ["จดหมายที่ส่งไม่ถึงเธอ", "ฤดูรักบนชานชาลา", "บทเพลงของวันพรุ่งนี้", "คาเฟ่หลังฝนตก", "เงาสะท้อนของคำรัก", "คืนที่ดาวกลับมา", "เพื่อนบ้านคนโปรด", "ภาพถ่ายใบเดิม", "ระยะห่างระหว่างเรา"],
+  วาย: [
+    "ห้องข้างกันในคืนฝน", "กัปตันทีมของหัวใจ", "เสียงเพลงจากชั้นสาม", "เพื่อนสนิทคิดเกินเลย", "สัญญาหลังเลิกเรียน", "บันทึกของคนข้างเวที", "ฤดูหนาวที่มีนาย", "ข้อความสุดท้ายในแชต", "ดาวเหนือของผม",
+    "ห้องล็อกเกอร์หลังเสียงเพลง", "แชตสุดท้ายก่อนขึ้นเวที", "เจ้าของร่มสีกรม", "เที่ยงคืนที่ห้องซ้อม", "จังหวะหัวใจข้างเวที", "แสงไฟในสตูดิโอเก่า", "เพลงที่เราไม่กล้าร้อง", "วันหยุดของกัปตันทีม", "จดหมายจากห้องแต่งตัว", "เมื่อฝนหยุดที่สถานี", "คู่แข่งคนโปรด", "ระยะห่างหนึ่งที่นั่ง", "ภาพโพลารอยด์ใบสุดท้าย", "เสียงกระซิบหลังม่าน", "ทะเลในวันซ้อมเต้น", "สัญญาใต้ไฟนีออน", "คนที่ยืนข้างผม", "รองเท้าคู่เดิมบนเวที", "ห้องสมุดหลังเลิกเรียน", "วันที่เราเปลี่ยนท่อนร้อง", "กาแฟแก้วที่สอง", "ดอกไม้ในกล่องเครื่องดนตรี", "ฝนดาวตกของเรา", "บทเพลงจากชั้นดาดฟ้า", "ไฟล์เสียงที่ไม่เคยส่ง", "ทางกลับบ้านสายเดิม", "นักเต้นกับนักแต่งเพลง", "ความลับใต้แสงแฟลช", "คืนซ้อมก่อนคอนเสิร์ต", "หลังเสียงปรบมือจางลง"
+  ],
+  ยูริ: [
+    "ดอกไม้ในสมุดวาด", "ร้านกาแฟริมทะเล", "เธอในวันอาทิตย์", "เส้นสีของเรา", "จดหมายจากเรือนกระจก", "เพลงรักของคนขี้อาย", "ก่อนฤดูร้อนจะจบ", "ข้างหน้าต่างบานเดิม", "ทางกลับบ้านของเรา",
+    "คืนที่ดาวตกบนชิงช้า", "กลิ่นฝนบนผ้าพันคอ", "คำสารภาพใต้ต้นซากุระ", "ร้านหนังสือของเธอ", "แสงเทียนบนระเบียง", "ฤดูหนาวที่เราพบกัน", "เจ้าของแมวข้างห้อง", "ภาพวาดที่ยังไม่เสร็จ", "เสียงเปียโนในวันฝนตก", "ทะเลสาบหลังโรงเรียน", "ดอกไม้ที่บานช้า", "เส้นทางจักรยานของเรา", "จดหมายจากเมืองไกล", "คู่แข่งชมรมดนตรี", "คาเฟ่หลังเลิกเรียน", "กล้องฟิล์มของคนขี้ลืม", "คืนดูหนังใต้ผ้าห่ม", "ความลับในตู้ล็อกเกอร์", "แสงอาทิตย์ของฉัน", "เพื่อนบ้านชั้นสาม", "ช่อดอกไม้วันเกิด", "บันทึกเสียงของฤดูร้อน", "หมวกสีแดงริมทะเล", "วันที่เธอจับมือฉัน", "ห้องซ้อมเต้นของเรา", "ดาวเหนือในหน้าต่าง", "ขนมปังยามเช้า", "กลิ่นลาเวนเดอร์ในจดหมาย", "คืนงานเทศกาล", "ปลายทางของหัวใจ"
+  ],
+  แฟนตาซี: ["คำสาปแห่งหุบเขาคราม", "คู่หูแห่งประตูเวท", "เจ้าชายกับนักล่ามังกร", "ภารกิจในคืนดาวตก", "ดาบที่เลือกผู้กล้า", "ร้านยาของแม่มด", "คำทำนายใต้แสงจันทร์", "บันทึกผู้พิทักษ์คนใหม่", "เมืองลับเหนือเมฆ"],
+  จีนโบราณ: ["ตำรารักใต้เงาจันทร์", "แม่ทัพผู้ไม่เคยยิ้ม", "ปิ่นหยกขององค์หญิง", "จดหมายจากเรือนเหมย", "กระบี่คู่ใต้หิมะ", "บุปผาในวังวน", "ชะตาที่ผูกด้วยด้ายแดง", "คืนวสันต์ริมธารา", "สัญญาหน้าศาลา"],
+  เกิดใหม่: ["รีเซ็ตชีวิตครั้งที่สอง", "นักปรุงยาในเมืองใหม่", "ฉันตื่นมาเป็นตัวร้าย", "บันทึกของผู้ย้อนเวลา", "โลกนี้มีเธออีกครั้ง", "ภารกิจเปลี่ยนชะตา", "ร้านขนมของผู้กล้า", "อดีตที่ขอแก้ไข", "เริ่มต้นใหม่ใต้ดาวเดิม"],
+  ลึกลับ: ["รหัสลับในจดหมาย", "เสียงเคาะห้องหมายเลขเจ็ด", "เงาในภาพถ่ายเก่า", "คดีคืนฝนตกที่สถานีปลายทาง", "ห้องสมุดหลังเที่ยงคืน", "สมุดบันทึกของคนหาย", "นาฬิกาที่เดินถอยหลัง", "ความลับใต้บันได", "ทางออกที่ไม่มีในแผนที่"],
+  สยองขวัญ: ["เสียงเรียกจากโรงละคร", "บ้านเช่าหลังป่าช้า", "ตุ๊กตาตัวสุดท้าย", "คืนที่ไฟดับทั้งเมือง", "เงาใต้เตียงของเรา", "บันทึกเวรยาม", "ทางเดินชั้นใต้ดิน", "ห้องเรียนที่ไม่มีชื่อ", "คำสาปจากเทปเก่า"],
+  แอ๊กชั่น: ["ภารกิจลับบนเส้นขอบฟ้า", "นักซิ่งแห่งเมืองนีออน", "ทีมศูนย์พิชิตคืนเดือด", "ล่าข้ามเขตอันตราย", "ผู้คุ้มกันคนสุดท้าย", "รหัสแดงบนดาดฟ้า", "หนีออกจากเมืองปิดตาย", "นักสืบสายลุย", "เส้นทางของคนไม่ยอมแพ้"],
+  ไซไฟ: ["สัญญาณจากดาวไกล", "รักในสถานีวงโคจร", "ผู้โดยสารคนสุดท้าย", "เมืองจำลองของเรา", "ภารกิจข้ามเวลา", "ดวงจันทร์ดวงที่สิบสาม", "บันทึกจากยานไร้นาม", "โปรแกรมหัวใจเทียม", "วันที่โลกหยุดหมุน"],
+  คอมเมดี้: ["รักวุ่นวายในออฟฟิศ", "คาเฟ่นี้มีแต่เรื่อง", "เพื่อนบ้านตัวป่วน", "ภารกิจจีบคนข้างโต๊ะ", "ร้านอาหารของคนซุ่มซ่าม", "ชมรมคนแพ้เกม", "แผนรักฉบับไม่ตั้งใจ", "บ้านนี้มีแมวเป็นหัวหน้า", "วันหยุดที่วุ่นที่สุด"],
+};
+
+const cartoonStoryTitlesByCategory: Record<string, string[]> = {
+  โรแมนติก: ["โปสการ์ดจากปลายฟ้า", "ฤดูร้อนที่เราพบกัน", "ร้านดอกไม้หลังเลิกเรียน", "เพลงรักริมหน้าต่าง", "แสงเย็นบนระเบียง", "เจ้าของร่มสีเหลือง", "วันหยุดของหัวใจ", "ทางกลับบ้านสายเดิม", "ภาพวาดของเรา"],
+  วาย: ["จังหวะหัวใจบนชานชาลา", "เพลงของคนข้างห้อง", "ร่มคันเดียวในวันฝนตก", "ห้องซ้อมหมายเลขเจ็ด", "เพื่อนร่วมวงคนโปรด", "ดาวตกหลังเวที", "สัญญาใต้แสงไฟ", "ทางเดินที่เราเดินด้วยกัน", "เสียงเพลงจากหน้าต่าง"],
+  ยูริ: ["เรือนกระจกของวันพรุ่งนี้", "ช่อดอกไม้ของเธอ", "กล้องฟิล์มในวันฝนพรำ", "สองเราใต้ต้นซากุระ", "คาเฟ่ข้างทะเลสาบ", "บันทึกสีลาเวนเดอร์", "จักรยานคันเดียวกัน", "แสงดาวในห้องวาดภาพ", "จดหมายที่เขียนถึงเธอ"],
+  แฟนตาซี: ["ผู้พิทักษ์แห่งสวนเมฆ", "หอคอยของนักเวทฝึกหัด", "แผนที่สู่หุบเขาคราม", "เจ้าหญิงกับจิ้งจอกเงิน", "คัมภีร์ใต้แสงดาว", "เมืองลับเหนือสายรุ้ง", "ดาบแห่งรุ่งอรุณ", "ร้านชาของแม่มด", "คำสัญญาแห่งปีกมังกร"],
+  จีนโบราณ: ["บุปผาริมธาราจันทร์", "ศาลารักใต้สายหมอก", "ปิ่นหยกของคุณหนู", "กระบี่เงาจันทร์", "จดหมายจากเรือนชา", "แม่ทัพกับสาวช่างวาด", "กลิ่นเหมยในคืนหิมะ", "ด้ายแดงผูกชะตา", "วสันต์กลางหุบเขา"],
+  เกิดใหม่: ["ชีวิตใหม่ในเมืองลอยฟ้า", "เข็มทิศของวันเริ่มต้น", "ฉันกลับมาเปลี่ยนชะตา", "ร้านขนมของนางเอก", "บันทึกจากโลกใบที่สอง", "ภารกิจหัวใจในรอบใหม่", "เจ้าหญิงแห่งฤดูถัดไป", "อดีตที่ฉันจะไม่พลาด", "รุ่งอรุณของชีวิตใหม่"],
+  ลึกลับ: ["เงาปริศนาในหอนาฬิกา", "กุญแจห้องใต้หลังคา", "คดีลับริมแม่น้ำ", "ภาพถ่ายที่ไม่มีคนถ่าย", "เสียงเรียกจากชั้นสี่", "แผนที่ของบ้านร้าง", "จดหมายในกล่องดนตรี", "คืนที่เข็มนาฬิกาหยุดเดิน", "ความลับหลังหน้าต่าง"],
+  สยองขวัญ: ["โรงหนังรอบเที่ยงคืน", "เสียงฝีเท้าหลังม่าน", "บ้านพักริมป่าหมอก", "ตุ๊กตาที่จำชื่อเราได้", "ห้องเรียนหลังเสียงระฆัง", "บันไดสู่ชั้นที่ไม่มีอยู่", "เงาในกระจกบานเก่า", "เทปเสียงจากคืนฝนตก", "สวนสนุกร้างยามตีสาม"],
+  แอ๊กชั่น: ["นักวิ่งแห่งเมืองนีออน", "ภารกิจเหนือเส้นขอบฟ้า", "ทีมเงาพิทักษ์นคร", "รหัสลับบนดาดฟ้า", "ผู้คุ้มกันแห่งทางด่วน", "ไล่ล่าผ่านเมืองลอยฟ้า", "หมัดแรกของรุ่งอรุณ", "สายลับร้านสะดวกซื้อ", "เส้นทางของคนไม่ถอย"],
+  ไซไฟ: ["สถานีปลายทางดาวเคราะห์", "สัญญาณรักจากวงโคจร", "นครกระจกแห่งอนาคต", "นักบินของดวงจันทร์สีฟ้า", "โปรแกรมหัวใจดวงใหม่", "บันทึกจากยานที่หายไป", "ตลาดกลางคืนบนดาวอังคาร", "ประตูข้ามเวลาของเรา", "แสงสุดท้ายจากกาแล็กซี"],
+  คอมเมดี้: ["ชมรมป่วนชั้นดาดฟ้า", "แมวหลุดกับวันหยุดอลเวง", "คาเฟ่ที่เจ้านายเป็นเด็กฝึก", "ภารกิจทำอาหารครั้งแรก", "เพื่อนบ้านข้างห้องสุดฮา", "ปาร์ตี้นี้ไม่มีใครพร้อม", "แก๊งส่งของหลงทาง", "โรงเรียนนี้มีแต่เรื่องวุ่น", "วันซวยของฮีโร่จำเป็น"],
+};
+
+const yaNewCartoonTitles = [
+  "จังหวะหัวใจใต้แสงดาว",
+  "ห้องสมุดหลังฝนซา",
+  "เข็มกลัดสีเงินของนาย",
+  "วันหยุดของนายแบบฝึกหัด",
+  "ขนมปังยามเช้าของเรา",
+  "ทีมบาสกับคนข้างสนาม",
+  "กระดาษโน้ตจากชั้นดาดฟ้า",
+  "ดาวเหนือในห้องดนตรี",
+  "ฤดูหนาวที่ปลายชานชาลา",
+  "เจ้าของร้านแผ่นเสียง",
+  "ภาพสะท้อนในกระจกบานฟ้า",
+  "นักวาดกับคนส่งดอกไม้",
+  "สายลมจากห้องเรียนข้าง ๆ",
+  "คำตอบในกล่องดินสอ",
+  "แสงไฟหลังเลิกงาน",
+  "คู่หูแห่งเมืองลอยฟ้า",
+  "คืนดูดาวของคนขี้ลืม",
+  "รองเท้าผ้าใบคู่เดิม",
+  "จดหมายจากเรือนกระจก",
+  "ทางกลับบ้านใต้ฝนดาว",
+];
+
+const yaNewCartoonAuthors = [
+  "BlueFrame", "RainPanel", "NeonSketch", "MangoInk", "CourtSide",
+  "RooftopLine", "NorthChord", "WinterPanel", "VinylMoon", "AzureMirror",
+  "PetalDraft", "BreezeNote", "PencilSignal", "AfterGlow", "SkyPilot",
+  "StarMori", "SneakerDay", "GlassGarden", "MeteorWalk", "CloudLetter",
+];
+
+const generatedFanficCoverPool = [
+  "/images/fanfic-covers/fanfic-romance-train.png",
+  "/images/fanfic-covers/fanfic-bl-neon.png",
+  "/images/fanfic-covers/fanfic-yuri-seaside.png",
+  "/images/fanfic-covers/fanfic-fantasy-gate.png",
+  "/images/fanfic-covers/fanfic-ancient-moon.png",
+  "/images/fanfic-covers/fanfic-rebirth-forest.png",
+  "/images/fanfic-covers/fanfic-mystery-letter.png",
+  "/images/fanfic-covers/fanfic-horror-theater.png",
+  "/images/fanfic-covers/fanfic-action-rooftop.png",
+  "/images/fanfic-covers/fanfic-scifi-station.png",
+  "/images/fanfic-covers/ai/fanfic-realistic-train-letter.png",
+  "/images/fanfic-covers/ai/fanfic-bl-neon-2.png",
+  "/images/fanfic-covers/ai/fanfic-yuri-seaside-2.png",
+  "/images/fanfic-covers/ai/fanfic-fantasy-gate-2.png",
+  "/images/fanfic-covers/ai/fanfic-ancient-lantern-2.png",
+  "/images/fanfic-covers/ai/fanfic-mystery-envelope-2.png",
+  "/images/fanfic-covers/ai/fanfic-horror-theater-2.png",
+  "/images/fanfic-covers/ai/fanfic-action-rooftop-2.png",
+  "/images/fanfic-covers/ai/fanfic-scifi-greenhouse-2.png",
+  "/images/fanfic-covers/ai/fanfic-rebirth-shrine-2.png",
+  "/images/fanfic-covers/ai/fanfic-comedy-cafe-2.png",
+  "/images/fanfic-covers/ai/fanfic-ancient-snow-scroll-2.png",
+];
+
+const additionalFanficCoverCandidates = [
+  ...["romantic", "bl", "yuri", "fantasy", "china", "isekai", "mystery", "horror", "action", "scifi", "comedy"].flatMap((slug) => Array.from({ length: 6 }, (_, index) => `/images/category-books/${slug}-${String(index + 1).padStart(2, "0")}.webp`)),
+  ...["romantic", "bl", "yuri", "fantasy", "china", "isekai", "mystery", "horror", "action", "scifi", "comedy"].flatMap((slug) => [`/images/category-books/fanfic-${slug}-new.webp`, `/images/category-books/cartoon-${slug === "romantic" ? "romantic" : slug === "bl" ? "bl" : slug === "yuri" ? "yuri" : slug === "fantasy" ? "fantasy" : slug === "china" ? "china" : slug === "isekai" ? "isekai" : slug === "mystery" ? "mystery" : slug === "horror" ? "horror" : slug === "action" ? "action" : slug === "scifi" ? "scifi" : "comedy"}-new.webp`]),
+  ...[
+    "/images/category-books/generated/adult-anime.png",
+    "/images/category-books/generated/adult-romance.png",
+    "/images/category-books/generated/adult-romance-2.png",
+    "/images/category-books/generated/anime-adventure.png",
+    "/images/category-books/generated/fashion-lifestyle.png",
+    "/images/category-books/generated/intense-drama.png",
+    "/images/category-books/generated/mature-rated.png",
+    "/images/category-books/generated/romance-fantasy.png",
+    "/images/category-books/generated/secret-bl.png",
+    "/images/category-books/generated/secret-yuri.png",
+    "/images/category-books/generated/virtual-world.png",
+  ],
+  ...["between-lines", "blood-moon", "city-echoes", "kissed-stars", "last-house", "lemon-days", "love-parallel", "not-just-friends", "our-classroom", "parallel-world", "photographs-rain", "pixel-heart", "rewrite-end", "roses-fire", "sky-tomorrow", "summer-lessons", "tulip-bound", "villains-side"].map((slug) => `/images/book-${slug}.webp`),
+  ...Array.from({ length: 120 }, (_, index) => `/images/fanfic-covers/derived/fanfic-derived-${index + 1}.webp`),
+];
+
+const fanficAuthors = ["VelvetNote", "MoonDraft", "RainyPage", "BlueLetter", "StarArchive", "NamiCloud", "SoraScript", "NightClover", "AsterInk", "PlotSailor"];
+
+const yaNewFanficCoverPool = Array.from({ length: 30 }, (_, index) => `/images/fanfic-covers/ya-new/ya-${String(index + 1).padStart(2, "0")}.webp`);
+let yaNewFanficCoverCursor = 0;
+
+function takeYaNewFanficCover() {
+  const cover = yaNewFanficCoverPool[yaNewFanficCoverCursor];
+  yaNewFanficCoverCursor += 1;
+  if (!cover) throw new Error("Not enough new ya fanfic cover assets");
+  return cover;
+}
+
+const yuriNewFanficCoverPool = Array.from({ length: 30 }, (_, index) => `/images/fanfic-covers/yuri-new/yuri-${String(index + 1).padStart(2, "0")}.webp`);
+let yuriNewFanficCoverCursor = 0;
+
+function takeYuriNewFanficCover() {
+  const cover = yuriNewFanficCoverPool[yuriNewFanficCoverCursor];
+  yuriNewFanficCoverCursor += 1;
+  if (!cover) throw new Error("Not enough new yuri fanfic cover assets");
+  return cover;
+}
+
+const cartoonNewCoverPool = [
+  ...Array.from({ length: 72 }, (_, index) => `/images/cartoon-covers/generated/cartoon-${String(index + 1).padStart(2, "0")}.webp`),
+  ...Array.from({ length: 120 }, (_, index) => `/images/fanfic-covers/derived/fanfic-derived-${index + 1}.webp`),
+];
+let cartoonNewCoverCursor = 0;
+const usedCartoonCoverPaths = new Set<string>();
+
+function takeCartoonNewCover() {
+  while (cartoonNewCoverCursor < cartoonNewCoverPool.length && usedCartoonCoverPaths.has(cartoonNewCoverPool[cartoonNewCoverCursor])) {
+    cartoonNewCoverCursor += 1;
+  }
+
+  const cover = cartoonNewCoverPool[cartoonNewCoverCursor];
+  cartoonNewCoverCursor += 1;
+  if (!cover) throw new Error("Not enough unique cartoon cover assets");
+  usedCartoonCoverPaths.add(cover);
+  return cover;
+}
+
+const additionalCategoryNames = [
+  "รักผู้ใหญ่",
+  "วายห้องลับ",
+  "ยูริห้องลับ",
+  "ดราม่าเข้มข้น",
+  "โรแมนซ์แฟนตาซี",
+  "เกมและโลกเสมือน",
+  "อนิเมะ",
+  "แฟชั่นและไลฟ์สไตล์",
+  "เรทผู้ใหญ่",
+  "โรแมนติกผู้ใหญ่",
+  "อนิเมะผู้ใหญ่",
+] as const;
+
+const additionalCategoryCoverPools: Record<string, string[]> = {
+  "รักผู้ใหญ่": ["/images/category-books/generated/adult-romance.png", "/images/category-books/romantic-01.webp", "/images/category-books/romantic-02.webp", "/images/category-books/romantic-03.webp", "/images/category-books/romantic-04.webp", "/images/category-books/romantic-05.webp", "/images/category-books/romantic-06.webp", "/images/book-between-lines.webp", "/images/book-sky-tomorrow.webp", "/images/book-kissed-stars.webp"],
+  "วายห้องลับ": ["/images/category-books/generated/secret-bl.png", "/images/category-books/bl-01.webp", "/images/category-books/bl-02.webp", "/images/category-books/bl-03.webp", "/images/category-books/bl-04.webp", "/images/category-books/bl-05.webp", "/images/category-books/bl-06.webp", "/images/category-books/generated/adult-romance-2.png", "/images/book-city-echoes.webp", "/images/book-love-parallel.webp"],
+  "ยูริห้องลับ": ["/images/category-books/generated/secret-yuri.png", "/images/category-books/yuri-01.webp", "/images/category-books/yuri-02.webp", "/images/category-books/yuri-03.webp", "/images/category-books/yuri-04.webp", "/images/category-books/yuri-05.webp", "/images/category-books/yuri-06.webp", "/images/category-books/cartoon-yuri-new.webp", "/images/book-summer-lessons.webp", "/images/book-photographs-rain.webp"],
+  "ดราม่าเข้มข้น": ["/images/category-books/generated/intense-drama.png", "/images/category-books/mystery-01.webp", "/images/category-books/mystery-02.webp", "/images/category-books/mystery-03.webp", "/images/category-books/mystery-04.webp", "/images/category-books/mystery-05.webp", "/images/category-books/mystery-06.webp", "/images/book-blood-moon.webp", "/images/book-last-house.webp", "/images/book-city-echoes.webp"],
+  "โรแมนซ์แฟนตาซี": ["/images/category-books/generated/romance-fantasy.png", "/images/category-books/fantasy-01.webp", "/images/category-books/fantasy-02.webp", "/images/category-books/fantasy-03.webp", "/images/category-books/fantasy-04.webp", "/images/category-books/fantasy-05.webp", "/images/category-books/fantasy-06.webp", "/images/book-sky-tomorrow.webp", "/images/book-kissed-stars.webp", "/images/category-books/cartoon-fantasy-new.webp"],
+  "เกมและโลกเสมือน": ["/images/category-books/generated/virtual-world.png", "/images/category-books/scifi-01.webp", "/images/category-books/scifi-02.webp", "/images/category-books/scifi-03.webp", "/images/category-books/scifi-04.webp", "/images/category-books/scifi-05.webp", "/images/category-books/scifi-06.webp", "/images/book-parallel-world.webp", "/images/category-books/cartoon-scifi-new.webp", "/images/category-books/fanfic-scifi-new.webp"],
+  "อนิเมะ": ["/images/category-books/generated/anime-adventure.png", "/images/category-books/cartoon-romantic-new.webp", "/images/category-books/cartoon-fantasy-new.webp", "/images/category-books/cartoon-isekai-new.webp", "/images/category-books/cartoon-mystery-new.webp", "/images/category-books/cartoon-horror-new.webp", "/images/category-books/cartoon-action-new.webp", "/images/category-books/cartoon-scifi-new.webp", "/images/category-books/cartoon-yuri-new.webp", "/images/category-books/cartoon-comedy-new.webp"],
+  "แฟชั่นและไลฟ์สไตล์": ["/images/category-books/generated/fashion-lifestyle.png", "/images/category-books/romantic-02.webp", "/images/category-books/romantic-04.webp", "/images/category-books/romantic-05.webp", "/images/category-books/yuri-01.webp", "/images/category-books/yuri-03.webp", "/images/book-summer-lessons.webp", "/images/book-photographs-rain.webp", "/images/book-between-lines.webp", "/images/book-love-parallel.webp"],
+  "เรทผู้ใหญ่": ["/images/category-books/generated/mature-rated.png", "/images/category-books/mystery-01.webp", "/images/category-books/mystery-02.webp", "/images/category-books/mystery-03.webp", "/images/category-books/mystery-04.webp", "/images/category-books/mystery-05.webp", "/images/category-books/mystery-06.webp", "/images/category-books/horror-01.webp", "/images/category-books/horror-02.webp", "/images/category-books/horror-03.webp"],
+  "โรแมนติกผู้ใหญ่": ["/images/category-books/generated/adult-romance-2.png", "/images/category-books/romantic-01.webp", "/images/category-books/romantic-02.webp", "/images/category-books/romantic-03.webp", "/images/category-books/romantic-04.webp", "/images/category-books/romantic-05.webp", "/images/category-books/romantic-06.webp", "/images/book-love-parallel.webp", "/images/book-summer-lessons.webp", "/images/book-kissed-stars.webp"],
+  "อนิเมะผู้ใหญ่": ["/images/category-books/generated/adult-anime.png", "/images/category-books/scifi-01.webp", "/images/category-books/scifi-02.webp", "/images/category-books/scifi-03.webp", "/images/category-books/scifi-04.webp", "/images/category-books/scifi-05.webp", "/images/category-books/scifi-06.webp", "/images/category-books/cartoon-scifi-new.webp", "/images/category-books/cartoon-action-new.webp", "/images/book-parallel-world.webp"],
+};
+
+const additionalCategoryStoryTitles: Record<string, string[]> = {
+  "รักผู้ใหญ่": ["คืนที่เราเลือกกันและกัน", "เส้นขอบฟ้าของคำสัญญา", "บทสนทนาในห้องสีชา", "หลังฝนพรำที่ปลายทาง", "ระยะห่างของหัวใจ", "จดหมายจากฤดูหนาว", "แสงไฟในคืนเงียบ", "วันพรุ่งนี้ที่มีเรา", "รักครั้งนี้ไม่ขอหลบซ่อน", "บ้านหลังเดิมของความทรงจำ"],
+  "วายห้องลับ": ["ประตูบานที่ไม่มีชื่อ", "ความลับใต้แสงจันทร์", "คืนนี้มีเพียงเรา", "เงาในห้องสมุดเก่า", "เมื่อคำลาไม่เคยเกิดขึ้น", "แผนที่ของคนหลงทาง", "เสียงกระซิบหลังม่าน", "ห้องที่เก็บฤดูร้อน", "รอยหมึกบนจดหมายลับ", "ผู้รักษาความลับของผม"],
+  "ยูริห้องลับ": ["สวนลับหลังเรือนกระจก", "กลิ่นดอกไม้ในคืนฝน", "เราสองคนใต้แสงจันทร์", "บทเพลงของคนที่รอคอย", "หน้าต่างบานที่เจ็ด", "ความทรงจำสีลาเวนเดอร์", "ก่อนฤดูหนาวจะมาถึง", "เธอในภาพถ่ายเก่า", "ซ่อนรักไว้ในสมุดบันทึก", "ปลายทางของคำว่าบ้าน"],
+  "ดราม่าเข้มข้น": ["วันที่จดหมายไม่ถูกส่ง", "ฝนตกในวันที่เราจากกัน", "เสียงเงียบของคนในบ้าน", "เศษแก้วของความทรงจำ", "ฤดูที่ไม่มีเธอ", "ระหว่างทางกลับบ้าน", "คนแปลกหน้าในรูปถ่าย", "บทสุดท้ายของคำขอโทษ", "เมืองที่เราทิ้งไว้", "เมื่อหัวใจต้องเริ่มใหม่"],
+  "โรแมนซ์แฟนตาซี": ["เจ้าหญิงแห่งสวนจันทรา", "คำสาปรักแห่งปราสาทหมอก", "กุหลาบของราชันย์เงา", "ดวงดาวเหนือบัลลังก์", "พันธสัญญาแห่งฤดูใบไม้ผลิ", "นักพยากรณ์กับเจ้าชายต้องห้าม", "มนตรารักกลางหุบเขา", "มงกุฎในคืนไร้ดาว", "เมื่อจอมเวทตกหลุมรัก", "อาณาจักรสุดท้ายของเรา"],
+  "เกมและโลกเสมือน": ["ผู้เล่นคนสุดท้ายของนครลอยฟ้า", "ภารกิจลับในโลกเสมือน", "รีเซ็ตครั้งนี้ขอมีเธอ", "ดันเจี้ยนใต้แสงนีออน", "ทีมศูนย์กับภารกิจพิชิตบอส", "คำสั่งลับจากระบบกลาง", "เกมรักของผู้เล่นเงา", "เมืองจำลองที่ไม่มีทางออก", "ชีวิตใหม่ในเซิร์ฟเวอร์ที่สิบสาม", "ก่อนโลกจะถูกรีเซ็ต"],
+  "อนิเมะ": ["ดาวตกของชมรมหลังเลิกเรียน", "ฤดูร้อนของเราในเมืองลอยฟ้า", "นักเดินทางกับจิ้งจอกสีคราม", "ร้านขนมของวันพรุ่งนี้", "บันทึกเสียงจากดวงจันทร์", "ห้องเรียนที่ซ่อนอยู่ในสายลม", "สัญญาใต้ต้นซากุระ", "รถไฟเที่ยวสุดท้ายสู่ทะเลดาว", "เจ้าของร้านเวทมนตร์มือใหม่", "ภาพวาดของวันวาน"],
+  "แฟชั่นและไลฟ์สไตล์": ["ห้องตัดเย็บริมหน้าต่าง", "ฤดูกาลของผ้าไหม", "รันเวย์ใต้แสงอาทิตย์", "ช่างภาพกับชุดเดรสสีฟ้า", "แบรนด์เล็กของความฝันใหญ่", "ดอกไม้บนปกนิตยสาร", "สไตลิสต์คนใหม่ในเมืองเก่า", "รองเท้าคู่แรกของเรา", "แฟชั่นวีคกับหัวใจที่หลงทาง", "คอลเลกชันสุดท้ายของฤดูร้อน"],
+  "เรทผู้ใหญ่": ["ห้องหมายเลขสิบสาม", "เงื่อนงำในโรงแรมแกรนด์", "รอยเท้าบนพรมแดง", "คดีคืนฝนตก", "ความจริงหลังประตูไม้", "ผู้โดยสารเที่ยวสุดท้าย", "ภาพวาดที่หายไป", "เสียงโทรศัพท์ยามเที่ยงคืน", "บันทึกของนักสืบไร้นาม", "คืนที่เมืองไม่หลับ"],
+  "โรแมนติกผู้ใหญ่": ["เช้าที่เราพบกันอีกครั้ง", "ดินเนอร์ใต้แสงดาว", "บ้านพักริมทะเลของเรา", "ความสัมพันธ์ที่เริ่มจากคำลา", "ฤดูรักในเมืองใหญ่", "ข้อตกลงของหัวใจ", "เธอคือคำตอบของวันวาน", "จังหวะรักบนถนนสายเก่า", "ความทรงจำในห้องรับแขก", "ปลายทางที่เราเลือกเอง"],
+  "อนิเมะผู้ใหญ่": ["นครนีออนใต้ฝนดาว", "ปีกเหล็กของผู้พิทักษ์", "รหัสลับจากเมืองจันทรา", "สถานีปลายทางของหุ่นยนต์", "เพลงสุดท้ายของนักบิน", "มหานครที่ไม่มีพระอาทิตย์", "ตำนานดาบแสงสีคราม", "เงาสะท้อนในโลกอนาคต", "ผู้ส่งสารจากกาแล็กซีไกล", "คืนที่เครื่องจักรฝันได้"],
+};
+
+const generatedCategoryBooks: Record<string, CategoryBook[]> = Object.fromEntries(
+  additionalCategoryNames.map((category, categoryIndex) => {
+    const createBooks = (kind: "novel" | "fanfic" | "cartoon") => Array.from({ length: 10 }, (_, index) => {
+      const cover = supplementalCovers[(categoryIndex * 3 + index) % supplementalCovers.length];
+      const storyTitle = additionalCategoryStoryTitles[category][index];
+      const titlePrefix = kind === "fanfic"
+        ? `แฟนฟิค${category}: `
+        : kind === "cartoon"
+          ? `การ์ตูน${category}: `
+          : `${category} · `;
+
+      return {
+        ...cover,
+        title: `${titlePrefix}${storyTitle}`,
+        author: cover.author,
+        category,
+        episodes: String(14 + ((categoryIndex + index) * 4) % 25),
+        views: `${220 + ((categoryIndex * 47 + index * 29) % 520)}K`,
+        likes: `${(8 + ((categoryIndex * 1.8 + index * 1.3) % 15)).toFixed(1)}K`,
+        image: additionalCategoryCoverPools[category][index],
+      };
+    });
+
+    return [category, [...createBooks("novel"), ...createBooks("fanfic"), ...createBooks("cartoon")]];
+  }),
+) as Record<string, CategoryBook[]>;
+
 export const categoryBooks: Record<string, CategoryBook[]> = Object.fromEntries(
   Object.entries(baseCategoryBooks).map(([category, books], categoryIndex) => [
     category,
@@ -196,6 +440,104 @@ export const categoryBooks: Record<string, CategoryBook[]> = Object.fromEntries(
     ],
   ]),
 ) as Record<string, CategoryBook[]>;
+
+Object.assign(categoryBooks, generatedCategoryBooks);
+
+const uniqueFanficCoverPool = Array.from(new Set([
+  ...generatedFanficCoverPool,
+  ...additionalFanficCoverCandidates,
+]));
+const usedFanficCoverPaths = new Set<string>();
+let fanficCoverCursor = 0;
+
+function takeUnusedFanficCover() {
+  while (fanficCoverCursor < uniqueFanficCoverPool.length && usedFanficCoverPaths.has(uniqueFanficCoverPool[fanficCoverCursor])) {
+    fanficCoverCursor += 1;
+  }
+
+  const cover = uniqueFanficCoverPool[fanficCoverCursor];
+  fanficCoverCursor += 1;
+  if (!cover) throw new Error("Not enough unique fanfic cover assets");
+
+  usedFanficCoverPaths.add(cover);
+  return cover;
+}
+
+for (const books of Object.values(categoryBooks)) {
+  for (const book of books) {
+    if (!book.title.startsWith("แฟนฟิค")) continue;
+
+    book.image = takeUnusedFanficCover();
+  }
+}
+
+for (const [categoryIndex, [category, books]] of Object.entries(categoryBooks).entries()) {
+  const existingFanficCount = books.filter((book) => book.title.startsWith("แฟนฟิค")).length;
+  const targetFanficCount = category === "วาย" || category === "ยูริ" ? 40 : 10;
+  const missingFanficCount = Math.max(0, targetFanficCount - existingFanficCount);
+  if (missingFanficCount === 0) continue;
+
+  const storyTitles = fanficStoryTitlesByCategory[category] ?? Array.from({ length: missingFanficCount }, (_, index) => `เรื่องราวบทใหม่ ${index + 1}`);
+  const newFanficBooks = storyTitles.slice(0, missingFanficCount).map((storyTitle, index) => ({
+    title: `แฟนฟิค${category}: ${storyTitle} (${fanficFandomByCategory[category] ?? "Original Universe"})`,
+    author: fanficAuthors[(categoryIndex + index) % fanficAuthors.length],
+    category,
+    episodes: String(16 + ((categoryIndex + index * 3) % 24)),
+    views: `${190 + ((categoryIndex * 37 + index * 43) % 620)}K`,
+    likes: `${(7.1 + ((categoryIndex * 0.7 + index * 0.9) % 13)).toFixed(1)}K`,
+    image: category === "วาย" && index >= 9
+      ? takeYaNewFanficCover()
+      : category === "ยูริ" && index >= 9
+        ? takeYuriNewFanficCover()
+        : takeUnusedFanficCover(),
+  }));
+
+  books.push(...newFanficBooks);
+}
+
+for (const [category, books] of Object.entries(categoryBooks)) {
+  const existingCartoonCount = books.filter((book) => book.title.startsWith("การ์ตูน")).length;
+  const missingCartoonCount = Math.max(0, 10 - existingCartoonCount);
+  if (missingCartoonCount === 0) continue;
+
+  const storyTitles = cartoonStoryTitlesByCategory[category] ?? [];
+  const newCartoonBooks = storyTitles.slice(0, missingCartoonCount).map((storyTitle, index) => ({
+    title: `การ์ตูน${category}: ${storyTitle}`,
+    author: ["PanelDawn", "FrameBloom", "StorySketch", "CloudInk", "PixelMori"][index % 5],
+    category,
+    episodes: String(18 + ((index * 5) % 22)),
+    views: `${260 + ((index * 41) % 360)}K`,
+    likes: `${(9.2 + ((index * 0.8) % 8)).toFixed(1)}K`,
+    image: takeCartoonNewCover(),
+  }));
+
+  books.push(...newCartoonBooks);
+}
+
+categoryBooks["วาย"].push(...yaNewCartoonTitles.map((storyTitle, index) => ({
+  title: `การ์ตูนวาย: ${storyTitle}`,
+  author: yaNewCartoonAuthors[index],
+  category: "วาย",
+  episodes: String(18 + ((index * 3) % 25)),
+  views: `${380 + ((index * 43) % 420)}K`,
+  likes: `${(11.4 + ((index * 0.9) % 12)).toFixed(1)}K`,
+  image: `/images/cartoon-covers/ya-new/ya-${String(index + 1).padStart(2, "0")}.webp`,
+})));
+
+for (const books of Object.values(categoryBooks)) {
+  for (const book of books) {
+    if (book.title.startsWith("การ์ตูน")) usedCartoonCoverPaths.add(book.image);
+  }
+}
+
+const seenCartoonCoverPaths = new Set<string>();
+for (const books of Object.values(categoryBooks)) {
+  for (const book of books) {
+    if (!book.title.startsWith("การ์ตูน")) continue;
+    if (seenCartoonCoverPaths.has(book.image)) book.image = takeCartoonNewCover();
+    seenCartoonCoverPaths.add(book.image);
+  }
+}
 
 export function getCategorySections(category: string): CategorySection[] {
   const books = categoryBooks[category] ?? [];

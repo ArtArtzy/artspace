@@ -90,31 +90,40 @@ const forYouSections: DiscoverySection[] = [
   { ...sections[3], books: sections[0].books },
 ];
 
-const forYouSectionIcons: Record<string, string> = {
-  "คัดมาให้คุณ": "/icons/icon-for-you.webp",
-  'เพราะคุณอ่าน "Sky of Tomorrow"': "/icons/icon-because-you-read.webp",
-  "เรื่องที่น่าจะชอบ": "/icons/icon-you-may-like.webp",
-  "อ่านต่อ": "/icons/icon-continue-reading.webp",
+const forYouSectionIcons: Record<string, SimpleTitleIconName> = {
+  "คัดมาให้คุณ": "sparkle",
+  'เพราะคุณอ่าน "Sky of Tomorrow"': "bookmark",
+  "เรื่องที่น่าจะชอบ": "star",
+  "อ่านต่อ": "play",
 };
 
-const continueSectionIcons: Record<string, string> = {
-  "อ่านต่อจากที่ค้างไว้": "/icons/icon-bookmark.webp",
-  "อัปเดตจากเรื่องที่กำลังอ่าน": "/icons/icon-reading-updates.webp",
-  "ใกล้อ่านจบ": "/icons/icon-near-completion.webp",
-  "กลับไปเรื่องโปรด": "/icons/icon-return-favorite.webp",
+const continueSectionIcons: Record<string, SimpleTitleIconName> = {
+  "อ่านต่อจากที่ค้างไว้": "bookmark",
+  "อัปเดตจากเรื่องที่กำลังอ่าน": "bell",
+  "ใกล้อ่านจบ": "clock",
+  "กลับไปเรื่องโปรด": "star",
 };
 
-const trendingSectionIcons: Record<string, string> = {
-  "กำลังมาแรง": "/icons/icon-reading-stats.webp",
-  "มาแรงในหมวดที่คุณชอบ": "/icons/icon-you-may-like.webp",
-  "มาแรงประจำสัปดาห์": "/icons/icon-for-you.webp",
+const trendingSectionIcons: Record<string, SimpleTitleIconName> = {
+  "กำลังมาแรง": "flame",
+  "มาแรงในหมวดที่คุณชอบ": "star",
+  "มาแรงประจำสัปดาห์": "chart",
 };
 
-const followingSectionIcons: Record<string, string> = {
-  "อัปเดตใหม่จากที่ติดตาม": "/icons/icon-reading-updates.webp",
-  "นักเขียนที่ติดตาม": "/icons/icon-followed-writers.webp",
-  "เรื่องที่ติดตาม": "/icons/icon-followed-stories.webp",
-  "ยังไม่ได้อ่านจากที่ติดตาม": "/icons/icon-bookmark.webp",
+const followingSectionIcons: Record<string, SimpleTitleIconName> = {
+  "อัปเดตใหม่จากที่ติดตาม": "bell",
+  "นักเขียนที่ติดตาม": "users",
+  "เรื่องที่ติดตาม": "books",
+  "ยังไม่ได้อ่านจากที่ติดตาม": "bookmark",
+};
+
+type SimpleTitleIconName = "sparkle" | "star" | "bookmark" | "play" | "clock" | "flame" | "users" | "books" | "check" | "bell" | "note" | "chart" | "community" | "news" | "library" | "book" | "gear";
+
+const completedSectionIcons: Record<string, SimpleTitleIconName> = {
+  "เรื่องจบครบแล้วสำหรับคุณ": "check",
+  "จบใหม่": "clock",
+  "ยอดนิยม": "star",
+  "อ่านรวดเดียวจบ": "play",
 };
 
 const continueSections: DiscoverySection[] = [
@@ -143,7 +152,10 @@ const continueSections: DiscoverySection[] = [
   },
 ];
 
-const mixCategoryBooks = (categories: string[], sectionIndex = 0) => categories.flatMap((category) => getCategorySections(category)[sectionIndex]?.books.slice(0, 1) ?? []);
+const mixCategoryBooks = (categories: string[], startingSection = 0) => categories.flatMap((category, index) => {
+  const sectionIndex = (startingSection + index) % 2;
+  return getCategorySections(category)[sectionIndex]?.books.slice(0, 1) ?? [];
+});
 
 const trendingSections: DiscoverySection[] = [
   {
@@ -177,12 +189,12 @@ const followingSections: DiscoverySection[] = [
   {
     title: "เรื่องที่ติดตาม",
     subtitle: "รวมเรื่องที่คุณกำลังติดตามอยู่ในที่เดียว",
-    books: getCategorySections("วาย")[2].books,
+    books: mixCategoryBooks(["วาย", "โรแมนติก", "แฟนตาซี", "ยูริ", "ลึกลับ", "คอมเมดี้"], 2),
   },
   {
     title: "ยังไม่ได้อ่านจากที่ติดตาม",
     subtitle: "เรื่องที่คุณติดตามไว้และยังมีตอนรอให้เปิดอ่าน",
-    books: getCategorySections("แฟนตาซี")[1].books,
+    books: mixCategoryBooks(["แฟนตาซี", "โรแมนติก", "วาย", "ลึกลับ", "แอ๊กชั่น", "ไซไฟ"], 1),
   },
 ];
 
@@ -195,17 +207,17 @@ const completedSections: DiscoverySection[] = [
   {
     title: "จบใหม่",
     subtitle: "เรื่องที่เพิ่งเดินทางมาถึงบทสรุป",
-    books: getCategorySections("โรแมนติก")[0].books,
+    books: mixCategoryBooks(["โรแมนติก", "แฟนตาซี", "ลึกลับ", "วาย", "ยูริ", "คอมเมดี้"]),
   },
   {
     title: "ยอดนิยม",
     subtitle: "เรื่องจบยอดนิยมที่ผู้อ่านชื่นชอบ",
-    books: getCategorySections("วาย")[1].books,
+    books: mixCategoryBooks(["วาย", "โรแมนติก", "แฟนตาซี", "ลึกลับ", "แอ๊กชั่น", "ไซไฟ"], 1),
   },
   {
     title: "อ่านรวดเดียวจบ",
     subtitle: "รวมเรื่องจบที่เหมาะกับการอ่านยาว ๆ",
-    books: getCategorySections("แฟนตาซี")[2].books,
+    books: mixCategoryBooks(["แฟนตาซี", "โรแมนติก", "วาย", "สยองขวัญ", "ลึกลับ", "คอมเมดี้"], 2),
   },
 ];
 
@@ -284,7 +296,32 @@ function getDisplayBookTitle(book: Book) {
   const prefix = prefixes.find((candidate) => book.title.startsWith(candidate));
   const title = prefix ? book.title.slice(prefix.length) : book.title;
 
-  return title.replace(/\s[·—]\s.*$/, "");
+  const displayTitle = title.replace(/\s[·—]\s.*$/, "");
+  const isFanfic = book.title.startsWith("แฟนฟิค") || /\([^()]+\)\s*$/.test(book.title);
+
+  return isFanfic && !/\([^()]+\)\s*$/.test(displayTitle) ? `${displayTitle} (แฟนฟิค)` : displayTitle;
+}
+
+function SimpleTitleIcon({ name, className = "h-5 w-5" }: { name: SimpleTitleIconName; className?: string }) {
+  const common = { fill: "none", stroke: "currentColor", strokeLinecap: "round" as const, strokeLinejoin: "round" as const, strokeWidth: 1.7 };
+
+  if (name === "sparkle") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="m12 3.5 1.5 4.2L17.7 9l-4.2 1.3L12 14.5l-1.5-4.2L6.3 9l4.2-1.3L12 3.5ZM18.3 14.4l.6 1.8 1.8.6-1.8.6-.6 1.8-.6-1.8-1.8-.6 1.8-.6.6-1.8Z" /></svg>;
+  if (name === "star") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="m12 3.8 2.5 5.1 5.6.8-4.1 4 1 5.6-5-2.7-5 2.7 1-5.6-4.1-4 5.6-.8L12 3.8Z" /></svg>;
+  if (name === "bookmark") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M6.5 4.5h11v15l-5.5-3.2-5.5 3.2v-15Z" /></svg>;
+  if (name === "play") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><circle {...common} cx="12" cy="12" r="8.5" /><path {...common} d="m10 8.5 5 3.5-5 3.5v-7Z" /></svg>;
+  if (name === "clock") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><circle {...common} cx="12" cy="12" r="8.5" /><path {...common} d="M12 7.5v5l3.2 2" /></svg>;
+  if (name === "flame") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M12.2 20.2c3.3 0 5.7-2.1 5.7-5.2 0-2.4-1.3-4.2-2.9-5.9-.1 1.8-.8 2.8-2 3.5.1-2.8-1.1-5.4-3.3-7.1.1 2.7-2.3 4.5-2.3 7.6 0 4 2.4 7.1 4.8 7.1Z" /></svg>;
+  if (name === "users") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><circle {...common} cx="12" cy="8" r="2.8" /><path {...common} d="M6.5 19v-1.1a4.1 4.1 0 0 1 4.1-4.1h2.8a4.1 4.1 0 0 1 4.1 4.1V19M5.2 11.5a2.2 2.2 0 0 0-2 2.2v.6M18.8 11.5a2.2 2.2 0 0 1 2 2.2v.6" /></svg>;
+  if (name === "books") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M5 5.5h5.2A2.8 2.8 0 0 1 13 8.3V19a2.8 2.8 0 0 0-2.8-2.8H5v-10.7ZM19 5.5h-5.2A2.8 2.8 0 0 0 11 8.3V19a2.8 2.8 0 0 1 2.8-2.8H19v-10.7Z" /></svg>;
+  if (name === "check") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><circle {...common} cx="12" cy="12" r="8.5" /><path {...common} d="m8.3 12.2 2.4 2.4 5-5" /></svg>;
+  if (name === "bell") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M6.5 16.8h11l-1.3-2v-3.2a4.2 4.2 0 0 0-8.4 0v3.2l-1.3 2ZM10.2 19.2h3.6" /></svg>;
+  if (name === "note") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M6 4.8h12v10.3l-3.6 3.6H6V4.8Z" /><path {...common} d="M14.4 18.7v-3.6H18M9 9h6M9 12h4" /></svg>;
+  if (name === "chart") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M5 18V12M10 18V8M15 18V5M20 18H4" /></svg>;
+  if (name === "community") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><circle {...common} cx="12" cy="8" r="2.5" /><circle {...common} cx="5.5" cy="12" r="2" /><circle {...common} cx="18.5" cy="12" r="2" /><path {...common} d="M8.2 18.5v-1a3.8 3.8 0 0 1 3.8-3.8 3.8 3.8 0 0 1 3.8 3.8v1M7.3 14.2l-1.1 1.1M16.7 14.2l1.1 1.1" /></svg>;
+  if (name === "news") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M5.5 5.2h13v13.6h-13zM8.5 8.5h7M8.5 11.5h7M8.5 14.5h4" /></svg>;
+  if (name === "library") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M5 5.5h3v13H5zM10.5 5.5h3v13h-3zM16 5.5h3v13h-3z" /><path {...common} d="M4 19.5h16" /></svg>;
+  if (name === "book") return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><path {...common} d="M4.8 5.5h5.5a2 2 0 0 1 2 2V19a2 2 0 0 0-2-2H4.8v-11.5ZM19.2 5.5h-5.5a2 2 0 0 0-2 2V19a2 2 0 0 1 2-2h5.5v-11.5Z" /></svg>;
+  return <svg aria-hidden="true" className={`${className} text-[#2ee77b]`} viewBox="0 0 24 24"><circle {...common} cx="12" cy="12" r="3" /><path {...common} d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6 18 18M18 6l-1.4 1.4M7.4 16.6 6 18" /></svg>;
 }
 
 function LibraryIcon() {
@@ -307,14 +344,6 @@ function FlameIcon() {
   return <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24"><path d="M12.1 21c3.8 0 6.4-2.4 6.4-5.8 0-2.8-1.7-4.8-3.5-6.8-.2 2.1-1.1 3.2-2.4 3.8.2-3.5-1.5-6.7-4-8.7.1 3.3-2.9 5.5-2.9 9.3C5.7 17.9 8.1 21 12.1 21Z" fill="currentColor" /></svg>;
 }
 
-function EyeIcon() {
-  return <svg aria-hidden="true" className="h-3 w-3" fill="none" viewBox="0 0 24 24"><path d="M3.5 12s3.1-5 8.5-5 8.5 5 8.5 5-3.1 5-8.5 5-8.5-5-8.5-5Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" /><circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth="1.7" /></svg>;
-}
-
-function RankingIcon() {
-  return <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24"><path d="M5 18V13M10 18V9M15 18V5M20 18H4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" /></svg>;
-}
-
 function CommentIcon() {
   return <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"><path d="M5 5.5h14v10H9.5L5 18.5v-3H5v-10Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" /><path d="M8 9h8M8 12h5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" /></svg>;
 }
@@ -325,6 +354,26 @@ function HeartOutlineIcon() {
 
 function ClockIcon() {
   return <svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.7" /><path d="M12 7.5v5l3.25 2" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" /></svg>;
+}
+
+function CompletedBookIcon() {
+  return <svg aria-hidden="true" className="h-7 w-7 shrink-0" fill="none" viewBox="0 0 24 24"><path d="M4.5 5.5c1.8-.8 3.6-.7 5.4.5v12.5c-1.8-1.2-3.6-1.3-5.4-.5V5.5ZM19.5 5.5c-1.8-.8-3.6-.7-5.4.5v12.5c1.8-1.2 3.6-1.3 5.4-.5V5.5Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /><path d="M12 6v12.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" /></svg>;
+}
+
+function CompletedCalendarIcon() {
+  return <svg aria-hidden="true" className="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24"><rect height="15" rx="2" stroke="currentColor" strokeWidth="1.6" width="15" x="4.5" y="5.5" /><path d="M8 3.8v3.4M16 3.8v3.4M4.5 9.5h15M8 13h2M12 13h2M8 16.5h2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" /></svg>;
+}
+
+function CompletedClockIcon() {
+  return <svg aria-hidden="true" className="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" stroke="currentColor" strokeWidth="1.6" /><path d="M12 7.8v4.7l3 1.8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" /></svg>;
+}
+
+function CompletedReviewIcon() {
+  return <svg aria-hidden="true" className="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="M6 4.8h12v11H10l-4 3.3V4.8Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.5" /><path d="M9 8.5h6M9 11.5h4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" /></svg>;
+}
+
+function CompletedStarIcon() {
+  return <svg aria-hidden="true" className="h-[19px] w-[19px] shrink-0" fill="none" viewBox="0 0 24 24"><path d="m12 4.5 2.3 4.7 5.2.8-3.8 3.7.9 5.2-4.6-2.5-4.6 2.5.9-5.2-3.8-3.7 5.2-.8L12 4.5Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.5" /></svg>;
 }
 
 const readerStats = [
@@ -399,9 +448,9 @@ function ReaderWelcomeCard() {
         <div className="relative flex items-center gap-3">
           <Image alt="โปรไฟล์นักอ่าน" className="h-[66px] w-[66px] shrink-0 rounded-full object-cover ring-2 ring-[#14e69a] ring-offset-2 ring-offset-[#101714]" height={66} src="/images/profile-arn.webp" width={66} />
           <div className="min-w-0">
-            <p className="text-[11px] font-medium text-[#58eaa9]">สวัสดีตอนเย็น</p>
-            <h2 className="mt-0.5 text-[17px] font-semibold leading-tight text-white" id="reader-welcome-title">คุณนักอ่านคนพิเศษ</h2>
-            <p className="mt-1 text-[11px] leading-4 text-white/60">“ทุกเรื่องราวที่ดี<br />เริ่มต้นจากคนที่เชื่อในความฝัน”</p>
+            <p className="sidebar-caption font-medium text-[#58eaa9]">สวัสดีตอนเย็น</p>
+            <h2 className="sidebar-title mt-0.5" id="reader-welcome-title">คุณนักอ่านคนพิเศษ</h2>
+            <p className="sidebar-meta mt-1 leading-4 text-white/60">“ทุกเรื่องราวที่ดี<br />เริ่มต้นจากคนที่เชื่อในความฝัน”</p>
           </div>
         </div>
       </div>
@@ -411,9 +460,9 @@ function ReaderWelcomeCard() {
           <div className="flex min-w-0 flex-col items-center justify-center px-1.5 py-3 text-center text-[#f0fff7]" key={label}>
             <div className="flex items-center gap-1.5">
               <Icon />
-              <span className="text-[16px] font-semibold leading-none">{value}</span>
+              <span className="sidebar-stat-value">{value}</span>
             </div>
-            <span className="mt-1 text-[9px] leading-3 text-white/55">{label}</span>
+            <span className="sidebar-caption mt-1 text-white/55">{label}</span>
           </div>
         ))}
       </div>
@@ -421,7 +470,7 @@ function ReaderWelcomeCard() {
       <div className="relative mx-3 mb-3 mt-3 overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] px-3 py-4 text-center">
         <Image alt="" className="object-cover opacity-80" fill sizes="260px" src="/images/reader-welcome-bg.webp" />
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,20,13,.78),rgba(3,20,13,.36),rgba(3,20,13,.72))]" />
-        <div className="relative text-[12px] font-medium leading-5 text-white/85">
+        <div className="sidebar-body relative font-medium text-white/85">
           ขอบคุณที่อยู่ในพื้นที่<br />ของเรื่องราวดี ๆ เสมอ
           <span className="mt-2 block text-[10px] tracking-[0.28em] text-[#a8cbb8]">— ARN SPACE —</span>
         </div>
@@ -441,17 +490,17 @@ function ReadingStatusCard() {
     <section aria-labelledby="reading-status-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-reading-status.webp" width={64} />
-          <h2 className="text-[17px] font-medium text-white" id="reading-status-title">สถานะการอ่านของคุณ</h2>
+          <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="play" />
+          <h2 className="sidebar-title" id="reading-status-title">สถานะการอ่านของคุณ</h2>
         </div>
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {statuses.map((status) => (
           <div className="rounded-[7px] border border-[#1b5944] bg-[#0d1b15] px-1.5 py-2.5 text-center" key={status.label}>
-            <p className="text-[10px] text-white/70">{status.label}</p>
-            <p className="mt-1 text-[21px] font-semibold leading-none text-white">{status.value}</p>
-            <p className="mt-1 text-[9px] text-white/55">{status.unit}</p>
+            <p className="sidebar-meta text-white/70">{status.label}</p>
+            <p className="sidebar-stat-value mt-1">{status.value}</p>
+            <p className="sidebar-caption mt-1 text-white/55">{status.unit}</p>
           </div>
         ))}
       </div>
@@ -469,28 +518,28 @@ function ReaderStatsCard() {
   return (
     <section aria-labelledby="reader-stats-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center gap-[7px]">
-        <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-stats.webp" width={64} />
-        <h2 className="text-[17px] font-medium text-white" id="reader-stats-title">สถิติหนังสือของคุณ</h2>
+        <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="chart" />
+        <h2 className="sidebar-title" id="reader-stats-title">สถิติหนังสือของคุณ</h2>
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {stats.map((stat) => (
           <div className="rounded-[7px] border border-[#1b5944] bg-[#0d1b15] px-1.5 py-2.5 text-center" key={stat.label}>
-            <p className="text-[11px] text-white/70">{stat.label}</p>
+            <p className="sidebar-meta text-white/70">{stat.label}</p>
             <div className="mt-1 flex items-center justify-center text-white">
-              <span className="text-[19px] font-semibold leading-none">{stat.value}</span>
+              <span className="sidebar-stat-value">{stat.value}</span>
             </div>
-            <p className="mt-1 text-[11px] text-white/60">{stat.unit}</p>
+            <p className="sidebar-caption mt-1 text-white/60">{stat.unit}</p>
           </div>
         ))}
       </div>
 
-      <p className="mt-3 text-center text-[12px] font-medium text-[#1be27e]">↑ อ่านมากกว่าสัปดาห์ก่อน 18%</p>
+      <p className="sidebar-meta mt-3 text-center font-medium text-[#1be27e]">↑ อ่านมากกว่าสัปดาห์ก่อน 18%</p>
 
       <div className="relative mt-3 overflow-hidden rounded-[8px] border border-white/[0.08] bg-[#101714] px-3 py-3 text-center">
         <Image alt="" className="object-cover opacity-60" fill sizes="260px" src="/images/reader-welcome-bg.webp" />
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,20,13,.86),rgba(3,20,13,.5),rgba(3,20,13,.86))]" />
-        <p className="relative text-[11px] leading-5 text-white/80">“ทุกหน้าที่คุณอ่าน<br />คือตัวโลกเก่าที่อ่อนโยน”</p>
+        <p className="sidebar-meta relative leading-5 text-white/80">“ทุกหน้าที่คุณอ่าน<br />คือตัวโลกเก่าที่อ่อนโยน”</p>
       </div>
     </section>
   );
@@ -503,8 +552,8 @@ function PopularRankingCard() {
   return (
     <section aria-labelledby="popular-ranking-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center gap-[7px]">
-        <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={128} src="/icons/icon-reading-stats.webp" width={128} />
-        <h2 className="text-[15px] font-medium text-white" id="popular-ranking-title">อันดับยอดนิยม 10 อันดับแรก</h2>
+        <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="flame" />
+        <h2 className="sidebar-title" id="popular-ranking-title">อันดับยอดนิยม 10 อันดับแรก</h2>
       </div>
 
       <div aria-label="ช่วงเวลาการจัดอันดับ" className="mt-2 grid grid-cols-3 gap-0.5 rounded-[6px] bg-[#0b1512] p-0.5" role="group">
@@ -514,7 +563,7 @@ function PopularRankingCard() {
           return (
             <button
               aria-pressed={isSelected}
-              className={`h-6 rounded-[4px] border px-2 text-[10px] font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82] ${isSelected ? "border-[#1be27e] bg-[#10352a] text-[#58eaa9]" : "border-transparent text-white/55 hover:bg-white/[0.06] hover:text-white"}`}
+              className={`sidebar-button h-6 rounded-[4px] border px-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82] ${isSelected ? "border-[#1be27e] bg-[#10352a] text-[#58eaa9]" : "border-transparent text-white/55 hover:bg-white/[0.06] hover:text-white"}`}
               key={option.id}
               onClick={() => setSelectedRange(option.id)}
               type="button"
@@ -528,13 +577,12 @@ function PopularRankingCard() {
       <div className="mt-1.5">
         {rankedBooks.map((book, index) => (
           <Link className="group flex min-w-0 items-center gap-1.5 border-b border-white/[0.05] py-1.5 last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} key={book.title}>
-            <span className={`w-4 shrink-0 text-center text-[11px] font-semibold ${index === 0 ? "text-[#f6d86e]" : index === 1 ? "text-white" : index === 2 ? "text-[#f0a65c]" : "text-white/70"}`}>{index + 1}</span>
+            <span className={`sidebar-meta w-4 shrink-0 text-center font-semibold ${index === 0 ? "text-[#f6d86e]" : index === 1 ? "text-white" : index === 2 ? "text-[#f0a65c]" : "text-white/70"}`}>{index + 1}</span>
             <Image alt={`ปกหนังสือ ${book.title}`} className="h-8 w-6 shrink-0 rounded-[3px] object-cover" height={32} src={book.image} width={24} />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[12px] font-medium leading-4 text-white/90 transition group-hover:text-white" title={getDisplayBookTitle(book)}>{getDisplayBookTitle(book)}</h3>
-              <p className="mt-0.5 truncate text-[11px] leading-3 text-white/45">{book.author}</p>
+              <h3 className="sidebar-item-title truncate transition group-hover:text-white" title={getDisplayBookTitle(book)}>{getDisplayBookTitle(book)}</h3>
+              <p className="sidebar-meta mt-0.5 truncate text-white/45">{book.author}</p>
             </div>
-            <span className="inline-flex shrink-0 items-center gap-0.5 text-[9px] text-white/45"><EyeIcon />{book.views}</span>
           </Link>
         ))}
       </div>
@@ -547,20 +595,19 @@ function TrendingWritersCard() {
     <section aria-labelledby="trending-writers-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-[7px]">
-          <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-trending-writers.webp" width={64} />
-          <h2 className="text-[17px] font-medium text-white" id="trending-writers-title">นักเขียนมาแรง</h2>
+          <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="users" />
+          <h2 className="sidebar-title" id="trending-writers-title">นักเขียนมาแรง</h2>
         </div>
-        <Link aria-label="ดูนักเขียนมาแรงทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/writers">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูนักเขียนมาแรงทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/writers">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
         {trendingWriters.map((writer) => (
-          <Link className="group flex min-w-0 items-center gap-2.5 rounded-[7px] border border-transparent px-1.5 py-1.5 transition hover:border-[#1b5944] hover:bg-[#0d1b15] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/writers/${writer.slug}`} key={writer.slug}>
-            <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="h-[40px] w-[40px] shrink-0 rounded-full border border-[#1be27e] object-cover" height={40} src={writer.image} width={40} />
+          <Link className="group flex min-w-0 items-center gap-2.5 py-2 first:pt-1 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/writers/${writer.slug}`} key={writer.slug}>
+            <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="h-[40px] w-[40px] shrink-0 rounded-full object-cover" height={40} src={writer.image} width={40} />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[11px] font-medium text-white/90 transition group-hover:text-white">{writer.name}</h3>
+              <h3 className="sidebar-item-title truncate transition group-hover:text-white">{writer.name}</h3>
             </div>
-            <span className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#1be27e]"><RankingIcon />+{writer.followers}</span>
           </Link>
         ))}
       </div>
@@ -570,38 +617,36 @@ function TrendingWritersCard() {
 
 function CompletedReadingStatsCard() {
   const stats = [
-    { label: "เดือนนี้", value: "4", unit: "เรื่อง", icon: "▣" },
-    { label: "เวลาที่ใช้ทั้งหมด", value: "38", unit: "ชม.", icon: "◷" },
-    { label: "เรื่องที่จบ", value: "42", unit: "เรื่อง", icon: "▣" },
-    { label: "คะแนนเฉลี่ย", value: "4.8", unit: "", icon: "☆" },
+    { label: "จบในเดือนนี้", value: "12", icon: CompletedCalendarIcon },
+    { label: "ชั่วโมงที่อ่าน", value: "320", icon: CompletedClockIcon },
+    { label: "รีวิวที่เขียน", value: "28", icon: CompletedReviewIcon },
+    { label: "คะแนนเฉลี่ย", value: "4.8", icon: CompletedStarIcon },
   ];
 
   return (
-    <section aria-labelledby="completed-reading-stats-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
-          <span aria-hidden="true" className="text-[20px] leading-none text-[#2ee77b]">▥</span>
-          <h2 className="text-[17px] font-medium text-white" id="completed-reading-stats-title">สถิติการอ่านของคุณ</h2>
+    <section aria-labelledby="completed-reading-stats-title" className="overflow-hidden rounded-[8px] border border-white/[0.1] bg-[#07130f] p-2 shadow-[0_0_0_1px_rgba(33,194,98,.08),0_10px_24px_rgba(0,0,0,.22)]">
+      <div className="flex items-center gap-2 px-0.5">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <SimpleTitleIcon className="h-[18px] w-[18px] shrink-0" name="chart" />
+          <h2 className="sidebar-title truncate" id="completed-reading-stats-title">สรุปการอ่านของคุณ</h2>
         </div>
-        <Link aria-label="ดูสถิติการอ่านทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
-      <div className="mt-3 flex items-center justify-center gap-3 border-b border-white/[0.1] pb-3">
-        <span aria-hidden="true" className="text-[35px] leading-none text-[#1be27e]">❧</span>
+      <div className="mt-2 flex items-center gap-3 rounded-[7px] border border-white/[0.1] bg-[#0a1a14] px-3 py-2.5">
+        <span className="text-[#dcebe4]"><CompletedBookIcon /></span>
         <div>
-          <p className="text-[10px] text-white/65">อ่านจบไปแล้ว</p>
-          <p className="mt-0.5 text-[26px] font-semibold leading-none text-white">56 <span className="text-[13px] font-normal text-white/70">เรื่อง</span></p>
-          <p className="mt-1 text-[9px] text-white/45">จบครบทุกเรื่องที่คุณตั้งใจอ่าน</p>
+          <p className="sidebar-stat-hero">56</p>
+          <p className="sidebar-meta mt-1 text-white/70">เรื่องที่อ่านจบแล้ว</p>
         </div>
       </div>
 
-      <div className="mt-2 grid grid-cols-2 divide-x divide-y divide-white/[0.1]">
-        {stats.map((stat) => (
-          <div className="flex items-center gap-2 px-2 py-2 first:pt-1 [&:nth-child(2)]:pt-1 [&:nth-child(3)]:pb-1 [&:nth-child(4)]:pb-1" key={stat.label}>
-            <span aria-hidden="true" className="text-[20px] leading-none text-[#1be27e]">{stat.icon}</span>
+      <div className="mt-2 grid grid-cols-2 gap-1.5">
+        {stats.map(({ label, value, icon: Icon }) => (
+          <div className="flex min-h-[51px] items-center gap-2 rounded-[7px] border border-white/[0.1] bg-[#0a1a14] px-2 py-1.5" key={label}>
+            <span className="text-[#17dc8a]"><Icon /></span>
             <div className="min-w-0">
-              <p className="truncate text-[9px] text-white/55">{stat.label}</p>
-              <p className="mt-0.5 text-[15px] font-semibold leading-none text-white">{stat.value} <span className="text-[9px] font-normal text-white/60">{stat.unit}</span></p>
+              <p className="sidebar-stat-value">{value}</p>
+              <p className="sidebar-caption mt-1 truncate text-white/60">{label}</p>
             </div>
           </div>
         ))}
@@ -612,50 +657,31 @@ function CompletedReadingStatsCard() {
 
 function LatestCompletedReviewsCard() {
   const completedBooks = completedSections[0].books?.slice(0, 3) ?? [];
-  const [ratings, setRatings] = useState<Record<string, number>>(() => Object.fromEntries(completedBooks.map((book) => [book.title, 5])));
 
   return (
     <section aria-labelledby="latest-completed-reviews-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <span aria-hidden="true" className="text-[20px] leading-none text-[#2ee77b]">▣</span>
-          <h2 className="text-[17px] font-medium text-white" id="latest-completed-reviews-title">อ่านจบล่าสุด</h2>
+          <SimpleTitleIcon className="h-5 w-5 shrink-0" name="star" />
+          <h2 className="sidebar-title" id="latest-completed-reviews-title">รอรีวิวจากคุณ</h2>
         </div>
-        <Link aria-label="ดูเรื่องที่อ่านจบล่าสุดทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูเรื่องที่รอรีวิวจากคุณทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
-      <div className="mt-3 space-y-2.5">
-        {completedBooks.map((book) => {
+      <div className="mt-2 divide-y divide-white/[0.08]">
+        {completedBooks.map((book, index) => {
           const displayTitle = getDisplayBookTitle(book);
-          const rating = ratings[book.title] ?? 0;
+          const completedAgo = index + 1;
 
           return (
-            <div className="rounded-[8px] border border-white/[0.1] bg-[#0d1b15] p-2" key={book.title}>
+            <div className="group flex min-w-0 gap-2.5 py-2 first:pt-1 last:pb-0" key={book.title}>
               <div className="flex min-w-0 gap-2.5">
-                <Image alt={`ปกหนังสือ ${displayTitle}`} className="h-[58px] w-[43px] shrink-0 rounded-[4px] object-cover" height={58} src={book.image} width={43} />
+                <Image alt={`ปกหนังสือ ${displayTitle}`} className="h-[42px] w-[32px] shrink-0 rounded-[4px] object-cover" height={42} src={book.image} width={32} />
                 <div className="min-w-0 flex-1">
-                  <Link className="block truncate text-[11px] font-medium text-white/90 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} title={displayTitle}>{displayTitle}</Link>
-                  <p className="mt-1 truncate text-[10px] text-white/45">{book.author}</p>
-                  <div className="mt-2 flex items-center justify-between gap-2">
-                    <div aria-label={`ให้คะแนน ${displayTitle}`} className="flex items-center" role="group">
-                      {Array.from({ length: 5 }, (_, index) => {
-                        const starNumber = index + 1;
-
-                        return (
-                          <button
-                            aria-label={`${starNumber} ดาว`}
-                            aria-pressed={rating === starNumber}
-                            className={`px-0.5 text-[17px] leading-none transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#29ef82] ${starNumber <= rating ? "text-[#1be27e]" : "text-white/30 hover:text-[#1be27e]"}`}
-                            key={starNumber}
-                            onClick={() => setRatings((current) => ({ ...current, [book.title]: starNumber }))}
-                            type="button"
-                          >
-                            {starNumber <= rating ? "★" : "☆"}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <Link className="shrink-0 rounded-full border border-[#18bd55] px-2.5 py-1 text-[9px] font-medium text-[#26df70] transition hover:bg-[#18bd55] hover:text-[#07100b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}#review`}>เขียนรีวิว</Link>
+                  <Link className="sidebar-item-title block truncate transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} title={displayTitle}>{displayTitle}</Link>
+                  <p className="sidebar-meta truncate text-white/45">{book.author}</p>
+                  <div className="mt-0.5">
+                    <p className="sidebar-caption truncate text-white/50">อ่านจบเมื่อ {completedAgo} วันที่แล้ว</p>
                   </div>
                 </div>
               </div>
@@ -674,10 +700,10 @@ function CompletedSavedCard() {
     <section aria-labelledby="completed-saved-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <span aria-hidden="true" className="text-[20px] leading-none text-[#2ee77b]">▣</span>
-          <h2 className="text-[17px] font-medium text-white" id="completed-saved-title">เรื่องจบที่คุณบันทึกไว้</h2>
+          <SimpleTitleIcon className="h-5 w-5 shrink-0" name="bookmark" />
+          <h2 className="sidebar-title" id="completed-saved-title">เรื่องจบที่คุณติดตาม</h2>
         </div>
-        <Link aria-label="ดูเรื่องจบที่บันทึกไว้ทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูเรื่องจบที่คุณติดตามทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
@@ -685,11 +711,10 @@ function CompletedSavedCard() {
           <div className="group flex min-w-0 items-center gap-2.5 py-2.5 first:pt-2 last:pb-1" key={book.title}>
             <Image alt={`ปกหนังสือ ${book.title}`} className="h-[52px] w-[38px] shrink-0 rounded-[4px] object-cover" height={52} src={book.image} width={38} />
             <div className="min-w-0 flex-1">
-              <Link className="block truncate text-[11px] font-medium text-white/90 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} title={getDisplayBookTitle(book)}>{getDisplayBookTitle(book)}</Link>
-              <p className="mt-1 truncate text-[10px] text-white/45">{book.author}</p>
-              <p className="mt-1 text-[10px] text-white/55">จบแล้ว {book.episodes} ตอน</p>
+              <Link className="sidebar-item-title block truncate transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} title={getDisplayBookTitle(book)}>{getDisplayBookTitle(book)}</Link>
+              <p className="sidebar-meta mt-1 truncate text-white/45">{book.author}</p>
+              <p className="sidebar-caption mt-1 text-white/55">จบแล้ว {book.episodes} ตอน</p>
             </div>
-            <Link className="shrink-0 rounded-full border border-[#18bd55] px-2.5 py-1 text-[9px] font-medium text-[#26df70] transition hover:bg-[#18bd55] hover:text-[#07100b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`}>เริ่มอ่าน</Link>
           </div>
         ))}
       </div>
@@ -702,10 +727,10 @@ function BookshelfCard({ useSimpleSidebarIcon = false }: { useSimpleSidebarIcon?
     <section aria-labelledby="bookshelf-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between px-3.5 pb-2.5 pt-3">
         <div className="flex min-w-0 items-center gap-[7px]">
-          <Image alt="" className={useSimpleSidebarIcon ? "h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" : "h-5 w-5 shrink-0 object-contain sm:h-[21px] sm:w-[21px]"} height={useSimpleSidebarIcon ? 64 : 128} src={useSimpleSidebarIcon ? "/icons/sidebar-library.webp" : "/icons/icon-bookshelf.webp"} width={useSimpleSidebarIcon ? 64 : 128} />
-          <h2 className="truncate text-[17px] font-medium text-white" id="bookshelf-title">ชั้นหนังสือของคุณ</h2>
+          <SimpleTitleIcon className={useSimpleSidebarIcon ? "h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" : "h-5 w-5 shrink-0 sm:h-[21px] sm:w-[21px]"} name={useSimpleSidebarIcon ? "books" : "library"} />
+          <h2 className="sidebar-title truncate" id="bookshelf-title">ชั้นหนังสือของคุณ</h2>
         </div>
-        <Link aria-label="ดูชั้นหนังสือทั้งหมด" className="ml-2 inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูชั้นหนังสือทั้งหมด" className="sidebar-link ml-2 inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="grid grid-cols-2 gap-1.5 px-3 pb-3">
@@ -713,10 +738,10 @@ function BookshelfCard({ useSimpleSidebarIcon = false }: { useSimpleSidebarIcon?
           <Link className="group flex min-w-0 items-center gap-2 rounded-[6px] border border-[#1b5944] bg-[#0d1b15] p-1.5 transition hover:border-[#2ee27b] hover:bg-[#10251b] hover:shadow-[0_0_12px_rgba(46,231,123,.16)]" href={`/read?title=${encodeURIComponent(book.title)}`} key={book.title}>
             <Image alt={`ปกหนังสือ ${book.title}`} className="h-10 w-8 shrink-0 rounded-[3px] object-cover transition duration-300 group-hover:scale-105" height={40} sizes="32px" src={book.image} width={32} />
             <span className="min-w-0">
-              <h3 className="truncate text-[10px] font-medium text-white/90 group-hover:text-white" title={book.title}>{book.title}</h3>
+              <h3 className="sidebar-item-title truncate group-hover:text-white" title={book.title}>{book.title}</h3>
               <p className="mt-0.5 flex items-baseline gap-1 truncate">
-                <span className="text-[14px] font-semibold leading-none text-white">{book.count}</span>
-                <span className="text-[10px] text-white/55">เรื่อง</span>
+                <span className="sidebar-stat-value">{book.count}</span>
+                <span className="sidebar-caption text-white/55">เรื่อง</span>
               </p>
             </span>
           </Link>
@@ -733,30 +758,30 @@ function LatestReadingCard() {
     <section aria-labelledby="latest-reading-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-latest-reading.webp" width={64} />
-          <h2 className="text-[17px] font-medium text-white" id="latest-reading-title">อ่านล่าสุด</h2>
+          <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="book" />
+          <h2 className="sidebar-title" id="latest-reading-title">อ่านล่าสุด</h2>
         </div>
       </div>
 
       <div className="mt-3 grid grid-cols-[77px_minmax(0,1fr)] gap-2.5 rounded-[8px] bg-[#0d1b15] p-2">
         <Link
           aria-label={`เปิดเรื่อง ${latestReading.title}`}
-          className="block h-full rounded-[5px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]"
+          className="block self-stretch rounded-[5px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]"
           href={`/read?title=${encodeURIComponent(latestReading.title)}`}
         >
-          <Image alt={`ปกหนังสือ ${latestReading.title}`} className="h-full w-[77px] rounded-[5px] bg-[#18211d] object-contain" height={90} src={latestReading.image} width={77} />
+          <Image alt={`ปกหนังสือ ${latestReading.title}`} className="block h-full w-[77px] rounded-[5px] object-contain" height={90} src={latestReading.image} width={77} />
         </Link>
         <div className="min-w-0">
           <Link className="group block rounded-[4px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(latestReading.title)}`}>
-            <h3 className="truncate text-[12px] font-semibold text-white transition group-hover:text-[#9bffc0]" title={latestReading.title}>{latestReading.title}</h3>
-            <p className="mt-1 truncate text-[10px] text-white/50">โดย {latestReading.author}</p>
-            <p className="mt-2 text-[10px] font-normal text-white/55">{latestReading.episode}</p>
+            <h3 className="sidebar-item-title truncate font-semibold text-white transition group-hover:text-[#9bffc0]" title={latestReading.title}>{latestReading.title}</h3>
+            <p className="sidebar-meta mt-1 truncate text-white/50">โดย {latestReading.author}</p>
+            <p className="sidebar-meta mt-2 font-normal text-white/55">{latestReading.episode}</p>
           </Link>
           <div className="mt-1.5 flex items-center gap-2">
             <span aria-hidden="true" className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#1c4436]"><span className="block h-full rounded-full bg-[#1be27e]" style={{ width: `${progress}%` }} /></span>
-            <span className="text-[9px] text-white/50">{progress}%</span>
+          <span className="sidebar-caption text-white/50">{progress}%</span>
           </div>
-          <Link className="mt-2 flex items-center justify-center gap-2 rounded-full bg-[#1be27e] px-3 py-1.5 text-[10px] font-semibold text-[#07100b] transition hover:bg-[#62f5a7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(latestReading.title)}`}>
+          <Link className="sidebar-button mt-2 inline-flex w-fit self-start items-center justify-center gap-2 rounded-full bg-[#1be27e] px-3 py-1.5 font-semibold text-[#07100b] transition hover:bg-[#62f5a7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(latestReading.title)}`}>
             อ่านต่อ <span aria-hidden="true">→</span>
           </Link>
         </div>
@@ -770,10 +795,10 @@ function NewEpisodesCard() {
     <section aria-labelledby="new-episodes-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-new-episodes.webp" width={64} />
-          <h2 className="text-[17px] font-medium text-white" id="new-episodes-title">มีตอนใหม่</h2>
+          <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="bell" />
+          <h2 className="sidebar-title" id="new-episodes-title">มีตอนใหม่</h2>
         </div>
-        <Link aria-label="ดูตอนใหม่ทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee27b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูตอนใหม่ทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 text-[#2ee27b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
@@ -781,11 +806,10 @@ function NewEpisodesCard() {
           <Link className="group flex min-w-0 items-center gap-2.5 py-2.5 first:pt-2 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(story.title)}`} key={story.title}>
             <Image alt={`ปกหนังสือ ${story.title}`} className="h-[58px] w-[43px] shrink-0 rounded-[4px] object-cover" height={58} src={story.image} width={43} />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[11px] font-medium text-white/90 transition group-hover:text-white" title={story.title}>{story.title}</h3>
-              <p className="mt-1 truncate text-[10px] text-white/50">{story.author}</p>
-              <p className="mt-1 truncate text-[10px] text-white/50">{story.episode} · {story.time}</p>
+              <h3 className="sidebar-item-title truncate transition group-hover:text-white" title={story.title}>{story.title}</h3>
+              <p className="sidebar-meta mt-1 truncate text-white/50">{story.author}</p>
+              <p className="sidebar-meta mt-1 truncate text-white/50">{story.episode} · {story.time}</p>
             </div>
-            <span className="shrink-0 rounded-[5px] border border-[#287a59] px-2 py-1 text-[9px] font-medium text-[#7ef7b5] transition group-hover:bg-[#1be27e] group-hover:text-[#07100b]">อ่านตอนใหม่</span>
           </Link>
         ))}
       </div>
@@ -798,10 +822,9 @@ function LatestReadingNotesCard() {
     <section aria-labelledby="latest-reading-notes-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-reading-notes.webp" width={64} />
-          <h2 className="text-[17px] font-medium text-white" id="latest-reading-notes-title">บันทึกล่าสุด</h2>
+          <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="note" />
+          <h2 className="sidebar-title" id="latest-reading-notes-title">บันทึกล่าสุด</h2>
         </div>
-        <Link aria-label="ดูบันทึกล่าสุดทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
@@ -809,9 +832,9 @@ function LatestReadingNotesCard() {
           <Link className="group flex min-w-0 items-center gap-2.5 py-2.5 first:pt-2 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(note.title)}`} key={note.title}>
             <Image alt={`ปกหนังสือ ${note.title}`} className="h-[52px] w-[38px] shrink-0 rounded-[4px] object-cover" height={52} src={note.image} width={38} />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[11px] font-medium text-white/90 transition group-hover:text-white" title={note.title}>{note.title}</h3>
-              <p className="mt-1 truncate text-[10px] text-white/55">{note.author} · ตอนที่ {note.episode}</p>
-              <p className="mt-1 flex items-center gap-1 truncate text-[9px] text-white/40"><span aria-hidden="true">◷</span>{note.lastRead}</p>
+              <h3 className="sidebar-item-title truncate transition group-hover:text-white" title={note.title}>{note.title}</h3>
+              <p className="sidebar-meta mt-1 truncate text-white/55">{note.author} · ตอนที่ {note.episode}</p>
+              <p className="sidebar-caption mt-1 flex items-center gap-1 truncate text-white/40"><span aria-hidden="true">◷</span>{note.lastRead}</p>
             </div>
           </Link>
         ))}
@@ -873,16 +896,16 @@ function FollowedSummaryCard() {
   return (
     <section aria-labelledby="followed-summary-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center gap-[7px]">
-        <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-stats.webp" width={64} />
-        <h2 className="text-[16px] font-medium text-white" id="followed-summary-title">สรุปการติดตาม</h2>
+        <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="chart" />
+        <h2 className="sidebar-title" id="followed-summary-title">สรุปการติดตาม</h2>
       </div>
 
       <div className="mt-2.5 grid grid-cols-3 gap-2">
         {stats.map(({ label, value, unit }) => (
           <div className="rounded-[7px] border border-[#1b5944] bg-[#0d1b15] px-1.5 py-2 text-center" key={label}>
-            <p className="text-[10px] text-white/70">{label}</p>
-            <p className="mt-1 text-[20px] font-semibold leading-none text-white">{value}</p>
-            <p className="mt-1 text-[10px] text-white/55">{unit}</p>
+            <p className="sidebar-meta text-white/70">{label}</p>
+            <p className="sidebar-stat-value mt-1">{value}</p>
+            <p className="sidebar-caption mt-1 text-white/55">{unit}</p>
           </div>
         ))}
       </div>
@@ -894,21 +917,21 @@ function LatestFollowingUpdatesCard() {
   return (
     <section aria-labelledby="latest-following-updates-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center gap-[7px]">
-        <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-following-activity.webp" width={64} />
-        <h2 className="text-[16px] font-medium text-white" id="latest-following-updates-title">กิจกรรมล่าสุด</h2>
+        <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="bell" />
+        <h2 className="sidebar-title" id="latest-following-updates-title">กิจกรรมล่าสุด</h2>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
         {latestFollowingUpdates.map((update) => (
           <Link className="group flex min-w-0 items-center gap-2.5 py-2 first:pt-1 last:pb-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={update.href} key={update.writer}>
-            <Image alt={`รูปโปรไฟล์ ${update.writer}`} className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-[#2ee77b] transition group-hover:ring-2" height={36} src={update.image} width={36} />
+            <Image alt={`รูปโปรไฟล์ ${update.writer}`} className="h-9 w-9 shrink-0 rounded-full object-cover" height={36} src={update.image} width={36} />
             <div className="min-w-0 flex-1">
-              <p className="flex min-w-0 items-center gap-1.5 truncate text-[10px]">
+              <p className="sidebar-meta flex min-w-0 items-center gap-1.5 truncate">
                 <span className="shrink-0 font-semibold text-white/90 transition group-hover:text-white">{update.writer}</span>
                 <span className="truncate text-[#d8fff0]">{update.action}</span>
               </p>
-              <p className="mt-0.5 truncate text-[10px] text-white/60">{update.story}</p>
-              <p className="mt-0.5 truncate text-[9px] text-white/40">{update.time}</p>
+              <p className="sidebar-meta mt-0.5 truncate text-white/60">{update.story}</p>
+              <p className="sidebar-caption mt-0.5 truncate text-white/40">{update.time}</p>
             </div>
           </Link>
         ))}
@@ -928,15 +951,15 @@ function FollowedManagementCard() {
   return (
     <section aria-labelledby="followed-management-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center gap-[7px]">
-        <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-following-management.webp" width={64} />
-        <h2 className="text-[16px] font-medium text-white" id="followed-management-title">จัดการการติดตาม</h2>
+        <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="gear" />
+        <h2 className="sidebar-title" id="followed-management-title">จัดการการติดตาม</h2>
       </div>
 
-      <div className="mt-2 overflow-hidden rounded-[7px] border border-[#1b5944] bg-[#0d1b15]">
+      <div className="mt-2 divide-y divide-white/[0.08]">
         {actions.map((action) => (
-          <Link className="group flex min-w-0 items-center gap-2.5 border-b border-white/[0.08] px-2 py-2 last:border-b-0 transition hover:bg-[#10251b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29ef82]" href={action.href} key={action.title}>
+          <Link className="group flex min-w-0 items-center gap-2.5 py-2 first:pt-1 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={action.href} key={action.title}>
             <span aria-hidden="true" className="flex h-6 w-6 shrink-0 items-center justify-center text-[#eafff3]"><FollowedActionIcon type={action.icon} /></span>
-            <span className="block min-w-0 flex-1 truncate text-[11px] font-medium text-white/90 transition group-hover:text-white">{action.title}</span>
+            <span className="sidebar-item-title block min-w-0 flex-1 truncate transition group-hover:text-white">{action.title}</span>
           </Link>
         ))}
       </div>
@@ -991,15 +1014,15 @@ function TodayFollowingUpdatesCard() {
   return (
     <section aria-labelledby="today-following-updates-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-2.5 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center gap-[7px]">
-        <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-following-updates.webp" width={64} />
-        <h2 className="text-[16px] font-medium text-white" id="today-following-updates-title">อัปเดตวันนี้</h2>
+        <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="clock" />
+        <h2 className="sidebar-title" id="today-following-updates-title">อัปเดตวันนี้</h2>
       </div>
 
-      <div className="mt-2 overflow-hidden rounded-[7px] border border-[#1b5944] bg-[#0d1b15]">
+      <div className="mt-2 overflow-hidden rounded-[7px] border border-white/[0.1] bg-[#0d1210]">
           {updateTypes.map((type) => (
             <div className="flex items-center justify-between gap-2 border-b border-white/[0.08] px-2 py-2 last:border-b-0" key={type.label}>
-              <span className="flex min-w-0 items-center gap-2 text-[10px] text-white/75"><FollowingUpdateIcon type={type.icon} /><span className="truncate">{type.label}</span></span>
-              <span className={type.highlight ? "shrink-0 text-[11px] font-semibold text-[#1be27e]" : "shrink-0 text-[10px] text-white/75"}>{type.value} ตอน</span>
+              <span className="sidebar-item-title flex min-w-0 items-center gap-2 text-white/75"><FollowingUpdateIcon type={type.icon} /><span className="truncate">{type.label}</span></span>
+              <span className={type.highlight ? "sidebar-item-title shrink-0 font-semibold text-[#1be27e]" : "sidebar-item-title shrink-0 font-normal text-white/75"}>{type.value} ตอน</span>
             </div>
           ))}
       </div>
@@ -1011,8 +1034,8 @@ function FollowedWritersCard() {
   return (
     <section aria-labelledby="followed-writers-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-[17px] font-medium text-white" id="followed-writers-title">นักเขียนที่คุณติดตาม</h2>
-        <Link aria-label="ดูนักเขียนที่ติดตามทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/writers">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <h2 className="sidebar-title" id="followed-writers-title">นักเขียนที่คุณติดตาม</h2>
+        <Link aria-label="ดูนักเขียนที่ติดตามทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/writers">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 overflow-hidden rounded-[7px] border border-[#1b5944] bg-[#0d1b15]">
@@ -1023,10 +1046,10 @@ function FollowedWritersCard() {
 
           return (
             <Link className="group flex min-w-0 items-center gap-2.5 border-b border-white/[0.08] px-2.5 py-2 last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29ef82]" href={`/writers/${writer.slug}`} key={writer.slug}>
-              <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-[#2ee77b] transition group-hover:ring-2" height={36} src={writer.image} width={36} />
+              <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="h-9 w-9 shrink-0 rounded-full object-cover" height={36} src={writer.image} width={36} />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[11px] font-semibold text-white/90 transition group-hover:text-white">{writer.name}</p>
-                <p className="mt-0.5 flex min-w-0 items-center gap-1.5 text-[9px]">
+                <p className="sidebar-item-title truncate font-semibold transition group-hover:text-white">{writer.name}</p>
+                <p className="sidebar-caption mt-0.5 flex min-w-0 items-center gap-1.5">
                   <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#1be27e] shadow-[0_0_7px_rgba(27,226,126,.7)]" />
                   <span className="truncate text-[#58eaa9]">{entry.status}</span>
                   <span className="shrink-0 text-white/40">{entry.time}</span>
@@ -1044,8 +1067,8 @@ function FollowedStoriesCard() {
   return (
     <section aria-labelledby="followed-stories-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-[17px] font-medium text-white" id="followed-stories-title">เรื่องที่คุณติดตาม</h2>
-        <Link aria-label="ดูเรื่องที่ติดตามทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <h2 className="sidebar-title" id="followed-stories-title">เรื่องที่คุณติดตาม</h2>
+        <Link aria-label="ดูเรื่องที่ติดตามทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 grid grid-cols-3 gap-2">
@@ -1054,8 +1077,8 @@ function FollowedStoriesCard() {
             <div className="relative aspect-[2/3] overflow-hidden rounded-[4px] bg-[#18211d]">
               <Image alt={`ปกหนังสือ ${story.title}`} className="object-contain transition duration-300 group-hover:scale-105" fill sizes="78px" src={story.image} />
             </div>
-            <h3 className="mt-1 truncate text-[9px] font-medium text-white/90 group-hover:text-white" title={story.title}>{story.title}</h3>
-            <p className="mt-0.5 truncate text-[8px] text-white/45">{story.episodes}</p>
+            <h3 className="sidebar-item-title mt-1 truncate group-hover:text-white" title={story.title}>{story.title}</h3>
+            <p className="sidebar-caption mt-0.5 truncate text-white/45">{story.episodes}</p>
           </Link>
         ))}
       </div>
@@ -1067,8 +1090,8 @@ function UnreadFollowedStoriesCard() {
   return (
     <section aria-labelledby="unread-followed-stories-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-[17px] font-medium text-white" id="unread-followed-stories-title">ยังไม่ได้อ่านจากที่ติดตาม</h2>
-        <Link aria-label="ดูเรื่องที่ยังไม่ได้อ่านทั้งหมด" className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <h2 className="sidebar-title" id="unread-followed-stories-title">ยังไม่ได้อ่านจากที่ติดตาม</h2>
+        <Link aria-label="ดูเรื่องที่ยังไม่ได้อ่านทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08] overflow-hidden rounded-[7px] border border-[#1b5944] bg-[#0d1b15] px-2">
@@ -1076,10 +1099,10 @@ function UnreadFollowedStoriesCard() {
           <Link className="group flex min-w-0 items-center gap-2 py-2 first:pt-2 last:pb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(story.title)}`} key={story.title}>
             <Image alt={`ปกหนังสือ ${story.title}`} className="h-10 w-8 shrink-0 rounded-[3px] object-cover" height={40} src={story.image} width={32} />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[10px] font-medium text-white/90 transition group-hover:text-white" title={story.title}>{story.title}</h3>
-              <p className="mt-0.5 truncate text-[8px] text-white/45">{story.author}</p>
+              <h3 className="sidebar-item-title truncate transition group-hover:text-white" title={story.title}>{story.title}</h3>
+              <p className="sidebar-meta mt-0.5 truncate text-white/45">{story.author}</p>
             </div>
-            <span className="shrink-0 rounded-full border border-[#1cae68] px-1.5 py-1 text-[8px] font-medium text-[#7ef7b5]">{story.newEpisodes}</span>
+            <span className="sidebar-button shrink-0 rounded-full border border-[#1cae68] px-1.5 py-1 text-[#7ef7b5]">{story.newEpisodes}</span>
             <span aria-hidden="true" className="shrink-0 text-[16px] leading-none text-white/45 transition group-hover:translate-x-0.5 group-hover:text-[#2ee77b]">›</span>
           </Link>
         ))}
@@ -1093,8 +1116,8 @@ function ReaderReviewsCard() {
     <section aria-labelledby="homepage-reader-reviews-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]" id="homepage-reader-reviews">
       <div className="flex items-center gap-2">
         <span className="text-[#eafff3]"><MessageBubbleIcon /></span>
-        <h2 className="text-[17px] font-medium text-white" id="homepage-reader-reviews-title">รีวิวจากผู้อ่าน</h2>
-        <Link aria-label="ดูรีวิวจากผู้อ่านทั้งหมด" className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/read#reader-reviews">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <h2 className="sidebar-title" id="homepage-reader-reviews-title">รีวิวจากผู้อ่าน</h2>
+        <Link aria-label="ดูรีวิวจากผู้อ่านทั้งหมด" className="sidebar-link ml-auto inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read#reader-reviews">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-3 space-y-2.5">
@@ -1110,23 +1133,23 @@ function ReaderReviewsCard() {
             <div className="relative flex items-center gap-2.5">
               <Image alt={`รูปโปรไฟล์ ${review.name}`} className="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-[#22df91] ring-offset-1 ring-offset-[#0d1915]" height={40} src={review.avatar} width={40} />
               <div className="min-w-0">
-                <p className="truncate text-[11px] font-medium text-white/85">{review.name}</p>
+                <p className="sidebar-item-title truncate text-white/85">{review.name}</p>
                 <div aria-label="ให้คะแนน 5 ดาว" className="mt-0.5 text-[12px] leading-none tracking-[0.1em] text-[#ffd75a]">★★★★★</div>
               </div>
               <span aria-hidden="true" className="ml-auto self-start pt-0.5 text-[30px] font-semibold leading-none text-white/75">“</span>
             </div>
 
-            <p className="relative mt-2.5 line-clamp-3 text-[12px] leading-[1.65] text-white/80">{review.quote}</p>
+            <p className="sidebar-body relative mt-2.5 line-clamp-3 text-white/80">{review.quote}</p>
 
             <div className="relative mt-2.5 grid grid-cols-[58px_minmax(0,1fr)_52px] items-center gap-2 rounded-[6px] border border-[#174035] bg-[#0b1512]/85 p-1.5 transition group-hover:border-[#23775b]">
               <div className="relative aspect-[3/4] overflow-hidden rounded-[4px] bg-[#18211d]">
                 <Image alt={`ปกหนังสือ ${review.book}`} className="object-cover" fill sizes="58px" src={review.cover} />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-[12px] font-medium text-white/90" title={review.book}>{review.book}</p>
-                <p className="mt-0.5 truncate text-[10px] text-white/45">โดย {review.author}</p>
+                <p className="sidebar-item-title truncate text-white/90" title={review.book}>{review.book}</p>
+                <p className="sidebar-meta mt-0.5 truncate text-white/45">โดย {review.author}</p>
               </div>
-              <div className="flex items-center justify-end gap-1 border-l border-white/[0.08] pl-2 text-[11px] text-white/75">
+              <div className="sidebar-meta flex items-center justify-end gap-1 border-l border-white/[0.08] pl-2 text-white/75">
                 <span aria-hidden="true" className="text-[19px] leading-none text-[#ff5276]">♥</span>
                 <span>{review.likes}</span>
               </div>
@@ -1142,9 +1165,9 @@ function ArnSpaceNewsCard() {
   return (
     <section aria-labelledby="homepage-arn-space-news-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]" id="homepage-arn-space-news">
       <div className="flex items-center gap-[7px]">
-        <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-news.webp" width={64} />
-        <h2 className="text-[17px] font-medium text-white" id="homepage-arn-space-news-title">ข่าวจาก ARN SPACE</h2>
-        <Link aria-label="ดูข่าวจาก ARN SPACE ทั้งหมด" className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/community">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="news" />
+        <h2 className="sidebar-title" id="homepage-arn-space-news-title">ข่าวจาก ARN SPACE</h2>
+        <Link aria-label="ดูข่าวจาก ARN SPACE ทั้งหมด" className="sidebar-link ml-auto inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/community">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
@@ -1152,8 +1175,8 @@ function ArnSpaceNewsCard() {
           <Link className="group flex min-w-0 items-start gap-2.5 py-3 first:pt-2 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href="/community" key={news.title}>
             <span aria-hidden="true" className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#20e987] shadow-[0_0_10px_rgba(32,233,135,.55)]" />
             <div className="min-w-0 flex-1">
-              <h3 className="line-clamp-2 text-[12px] font-medium leading-5 text-white/90 transition group-hover:text-white">{news.title}</h3>
-              <p className="mt-1 flex items-center justify-between gap-2 text-[10px] text-white/45">
+              <h3 className="sidebar-item-title line-clamp-2 transition group-hover:text-white">{news.title}</h3>
+              <p className="sidebar-meta mt-1 flex items-center justify-between gap-2 text-white/45">
                 <span className="truncate">{news.label}</span>
                 <span className="shrink-0">{news.time}</span>
               </p>
@@ -1166,14 +1189,12 @@ function ArnSpaceNewsCard() {
 }
 
 function CommunityTopicsCard({ title = "ชุมชนกำลังพูดถึง", limit = 5, compact = false, useSimpleSidebarIcon = false }: { title?: string; limit?: number; compact?: boolean; useSimpleSidebarIcon?: boolean }) {
-  const isInterestedCommunity = title === "ชุมชนที่คุณสนใจ" || useSimpleSidebarIcon;
-
   return (
     <section aria-labelledby="homepage-community-topics-title" className="overflow-hidden rounded-[9px] border border-white/[0.1] bg-[#101714] p-3 shadow-[0_0_0_1px_rgba(33,194,98,.04),0_10px_24px_rgba(0,0,0,.2)]" id="homepage-community-topics">
       <div className="flex items-center gap-[7px]">
-        {isInterestedCommunity ? <Image alt="" className="h-[19px] w-[19px] shrink-0 object-contain opacity-90 sm:h-5 sm:w-5" height={64} src="/icons/sidebar-community.webp" width={64} /> : <span className="text-[#eafff3]"><CommunityIcon /></span>}
-        <h2 className="text-[17px] font-medium text-white" id="homepage-community-topics-title">{title}</h2>
-        <Link aria-label="ดูหัวข้อชุมชนทั้งหมด" className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]" href="/community">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <SimpleTitleIcon className="h-[19px] w-[19px] shrink-0 sm:h-5 sm:w-5" name="community" />
+        <h2 className="sidebar-title" id="homepage-community-topics-title">{title}</h2>
+        <Link aria-label="ดูหัวข้อชุมชนทั้งหมด" className="sidebar-link ml-auto inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/community">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
@@ -1183,8 +1204,8 @@ function CommunityTopicsCard({ title = "ชุมชนกำลังพูด�
               <Image alt="" className="object-cover transition duration-300 group-hover:scale-105" fill sizes="70px" src={topic.image} />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[11px] font-medium text-white/90 transition group-hover:text-white" title={topic.title}>{topic.title}</h3>
-              <div className="mt-1 flex min-w-0 items-center justify-between gap-2 text-[9px] text-white/45">
+              <h3 className="sidebar-item-title truncate transition group-hover:text-white" title={topic.title}>{topic.title}</h3>
+              <div className="sidebar-caption mt-1 flex min-w-0 items-center justify-between gap-2 text-white/45">
                 <span className="inline-flex min-w-0 items-center gap-1 truncate"><CommentIcon />{topic.comments}</span>
                 <span className="shrink-0">{topic.time}</span>
               </div>
@@ -1208,8 +1229,8 @@ function WriterCard({ writer, showFollowButton = false, compact = false }: { wri
         className="block rounded-[7px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]"
         href={`/writers/${writer.slug}`}
       >
-        <div className={`relative mx-auto overflow-hidden rounded-full bg-[#18211d] transition group-hover:border-[#2ee77b] group-hover:shadow-[0_0_18px_rgba(46,231,123,.18)] ${compact ? "h-[76px] w-[76px] border-2 border-[#1b654b]" : "h-[72px] w-[72px] border border-[#1ec765] p-0.5 shadow-[0_0_0_2px_rgba(28,198,101,.15)]"}`}>
-          <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="object-cover transition duration-500 group-hover:scale-105" fill sizes={compact ? "76px" : "(max-width: 640px) 28vw, 150px"} src={writer.image} />
+        <div className={`relative mx-auto overflow-hidden rounded-full border-0 bg-[#18211d] shadow-none ring-0 transition ${compact ? "h-[76px] w-[76px]" : "h-[72px] w-[72px]"}`}>
+          <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="border-0 object-cover ring-0 transition duration-500 group-hover:scale-105" fill sizes={compact ? "76px" : "(max-width: 640px) 28vw, 150px"} src={writer.image} />
         </div>
         <h3 className={`mt-2 truncate font-medium text-white transition group-hover:text-[#9bffc0] ${compact ? "text-[11px]" : "text-[12px]"}`} title={writer.name}>{writer.name}</h3>
         {compact ? (
@@ -1273,7 +1294,7 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0 }: { bo
       )}
       <div className="pointer-events-none absolute inset-1 z-20 flex flex-col justify-end rounded-[7px] bg-gradient-to-t from-[#07100c] via-[#07100c]/90 to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
         <h3 className="break-words text-[14px] font-semibold leading-5 text-white">{displayTitle}</h3>
-        <p className="mt-0.5 line-clamp-6 text-[10px] leading-4 text-white/70">{hoverDescriptions[book.category] ?? "เรื่องราวที่คัดสรรมาให้คุณได้ออกเดินทาง พร้อมความลับและตัวละครมากมายที่รอให้คุณทำความรู้จัก"}</p>
+        <p className="mt-0.5 line-clamp-6 text-[11px] leading-[1.45] text-white/70">{hoverDescriptions[book.category] ?? "เรื่องราวที่คัดสรรมาให้คุณได้ออกเดินทาง พร้อมความลับและตัวละครมากมายที่รอให้คุณทำความรู้จัก"}</p>
         <span className="mt-2 inline-flex h-8 items-center justify-center rounded-[7px] bg-[#1be27e] text-[11px] font-semibold text-[#07100b] shadow-[0_5px_16px_rgba(0,0,0,.25)]">อ่านเลย <span aria-hidden="true" className="ml-2 text-sm">→</span></span>
       </div>
     </Link>
@@ -1308,6 +1329,8 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
                   ? trendingSectionIcons[section.title]
                   : selectedCategory === "จากที่ติดตาม"
                     ? followingSectionIcons[section.title]
+                    : selectedCategory === "เรื่องจบแล้ว"
+                      ? completedSectionIcons[section.title]
                     : undefined;
 
             return (
@@ -1315,7 +1338,7 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
               <div className="mb-3 flex items-end justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    {sectionIcon ? <Image alt="" className="h-[23px] w-[23px] shrink-0 object-contain sm:h-[25px] sm:w-[25px]" height={128} src={sectionIcon} width={128} /> : null}
+                    {sectionIcon ? <SimpleTitleIcon className="h-[23px] w-[23px] shrink-0 sm:h-[25px] sm:w-[25px]" name={sectionIcon} /> : null}
                     <h2 className="text-[21px] font-medium leading-tight text-white">{section.title}</h2>
                   </div>
                   <p className="mt-1 text-[12px] text-white/50">{section.subtitle}</p>

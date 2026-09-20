@@ -57,7 +57,7 @@ export default function CommunitySection() {
           <div className="grid grid-cols-6 gap-3" id="writers">
             {recommendedWriters.map((writer) => (
               <Link className="group min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-3 text-center transition hover:-translate-y-1 hover:border-[#1ec765]/60 hover:bg-[#12231a] hover:shadow-[0_12px_30px_rgba(0,0,0,.2)]" href={`/writers/${writer.slug}`} key={writer.slug}>
-                <div className="relative mx-auto h-[72px] w-[72px] overflow-hidden rounded-full border border-[#1ec765] bg-[#18211d] p-0.5 shadow-[0_0_0_2px_rgba(28,198,101,.15)]">
+                <div className="relative mx-auto h-[72px] w-[72px] overflow-hidden rounded-full bg-[#18211d]">
                   <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="rounded-full object-cover" fill sizes="72px" src={writer.image} />
                 </div>
                 <h3 className="mt-2 truncate text-[12px] font-medium text-white" title={writer.name}>{writer.name}</h3>

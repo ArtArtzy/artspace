@@ -1,16 +1,20 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type Category = {
   label: string;
   lines?: readonly string[];
   special?: boolean;
+  genreMenu?: boolean;
+  menuOnly?: boolean;
+  requiresVerification?: boolean;
   color: string;
-  icon: "all" | "heart" | "double-heart" | "spark" | "bookmark" | "trending" | "flame" | "book" | "check" | "bl" | "gl" | "fantasy" | "china" | "isekai" | "romance-fantasy" | "drama" | "detective" | "mystery" | "horror" | "action" | "sci-fi" | "life" | "comedy" | "anime" | "game" | "tv" | "other";
+  icon: "all" | "more" | "heart" | "double-heart" | "spark" | "bookmark" | "trending" | "flame" | "book" | "check" | "bl" | "gl" | "fantasy" | "china" | "isekai" | "romance-fantasy" | "drama" | "detective" | "mystery" | "horror" | "action" | "sci-fi" | "life" | "comedy" | "anime" | "game" | "tv" | "other";
 };
 
-const categories: Category[] = [
+const genreCategories: Category[] = [
   { label: "ทั้งหมด", color: "text-[#45ee83]", icon: "all" },
   { label: "โรแมนติก", color: "text-[#f04d9b]", icon: "double-heart" },
   { label: "วาย", color: "text-[#478fff]", icon: "bl" },
@@ -23,7 +27,44 @@ const categories: Category[] = [
   { label: "แอ๊กชั่น", color: "text-[#ff6d55]", icon: "action" },
   { label: "ไซไฟ", color: "text-[#42e7e0]", icon: "sci-fi" },
   { label: "คอมเมดี้", color: "text-[#f4cf4e]", icon: "comedy" },
+  { label: "รักผู้ใหญ่", color: "text-[#f28baf]", icon: "romance-fantasy", menuOnly: true, requiresVerification: true },
+  { label: "วายห้องลับ", color: "text-[#76a9ff]", icon: "bl", menuOnly: true, requiresVerification: true },
+  { label: "ยูริห้องลับ", color: "text-[#ff91ae]", icon: "gl", menuOnly: true, requiresVerification: true },
+  { label: "ดราม่าเข้มข้น", color: "text-[#ff8d78]", icon: "drama", menuOnly: true },
+  { label: "โรแมนซ์แฟนตาซี", color: "text-[#d28cff]", icon: "romance-fantasy", menuOnly: true },
+  { label: "เกมและโลกเสมือน", color: "text-[#77b7ff]", icon: "game", menuOnly: true },
+  { label: "อนิเมะ", color: "text-[#f5a1ff]", icon: "anime", menuOnly: true },
+  { label: "แฟชั่นและไลฟ์สไตล์", color: "text-[#69e6c2]", icon: "life", menuOnly: true },
+  { label: "เรทผู้ใหญ่", color: "text-[#ff7899]", icon: "drama", menuOnly: true, requiresVerification: true },
+  { label: "โรแมนติกผู้ใหญ่", color: "text-[#f28baf]", icon: "romance-fantasy", menuOnly: true, requiresVerification: true },
+  { label: "อนิเมะผู้ใหญ่", color: "text-[#f5a1ff]", icon: "anime", menuOnly: true, requiresVerification: true },
 ];
+
+const categories: Category[] = [
+  ...genreCategories.filter((category) => !category.menuOnly && category.label !== "ไซไฟ" && category.label !== "คอมเมดี้"),
+  { label: "หมวดทั้งหมด", color: "text-[#45ee83]", icon: "more", special: true, genreMenu: true },
+];
+
+export const defaultGenreSelection = genreCategories
+  .filter((category) => category.label !== "ทั้งหมด")
+  .slice(0, 10)
+  .map((category) => category.label);
+
+const orderGenresWithProtectedLast = (labels: string[]) => {
+  const regularGenres: string[] = [];
+  const protectedGenres: string[] = [];
+
+  labels.forEach((label) => {
+    const category = genreCategories.find((item) => item.label === label);
+    if (category?.requiresVerification) {
+      protectedGenres.push(label);
+    } else {
+      regularGenres.push(label);
+    }
+  });
+
+  return [...regularGenres, ...protectedGenres];
+};
 
 const homeCategories: Category[] = [
   { label: "สำหรับคุณ", lines: ["สำหรับคุณ", "คัดสรรพิเศษเพื่อคุณ"], color: "text-[#20e99a]", icon: "heart" },
@@ -49,6 +90,14 @@ function CategoryIcon({ type }: { type: Category["icon"] }) {
           <circle cx="16" cy="8" r="2.6" stroke="currentColor" strokeWidth="1.8" />
           <circle cx="8" cy="16" r="2.6" stroke="currentColor" strokeWidth="1.8" />
           <circle cx="16" cy="16" r="2.6" stroke="currentColor" strokeWidth="1.8" />
+        </svg>
+      );
+    case "more":
+      return (
+        <svg {...common}>
+          <circle cx="6.5" cy="12" r="1.6" fill="currentColor" />
+          <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+          <circle cx="17.5" cy="12" r="1.6" fill="currentColor" />
         </svg>
       );
     case "heart":
@@ -214,19 +263,32 @@ function CategoryIcon({ type }: { type: Category["icon"] }) {
 export type CategoryFilterProps = {
   selected: string;
   onSelect: (category: string) => void;
+  onSelectGenres?: (categories: string[]) => void;
+  selectedGenres?: string[];
   myCategoryCount?: number;
   showMyCategory?: boolean;
   variant?: "categories" | "home";
 };
 
-export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0, showMyCategory = false, variant = "categories" }: CategoryFilterProps) {
+export default function CategoryFilter({ selected, onSelect, onSelectGenres, selectedGenres = [], myCategoryCount = 0, showMyCategory = false, variant = "categories" }: CategoryFilterProps) {
+  const [isGenreMenuOpen, setIsGenreMenuOpen] = useState(false);
+  const [draftGenres, setDraftGenres] = useState<string[]>(orderGenresWithProtectedLast(selectedGenres.length > 0 ? selectedGenres : defaultGenreSelection));
+  const [isVerified, setIsVerified] = useState(false);
+  const [draggedGenreIndex, setDraggedGenreIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isGenreMenuOpen) {
+      setDraftGenres(orderGenresWithProtectedLast(selectedGenres.length > 0 ? selectedGenres : defaultGenreSelection));
+    }
+  }, [isGenreMenuOpen, selectedGenres]);
+
   const visibleCategories: Category[] = variant === "home"
     ? homeCategories
     : showMyCategory
     ? [
         {
           label: "หมวดของฉัน",
-          lines: ["หมวดของฉัน", `${myCategoryCount} หมวด`],
+          lines: ["หมวดของฉัน"],
           special: true,
           color: "text-[#45ee83]",
           icon: "heart",
@@ -234,11 +296,73 @@ export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0
         ...categories,
       ]
     : categories;
+  const availableGenres = genreCategories.filter((category) => category.label !== "ทั้งหมด");
+
+  const pinnedCategories = visibleCategories.filter((category) => category.label === "หมวดของฉัน" || category.label === "ทั้งหมด");
+  const orderedAvailableGenres = [
+    ...availableGenres.filter((category) => !category.requiresVerification),
+    ...availableGenres.filter((category) => category.requiresVerification),
+  ];
+  const orderedVisibleCategories = variant === "home"
+    ? visibleCategories
+    : [
+        ...pinnedCategories,
+        ...orderGenresWithProtectedLast(selectedGenres)
+          .map((label) => visibleCategories.find((category) => category.label === label) ?? genreCategories.find((category) => category.label === label))
+          .filter((category): category is Category => {
+            if (!category) return false;
+            return !pinnedCategories.includes(category);
+          }),
+        ...visibleCategories.filter((category) => category.genreMenu),
+      ];
+
+  const toggleGenre = (category: Category) => {
+    if (category.requiresVerification && !isVerified) return;
+
+    setDraftGenres((current) => orderGenresWithProtectedLast(
+      current.includes(category.label)
+        ? current.filter((label) => label !== category.label)
+        : current.length < 10 ? [...current, category.label] : current,
+    ));
+  };
+
+  const removeGenre = (label: string) => {
+    setDraftGenres((current) => orderGenresWithProtectedLast(current.filter((item) => item !== label)));
+  };
+
+  const applyGenres = () => {
+    if (draftGenres.length === 0) return;
+    onSelectGenres?.(orderGenresWithProtectedLast(draftGenres));
+    setIsGenreMenuOpen(false);
+  };
+
+  const moveGenre = (index: number, direction: -1 | 1) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= draftGenres.length) return;
+
+    setDraftGenres((current) => {
+      const next = [...current];
+      [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+      return orderGenresWithProtectedLast(next);
+    });
+  };
+
+  const dropGenre = (targetIndex: number) => {
+    if (draggedGenreIndex === null || draggedGenreIndex === targetIndex) return;
+
+    setDraftGenres((current) => {
+      const next = [...current];
+      const [draggedGenre] = next.splice(draggedGenreIndex, 1);
+      next.splice(targetIndex, 0, draggedGenre);
+      return orderGenresWithProtectedLast(next);
+    });
+    setDraggedGenreIndex(null);
+  };
 
   return (
     <section aria-label={variant === "home" ? "เลือกการสำรวจ" : "เลือกหมวดหมู่"} className="sticky top-[82px] z-40 mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-[#0D0F0E] px-2 pb-[18px] pt-1 shadow-[0_8px_20px_rgba(0,0,0,.24)]" id="category-filter">
       <div className={`flex w-full flex-nowrap gap-2 overflow-hidden ${variant === "home" ? "grid grid-cols-5" : ""}`}>
-        {visibleCategories.map((category) => {
+        {orderedVisibleCategories.map((category) => {
           const isSelected = selected === category.label;
           const buttonClass = variant === "home"
             ? [
@@ -263,7 +387,7 @@ export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0
               aria-pressed={isSelected}
               className={buttonClass}
               key={category.label}
-              onClick={() => onSelect(category.label)}
+              onClick={() => category.genreMenu ? setIsGenreMenuOpen(true) : onSelect(category.label)}
               type="button"
             >
               {variant === "home" ? (
@@ -286,6 +410,101 @@ export default function CategoryFilter({ selected, onSelect, myCategoryCount = 0
           );
         })}
       </div>
+
+      {isGenreMenuOpen && variant !== "home" && (
+        <div aria-modal="true" className="fixed inset-0 z-[80] flex items-center justify-center bg-[#020504]/75 px-4 py-6 backdrop-blur-[3px]" role="dialog">
+          <div className="max-h-[min(720px,calc(100vh-48px))] w-full max-w-[680px] overflow-y-auto rounded-[14px] border border-[#1d6146] bg-[#0d1512] p-4 shadow-[0_20px_80px_rgba(0,0,0,.55)] sm:p-5" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-[20px] font-semibold text-white">เลือกหมวดที่คุณสนใจ</h2>
+                <p className="mt-1 text-[12px] text-white/50">เลือกได้สูงสุด 10 หมวด เพื่อปรับรายการนิยายให้ตรงกับคุณ</p>
+              </div>
+              <button aria-label="ปิดหน้าต่างเลือกหมวด" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 text-lg text-white/60 transition hover:border-white/25 hover:text-white" onClick={() => setIsGenreMenuOpen(false)} type="button">×</button>
+            </div>
+
+            <div className="mt-4 flex items-start gap-3 rounded-[9px] border border-[#174c3a] bg-[#0b2119] px-3 py-3">
+              <svg aria-hidden="true" className="mt-0.5 h-6 w-6 shrink-0 text-white/80" fill="none" viewBox="0 0 24 24"><path d="M6.5 10V7.8A5.5 5.5 0 0 1 12 2.3a5.5 5.5 0 0 1 5.5 5.5V10M5 10h14v10.5H5V10Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" /><path d="M12 14v2.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" /></svg>
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-semibold text-white">บางหมวดมีเนื้อหาที่ต้องยืนยันตัวตนก่อนเข้าใช้งาน</p>
+                <p className="mt-1 text-[11px] leading-relaxed text-white/50">เพื่อความปลอดภัยของผู้ใช้งาน กรุณายืนยันตัวตนก่อนเลือกหมวดที่มีการจำกัดอายุ</p>
+              </div>
+              <button className={`shrink-0 rounded-[6px] border px-2.5 py-1.5 text-[11px] font-medium transition ${isVerified ? "border-[#1be27e] bg-[#123722] text-[#58eaa9]" : "border-[#1be27e] text-[#58eaa9] hover:bg-[#123722]"}`} onClick={() => setIsVerified((current) => !current)} type="button">
+                {isVerified ? "ยืนยันแล้ว ✓" : "ยืนยันตัวตนเพิ่ม →"}
+              </button>
+            </div>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <section aria-labelledby="available-genres-title" className="rounded-[9px] border border-white/[0.08] bg-[#101714] p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-[12px] font-medium text-white/85" id="available-genres-title">หมวดที่มีให้เลือก</h3>
+                  <span className="text-[10px] text-white/45">คลิกเพื่อเพิ่ม →</span>
+                </div>
+                <div className="mt-2 max-h-[330px] space-y-1.5 overflow-y-auto pr-1">
+                  {orderedAvailableGenres.filter((category) => !draftGenres.includes(category.label)).map((category) => {
+                    const isLocked = Boolean(category.requiresVerification && !isVerified);
+                    const isLimitReached = draftGenres.length >= 10;
+
+                    return (
+                      <button
+                        aria-label={`${isLocked ? "ล็อก " : "เพิ่ม "}${category.label}`}
+                        className={`flex min-h-[52px] w-full items-center gap-2 rounded-[7px] border border-white/10 bg-[#121a17] px-2.5 py-2 text-left transition ${isLocked || isLimitReached ? "cursor-not-allowed opacity-50" : "hover:border-[#1be27e]/60 hover:bg-[#17251f]"}`}
+                        disabled={isLocked || isLimitReached}
+                        key={category.label}
+                        onClick={() => toggleGenre(category)}
+                        type="button"
+                      >
+                        <span className={category.color}><CategoryIcon type={category.icon} /></span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[12px] font-medium text-white/90">{category.label}</span>
+                          <span className="mt-0.5 block text-[10px] text-white/45">{isLocked ? "ต้องยืนยันตัวตน" : isLimitReached ? "ครบ 10 หมวดแล้ว" : "เพิ่มในรายการที่เลือก"}</span>
+                        </span>
+                        <span aria-hidden="true" className="shrink-0 text-[16px] text-white/45">{isLocked ? "🔒" : isLimitReached ? "•" : "→"}</span>
+                      </button>
+                    );
+                  })}
+                  {availableGenres.every((category) => draftGenres.includes(category.label)) && <p className="py-5 text-center text-[11px] text-white/35">เลือกครบทุกหมวดแล้ว</p>}
+                </div>
+              </section>
+
+              <section aria-labelledby="selected-genres-title" className="rounded-[9px] border border-[#1b5944] bg-[#0d2118] p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-[12px] font-medium text-white/85" id="selected-genres-title">หมวดที่คุณเลือก</h3>
+                  <span className="text-[10px] text-[#58eaa9]">{draftGenres.length}/10 หมวด · ลากเพื่อเรียง</span>
+                </div>
+                <div className="mt-2 max-h-[330px] space-y-1.5 overflow-y-auto pr-1">
+                  {draftGenres.map((label, index) => (
+                    <div
+                      className={`flex min-w-0 cursor-grab items-center gap-2 rounded-[7px] border border-[#1b5944] bg-[#102a1e] px-2 py-2 transition active:cursor-grabbing ${draggedGenreIndex === index ? "opacity-50" : ""}`}
+                      draggable
+                      key={label}
+                      onDragEnd={() => setDraggedGenreIndex(null)}
+                      onDragOver={(event) => event.preventDefault()}
+                      onDragStart={() => setDraggedGenreIndex(index)}
+                      onDrop={(event) => {
+                        event.preventDefault();
+                        dropGenre(index);
+                      }}
+                    >
+                      <span aria-hidden="true" className="select-none text-[15px] leading-none text-white/35">⠿</span>
+                      <span className="w-5 shrink-0 text-center text-[11px] font-semibold text-[#58eaa9]">{index + 1}</span>
+                      <span className="min-w-0 flex-1 truncate text-[12px] text-white/90">{label}</span>
+                      <button aria-label={`นำ ${label} ออกจากรายการ`} className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-white/10 text-[15px] text-white/55 transition hover:border-[#ff7697] hover:text-[#ff9db4]" onClick={() => removeGenre(label)} type="button">←</button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/[0.08] pt-4">
+              <p className="text-[11px] text-white/45">เลือกแล้ว {draftGenres.length}/10 หมวด</p>
+              <div className="flex gap-2">
+                <button className="rounded-[7px] border border-white/10 px-3 py-2 text-[11px] text-white/60 transition hover:border-white/25 hover:text-white" onClick={() => setIsGenreMenuOpen(false)} type="button">ยกเลิก</button>
+                <button className="rounded-[7px] bg-[#1be27e] px-4 py-2 text-[11px] font-semibold text-[#07100b] transition hover:bg-[#62f5a7] disabled:cursor-not-allowed disabled:opacity-40" disabled={draftGenres.length === 0} onClick={applyGenres} type="button">ใช้หมวดที่เลือก</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
