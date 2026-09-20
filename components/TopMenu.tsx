@@ -37,6 +37,14 @@ function HeartIcon() {
   );
 }
 
+function MenuBookIcon() {
+  return (
+    <svg aria-hidden="true" className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24">
+      <path d="M4.5 5.5h5.2a2.3 2.3 0 0 1 2.3 2.3v11a2.3 2.3 0 0 0-2.3-2.3H4.5v-11ZM19.5 5.5h-5.2A2.3 2.3 0 0 0 12 7.8v11a2.3 2.3 0 0 1 2.3-2.3h5.2v-11Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 type NotificationItem = {
   title: string;
   description: string;
@@ -230,12 +238,17 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
         </a>
 
         <nav aria-label="เมนูหลัก" className="flex h-full items-center gap-2">
-          {links.map((link) => (
-            <a aria-current={isLinkActive(link.href) ? "page" : undefined} className={`relative flex h-full min-w-[88px] flex-col items-center justify-center gap-2 px-3 pt-1 text-[15px] font-semibold transition-colors ${isLinkActive(link.href) ? "text-[#0ed77e]" : "text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
-              {link.label}
-              <span className={`block h-0.5 w-full rounded-full ${isLinkActive(link.href) ? "bg-[#0ed77e]" : "opacity-0"}`} />
-            </a>
-          ))}
+          {links.map((link) => {
+            const isActive = isLinkActive(link.href);
+
+            return (
+              <a aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-[15px] font-semibold transition-colors ${isActive ? "border-[#176b4a] bg-[linear-gradient(145deg,#0d3028,#10221d)] text-[#0ed77e] shadow-[0_0_14px_rgba(23,213,125,.12)]" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
+                {isActive && <MenuBookIcon />}
+                <span>{link.label}</span>
+                <span className={`absolute bottom-0.5 left-2 right-2 block h-0.5 rounded-full ${isActive ? "bg-[#0ed77e]" : "opacity-0"}`} />
+              </a>
+            );
+          })}
         </nav>
 
         <div className="ml-auto flex min-w-0 items-center gap-4">

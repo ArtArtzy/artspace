@@ -42,7 +42,7 @@ const genreCategories: Category[] = [
 
 const categories: Category[] = [
   ...genreCategories.filter((category) => !category.menuOnly && category.label !== "ไซไฟ" && category.label !== "คอมเมดี้"),
-  { label: "หมวดทั้งหมด", color: "text-[#45ee83]", icon: "more", special: true, genreMenu: true },
+  { label: "ปรับแต่ง", color: "text-[#45ee83]", icon: "more", special: true, genreMenu: true },
 ];
 
 export const defaultGenreSelection = genreCategories
@@ -268,9 +268,10 @@ export type CategoryFilterProps = {
   myCategoryCount?: number;
   showMyCategory?: boolean;
   variant?: "categories" | "home";
+  stickyOffset?: "menu" | "read";
 };
 
-export default function CategoryFilter({ selected, onSelect, onSelectGenres, selectedGenres = [], myCategoryCount = 0, showMyCategory = false, variant = "categories" }: CategoryFilterProps) {
+export default function CategoryFilter({ selected, onSelect, onSelectGenres, selectedGenres = [], myCategoryCount = 0, showMyCategory = false, variant = "categories", stickyOffset = "menu" }: CategoryFilterProps) {
   const [isGenreMenuOpen, setIsGenreMenuOpen] = useState(false);
   const [draftGenres, setDraftGenres] = useState<string[]>(orderGenresWithProtectedLast(selectedGenres.length > 0 ? selectedGenres : defaultGenreSelection));
   const [isVerified, setIsVerified] = useState(false);
@@ -360,7 +361,7 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
   };
 
   return (
-    <section aria-label={variant === "home" ? "เลือกการสำรวจ" : "เลือกหมวดหมู่"} className="sticky top-[82px] z-40 mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-[#0D0F0E] px-2 pb-[18px] pt-1 shadow-[0_8px_20px_rgba(0,0,0,.24)]" id="category-filter">
+    <section aria-label={variant === "home" ? "เลือกการสำรวจ" : "เลือกหมวดหมู่"} className={`${stickyOffset === "read" ? "top-[142px] mt-0" : "top-[82px] mt-3"} sticky z-40 mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-[#0D0F0E] px-2 pb-[18px] pt-1 shadow-[0_8px_20px_rgba(0,0,0,.24)]`} id="category-filter">
       <div className={`flex w-full flex-nowrap gap-2 overflow-hidden ${variant === "home" ? "grid grid-cols-5" : ""}`}>
         {orderedVisibleCategories.map((category) => {
           const isSelected = selected === category.label;
@@ -372,7 +373,7 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
                   : "border-[#14332f] bg-[#101a18] hover:border-[#1b5a4c] hover:bg-[#12231f]",
               ].join(" ")
             : [
-                "group flex h-[82px] min-w-0 flex-1 flex-col items-center justify-center gap-2 rounded-[7px] border px-1 py-2 transition",
+                "group flex h-[58px] min-w-0 flex-1 flex-row items-center justify-center gap-2 rounded-[7px] border px-2 py-2 transition",
                 isSelected
                   ? "border-[#1cbd55] bg-[linear-gradient(145deg,#102d19,#102017)] shadow-[0_0_12px_rgba(23,213,100,.22)]"
                   : category.special

@@ -559,7 +559,7 @@ function PopularRankingCard({ mode }: { mode: ReadModeId }) {
 }
 
 function TrendingStories({ mode, selectedCategory, selectedCategories }: { mode: ReadModeId; selectedCategory: string; selectedCategories: string[] }) {
-  const isMultiCategory = selectedCategory === "หมวดทั้งหมด" && selectedCategories.length > 0;
+  const isMultiCategory = selectedCategory === "ปรับแต่ง" && selectedCategories.length > 0;
   const trendingTitle = selectedCategory === "ทั้งหมด"
     ? `${modeLabels[mode]}มาแรง`
     : isMultiCategory
@@ -725,7 +725,7 @@ export default function ReadDiscovery({ followedCategories, mode, onToggleCatego
   const [catalogPage, setCatalogPage] = useState(1);
   const contentLabel = modeLabels[mode];
   const isAllBooks = selectedCategory === "ทั้งหมด";
-  const isMultiCategory = selectedCategory === "หมวดทั้งหมด" && selectedGenres.length > 0;
+  const isMultiCategory = selectedCategory === "ปรับแต่ง" && selectedGenres.length > 0;
   const isCategoryCatalog = isAllBooks || isMultiCategory || Object.prototype.hasOwnProperty.call(categoryBooks, selectedCategory);
   const catalogBooks = isAllBooks ? getMixedBooks(30, mode) : isMultiCategory ? getBooksByCategories(selectedGenres, mode) : getBooksByCategory(selectedCategory, mode);
   const sortedCatalogBooks = sortBooks(catalogBooks, sortOption);

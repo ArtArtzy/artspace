@@ -94,7 +94,7 @@ export default function ReadModePage({ mode }: ReadModePageProps) {
       <TopMenu fixed />
       <ReadHero activeMode={mode} />
       <div className={isLoggedIn === null ? "invisible" : undefined}>
-        <CategoryFilter onSelect={selectCategory} onSelectGenres={selectGenres} selected={selectedCategory} selectedGenres={selectedGenres} myCategoryCount={followedCategories.length} showMyCategory={isLoggedIn === true} />
+        <CategoryFilter onSelect={selectCategory} onSelectGenres={selectGenres} selected={selectedCategory} selectedGenres={selectedGenres} myCategoryCount={followedCategories.length} showMyCategory={isLoggedIn === true} stickyOffset="read" />
         <ReadDiscovery
           followedCategories={followedCategories}
           mode={mode}
