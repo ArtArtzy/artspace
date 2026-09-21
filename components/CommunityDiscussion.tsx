@@ -1,6 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type DiscussionRow = {
   slug: string;
@@ -11,6 +10,8 @@ type DiscussionRow = {
   avatar: string;
   image: string;
   stats: [string, string, string];
+  badge?: string;
+  badgeClass?: string;
 };
 
 type DiscussionSection = {
@@ -49,6 +50,16 @@ const pinnedThreads: DiscussionRow[] = [
     avatar: "/images/writers/purplemoon.webp",
     image: "/images/community/community-portal.webp",
     stats: ["126", "895", "28.1K"],
+  },
+  {
+    slug: "september-writing-challenge",
+    title: "ชวนคุย: เริ่มต้นเขียนเรื่องแรกใน ArnSpace กันยังไง?",
+    excerpt: "มาแชร์ไอเดียเล็ก ๆ สำหรับคนที่อยากเริ่มเขียนเรื่องแรกให้ไปต่อได้จริง",
+    user: "WriteDream",
+    age: "6 ชั่วโมงที่แล้ว",
+    avatar: "/images/writers/lunarblack.webp",
+    image: "/images/community/community-tree.webp",
+    stats: ["74", "214", "3.6K"],
   },
 ];
 
@@ -116,6 +127,28 @@ const discussionSections: DiscussionSection[] = [
   },
 ];
 
+const allDiscussionRows: DiscussionRow[] = discussionSections
+  .reduce<DiscussionRow[][]>((rowsByPosition, section) => {
+    section.rows.forEach((row, index) => {
+      rowsByPosition[index] ??= [];
+      rowsByPosition[index].push({
+        ...row,
+        badge: section.badge,
+        badgeClass: section.badgeClass,
+      });
+    });
+    return rowsByPosition;
+  }, [])
+  .flat();
+
+const allDiscussionSection: DiscussionSection = {
+  icon: "▦",
+  title: "ทั้งหมด",
+  badge: "",
+  badgeClass: "",
+  rows: allDiscussionRows,
+};
+
 function DiscussionStats({ stats }: { stats: DiscussionRow["stats"] }) {
   return (
     <div className="flex shrink-0 items-center gap-3 text-[10px] text-white/55 sm:gap-4">
@@ -126,17 +159,20 @@ function DiscussionStats({ stats }: { stats: DiscussionRow["stats"] }) {
   );
 }
 
-function DiscussionRowView({ row, pinned = false, badge, badgeClass }: { row: DiscussionRow; pinned?: boolean; badge?: string; badgeClass?: string }) {
+function DiscussionTitleIcon({ type }: { type: "pin" | "all" }) {
+  if (type === "pin") {
+    return <svg aria-hidden="true" className="h-5 w-5 shrink-0 text-section-community" viewBox="0 0 24 24"><path d="M16 9V4h1V2H7v2h1v5c0 1.66-1.34 3-3 3v2h5.97v7h2.06v-7H20v-2c-1.66 0-3-1.34-3-3Z" fill="currentColor" /></svg>;
+  }
+
+  return <svg aria-hidden="true" className="h-5 w-5 shrink-0 text-section-community" viewBox="0 0 24 24"><rect fill="currentColor" height="6" rx="1.2" width="6" x="3" y="3" /><rect fill="currentColor" height="6" rx="1.2" width="6" x="15" y="3" /><rect fill="currentColor" height="6" rx="1.2" width="6" x="3" y="15" /><rect fill="currentColor" height="6" rx="1.2" width="6" x="15" y="15" /></svg>;
+}
+
+function DiscussionRowView({ row }: { row: DiscussionRow }) {
   return (
-    <Link href={`/community/posts/${row.slug}`} className="group flex min-w-0 items-center gap-2 border-t border-white/[0.07] py-2 transition hover:bg-white/[0.025] sm:gap-2.5">
-      <div className={`relative shrink-0 overflow-hidden rounded ${pinned ? "h-12 w-[92px] sm:h-12 sm:w-[112px]" : "h-10 w-14 sm:h-11 sm:w-[68px]"}`}>
-        <Image alt={`ภาพประกอบ ${row.title}`} className="object-cover" fill sizes={pinned ? "112px" : "68px"} src={row.image} />
-      </div>
-      <Image alt={`รูปโปรไฟล์ ${row.user}`} className={`${pinned ? "h-7 w-7" : "h-7 w-7"} shrink-0 rounded-full border border-white/20 object-cover`} height={28} src={row.avatar} width={28} />
+    <Link href={`/community/posts/${row.slug}?from=community-discussion`} className="group flex min-w-0 items-center gap-2 border-t border-white/[0.07] py-2 transition hover:bg-white/[0.025] sm:gap-2.5">
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-center gap-2">
           <p className="truncate text-[13px] font-medium leading-tight text-white/90 group-hover:text-[#7cf3b2]">{row.title}</p>
-          {!pinned && badge && <span className={`hidden shrink-0 rounded px-2 py-1 text-[10px] font-semibold sm:inline-flex ${badgeClass}`}>{badge}</span>}
         </div>
         <p className="mt-1 truncate text-[11px] leading-tight text-white/55">{row.excerpt}</p>
         <div className="mt-1 flex min-w-0 items-center gap-2 text-[10px] text-white/50">
@@ -149,15 +185,26 @@ function DiscussionRowView({ row, pinned = false, badge, badgeClass }: { row: Di
   );
 }
 
-function DiscussionCard({ section }: { section: DiscussionSection }) {
+function DiscussionCard({ section, headingIcon }: { section: DiscussionSection; headingIcon?: "all" }) {
   return (
     <section className="ds-section px-3 sm:px-4" aria-labelledby={`discussion-${section.title}`}>
       <div className="flex items-center gap-2 py-2.5">
-        <span aria-hidden="true" className="text-base leading-none">{section.icon}</span>
+        {headingIcon && <DiscussionTitleIcon type={headingIcon} />}
         <h2 id={`discussion-${section.title}`} className="text-[16px] font-semibold leading-tight text-white">{section.title}</h2>
-        <Link href="#community-discussion" className="ml-auto text-[10px] font-medium text-[#1de38b] transition hover:text-[#8affc0]">ดูทั้งหมด →</Link>
       </div>
-      {section.rows.map((row) => <DiscussionRowView badge={section.badge} badgeClass={section.badgeClass} key={`${section.title}-${row.title}`} row={row} />)}
+      {section.rows.map((row, index) => <DiscussionRowView key={`${section.title}-${row.slug}-${index}`} row={row} />)}
+    </section>
+  );
+}
+
+function PinnedDiscussionCard() {
+  return (
+    <section className="ds-section px-3 sm:px-4" aria-labelledby="pinned-discussions-title">
+      <div className="flex items-center gap-2 py-2.5">
+        <DiscussionTitleIcon type="pin" />
+        <h2 id="pinned-discussions-title" className="text-[16px] font-semibold leading-tight text-white">กระทู้ปักหมุด</h2>
+      </div>
+      {pinnedThreads.map((row, index) => <DiscussionRowView key={`${row.slug}-${index}`} row={row} />)}
     </section>
   );
 }
@@ -202,43 +249,46 @@ function DiscussionPagination() {
     <nav aria-label="หน้ารายการกระทู้" className="flex items-center justify-center gap-1.5 pt-2">
       <button aria-current="page" className="flex h-8 min-w-8 items-center justify-center rounded-md border border-[#12df8a] bg-[#12df8a] px-2 text-[11px] font-semibold text-[#03150d]" type="button">1</button>
       {[2, 3, 4, 5].map((page) => (
-        <button key={page} aria-disabled="true" className="flex h-8 min-w-8 cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-[#101b17] px-2 text-[11px] text-white/35" disabled type="button">{page}</button>
+        <button key={page} aria-disabled="true" className="flex h-8 min-w-8 cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-arn-canvas px-2 text-[11px] text-white/35" disabled type="button">{page}</button>
       ))}
       <span aria-hidden="true" className="px-1 text-[11px] text-white/35">…</span>
-      <button aria-disabled="true" className="flex h-8 min-w-8 cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-[#101b17] px-2 text-[11px] text-white/35" disabled type="button">50</button>
+      <button aria-disabled="true" className="flex h-8 min-w-8 cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-arn-canvas px-2 text-[11px] text-white/35" disabled type="button">50</button>
     </nav>
   );
 }
 
-export default function CommunityDiscussion({ initialFilter }: { initialFilter?: string }) {
+export default function CommunityDiscussion({ initialFilter, onFilterChange }: { initialFilter?: string; onFilterChange?: (filter: string) => void }) {
   const [selectedFilter, setSelectedFilter] = useState(filters.includes(initialFilter ?? "") ? initialFilter! : "ทั้งหมด");
   const [sortOrder, setSortOrder] = useState<SortOrder>("latest");
   const selectedSection = discussionSections.find((section) => section.title === selectedFilter);
+
+  useEffect(() => {
+    const nextFilter = filters.includes(initialFilter ?? "") ? initialFilter! : "ทั้งหมด";
+    setSelectedFilter(nextFilter);
+    onFilterChange?.(nextFilter);
+  }, [initialFilter, onFilterChange]);
+
   const simulatedRows = useMemo(() => {
     if (!selectedSection) return [];
     return sortDiscussionRows(createSimulatedThreadPage(selectedSection), sortOrder);
   }, [selectedSection, sortOrder]);
-  const displaySections = useMemo(() => {
-    if (selectedSection || sortOrder === "latest") return discussionSections;
-
-    return discussionSections.map((section) => ({
-      ...section,
-      rows: sortDiscussionRows(createSimulatedThreadPage(section), sortOrder).slice(0, section.rows.length),
-    }));
-  }, [selectedSection, sortOrder]);
+  const allSimulatedRows = useMemo(
+    () => sortDiscussionRows(createSimulatedThreadPage(allDiscussionSection), sortOrder),
+    [sortOrder],
+  );
 
   return (
     <div className="min-w-0" id="community-discussion">
       <div className="mb-2.5 flex items-center gap-1.5 overflow-x-auto pb-0.5">
         {filters.map((filter, index) => (
-          <button key={filter} aria-pressed={selectedFilter === filter} className={`shrink-0 rounded-full border px-4 py-1.5 text-[11px] transition ${selectedFilter === filter ? "border-[#12df8a] bg-[#12df8a] font-semibold text-[#03150d]" : "border-white/10 bg-[#101b17] text-white/70 hover:border-[#12df8a] hover:text-white"}`} onClick={() => setSelectedFilter(filter)} type="button">
+          <button key={filter} aria-pressed={selectedFilter === filter} className={`shrink-0 rounded-full border px-4 py-1.5 text-[11px] transition ${selectedFilter === filter ? "border-[#12df8a] bg-[#12df8a] font-semibold text-[#03150d]" : "border-white/10 bg-arn-canvas text-white/70 hover:border-[#12df8a] hover:text-white"}`} onClick={() => { setSelectedFilter(filter); onFilterChange?.(filter); }} type="button">
             {filter}
           </button>
         ))}
         <label className="relative ml-auto inline-flex shrink-0 items-center">
           <span className="sr-only">เรียงลำดับกระทู้</span>
-          <select aria-label="เรียงลำดับกระทู้" className="appearance-none rounded-full border border-white/10 bg-[#101b17] py-1.5 pl-4 pr-8 text-[11px] text-white/75 outline-none transition focus:border-[#12df8a]" onChange={(event) => setSortOrder(event.target.value as (typeof sortOptions)[number]["value"])} value={sortOrder}>
-            {sortOptions.map((option) => <option className="bg-[#101b17]" key={option.value} value={option.value}>{option.label}</option>)}
+          <select aria-label="เรียงลำดับกระทู้" className="appearance-none rounded-full border border-white/10 bg-arn-canvas py-1.5 pl-4 pr-8 text-[11px] text-white/75 outline-none transition focus:border-[#12df8a]" onChange={(event) => setSortOrder(event.target.value as (typeof sortOptions)[number]["value"])} value={sortOrder}>
+            {sortOptions.map((option) => <option className="bg-arn-canvas" key={option.value} value={option.value}>{option.label}</option>)}
           </select>
           <span aria-hidden="true" className="pointer-events-none absolute right-3 text-[11px] text-white/60">⌄</span>
         </label>
@@ -247,21 +297,16 @@ export default function CommunityDiscussion({ initialFilter }: { initialFilter?:
       <div className="space-y-3">
         {selectedSection ? (
           <>
-            <DiscussionCard section={{ ...selectedSection, rows: simulatedRows }} />
+            <PinnedDiscussionCard />
+            <DiscussionCard key={`${selectedFilter}-${sortOrder}`} section={{ ...selectedSection, rows: simulatedRows }} />
             <DiscussionPagination />
           </>
         ) : (
           <>
-        <section className="ds-section px-3 sm:px-4" aria-labelledby="pinned-discussions-title">
-          <div className="flex items-center gap-2 py-2.5">
-            <span aria-hidden="true" className="text-base leading-none">📌</span>
-            <h2 id="pinned-discussions-title" className="text-[16px] font-semibold leading-tight text-white">กระทู้ปักหมุด</h2>
-            <Link href="#community-discussion" className="ml-auto text-[10px] font-medium text-[#1de38b] transition hover:text-[#8affc0]">ดูทั้งหมด →</Link>
-          </div>
-          {pinnedThreads.map((row) => <DiscussionRowView key={row.title} pinned row={row} />)}
-        </section>
+            <PinnedDiscussionCard />
 
-        {displaySections.map((section) => <DiscussionCard key={section.title} section={section} />)}
+            <DiscussionCard key={`${selectedFilter}-${sortOrder}`} section={{ ...allDiscussionSection, rows: allSimulatedRows }} headingIcon="all" />
+            <DiscussionPagination />
           </>
         )}
       </div>

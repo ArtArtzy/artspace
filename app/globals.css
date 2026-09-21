@@ -21,9 +21,10 @@
     --arn-color-accent-soft: #8affc0;
     --arn-color-accent-ink: #03150d;
 
-    --arn-accent-novel: #21d98b;
-    --arn-accent-fanfic: #b86cff;
-    --arn-accent-cartoon: #39c7ff;
+    --arn-accent-home: #00e68a;
+    --arn-accent-novel: #22c77a;
+    --arn-accent-fanfic: #a76bf3;
+    --arn-accent-cartoon: #36a9e1;
     --arn-accent-community: #12df8a;
 
     --arn-status-success: #12df8a;
@@ -62,6 +63,66 @@
     border-radius: 9px;
     background: var(--arn-color-surface-raised);
     box-shadow: var(--arn-shadow-card);
+  }
+
+  .ds-community-content .ds-card,
+  .ds-community-content .ds-section,
+  .ds-community-content .ds-community-surface {
+    background: var(--arn-color-canvas);
+    box-shadow: none;
+  }
+
+  .ds-page-banner-shell {
+    position: sticky;
+    top: 82px;
+    z-index: 40;
+  }
+
+  .ds-page-banner {
+    position: relative;
+    display: flex;
+    min-height: 52px;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--page-accent) 30%, transparent);
+    border-radius: 8px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--page-accent) 6%, var(--arn-color-surface)) 0%, var(--arn-color-surface) 72%, var(--arn-color-surface) 100%);
+    padding: 6px 20px;
+  }
+
+  .ds-page-banner[data-page-accent="home"] {
+    --page-accent: var(--arn-accent-home);
+  }
+
+  .ds-page-banner[data-page-accent="novel"] {
+    --page-accent: var(--arn-accent-novel);
+  }
+
+  .ds-page-banner[data-page-accent="fanfic"] {
+    --page-accent: var(--arn-accent-fanfic);
+  }
+
+  .ds-page-banner[data-page-accent="cartoon"] {
+    --page-accent: var(--arn-accent-cartoon);
+  }
+
+  .ds-page-banner[data-page-accent="community"] {
+    --page-accent: var(--arn-accent-community);
+  }
+
+  .ds-page-banner-title,
+  .ds-page-banner svg {
+    color: var(--page-accent);
+  }
+
+  @media (max-width: 640px) {
+    .ds-page-banner {
+      min-height: 54px;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 7px 12px;
+    }
   }
 
   .ds-input {

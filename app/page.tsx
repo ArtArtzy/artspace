@@ -6,6 +6,7 @@ import HeroCarousel from "@/components/HeroCarousel";
 import BookDiscovery from "@/components/BookDiscovery";
 import CommunitySection from "@/components/CommunitySection";
 import Footer from "@/components/Footer";
+import PageTitleBar from "@/components/PageTitleBar";
 import TopMenu, { authStateChangedEvent } from "@/components/TopMenu";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
@@ -40,8 +41,9 @@ export default function Home() {
       <TopMenu fixed />
       <UnbuiltPageGuard>
         <HeroCarousel />
+        <PageTitleBar variant="home" />
         <div className={isLoggedIn === null ? "invisible" : undefined}>
-          {isLoggedIn !== false && <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} variant="home" />}
+          {isLoggedIn !== false && <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} stickyOffset="page-banner" variant="home" />}
           <BookDiscovery selectedCategory={visibleCategory} />
         </div>
         <CommunitySection />

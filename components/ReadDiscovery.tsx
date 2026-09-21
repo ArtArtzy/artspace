@@ -247,12 +247,12 @@ function MyBookshelfCard({ mode }: { mode: ReadModeId }) {
 
       <div className="mt-2 divide-y divide-white/[0.08]">
         {shelfBooks.map((book) => (
-          <div className="flex min-w-0 gap-2.5 py-2.5 first:pt-2 last:pb-1" key={book.title}>
-            <Link aria-label={`เปิดเรื่อง ${book.title}`} className="block h-[58px] w-[43px] shrink-0 overflow-hidden rounded-[4px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`${modePaths[mode]}?title=${encodeURIComponent(book.title)}`}>
-              <Image alt={`ปกหนังสือ ${book.title}`} className="h-full w-full object-cover" height={58} src={book.image} width={43} />
-            </Link>
+          <Link aria-label={`เปิดเรื่อง ${book.title}`} className="group flex min-w-0 gap-2.5 rounded-[5px] py-2.5 first:pt-2 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`${modePaths[mode]}?title=${encodeURIComponent(book.title)}`} key={book.title}>
+            <div className="h-[58px] w-[43px] shrink-0 overflow-hidden rounded-[4px]">
+              <Image alt={`ปกหนังสือ ${book.title}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" height={58} src={book.image} width={43} />
+            </div>
             <div className="min-w-0 flex-1">
-              <Link className="sidebar-item-title block truncate transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`${modePaths[mode]}?title=${encodeURIComponent(book.title)}`} title={book.title}>{book.title}</Link>
+              <span className="sidebar-item-title block truncate transition group-hover:text-white" title={book.title}>{book.title}</span>
               <p className="sidebar-meta mt-1 truncate text-white/50">{book.author}</p>
               <div className="mt-1.5 flex items-center gap-2">
                 <span className="sidebar-caption min-w-0 truncate text-white/55">{book.episode}</span>
@@ -262,7 +262,7 @@ function MyBookshelfCard({ mode }: { mode: ReadModeId }) {
                 <span className="block h-full rounded-full bg-[#1be27e]" style={{ width: `${book.progress}%` }} />
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

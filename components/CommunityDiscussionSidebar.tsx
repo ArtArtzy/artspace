@@ -42,10 +42,9 @@ function DiscussionSidebarCard({ children }: { children: React.ReactNode }) {
   return <section className="ds-card p-3">{children}</section>;
 }
 
-function DiscussionSidebarHeader({ icon, title, showAll = true }: { icon: string; title: string; showAll?: boolean }) {
+function DiscussionSidebarHeader({ title, showAll = true }: { title: string; showAll?: boolean }) {
   return (
     <div className="mb-2.5 flex items-center gap-2">
-      <span aria-hidden="true" className="text-base leading-none">{icon}</span>
       <h2 className="sidebar-title">{title}</h2>
       {showAll && <Link href="#community-discussion" className="sidebar-link ml-auto transition hover:text-[#8affc0]">ดูทั้งหมด →</Link>}
     </div>
@@ -57,7 +56,6 @@ export default function CommunityDiscussionSidebar() {
     <aside aria-label="ข้อมูลห้องพูดคุยเพิ่มเติม" className="space-y-3">
       <DiscussionSidebarCard>
         <div className="flex items-start gap-3">
-          <span aria-hidden="true" className="text-4xl leading-none text-[#1de38b]">✎</span>
           <div className="min-w-0">
             <h2 className="sidebar-title">ตั้งกระทู้ใหม่</h2>
             <p className="sidebar-body mt-1 text-white/60">เริ่มบทสนทนา แชร์ความคิดเห็น หรือถามคำถามกับเพื่อน ๆ ใน ArnSpace</p>
@@ -67,7 +65,7 @@ export default function CommunityDiscussionSidebar() {
       </DiscussionSidebarCard>
 
       <DiscussionSidebarCard>
-        <DiscussionSidebarHeader icon="🔥" title="กระทู้กำลังฮิต" />
+        <DiscussionSidebarHeader title="กระทู้กำลังฮิต" />
         <div className="space-y-2">
           {hotThreads.map((thread, index) => (
             <Link key={thread.title} href="/community/posts/clockwork-character" className="flex items-center gap-2 transition hover:bg-white/[0.03]">
@@ -84,7 +82,7 @@ export default function CommunityDiscussionSidebar() {
       </DiscussionSidebarCard>
 
       <DiscussionSidebarCard>
-        <DiscussionSidebarHeader icon="#" title="แฮชแท็กกำลังนิยม" />
+        <DiscussionSidebarHeader title="แฮชแท็กกำลังนิยม" />
         <div className="grid grid-cols-3 gap-1.5">
           {popularTags.map(([tag, count]) => (
             <Link key={tag} href="#community-discussion" className="rounded border border-white/10 bg-white/[0.02] px-2 py-1.5 transition hover:border-[#1de38b]">
@@ -96,7 +94,7 @@ export default function CommunityDiscussionSidebar() {
       </DiscussionSidebarCard>
 
       <DiscussionSidebarCard>
-        <DiscussionSidebarHeader icon="🏆" title="ห้องยอดนิยม" />
+        <DiscussionSidebarHeader title="ห้องยอดนิยม" />
         <div className="space-y-2">
           {popularRooms.map(([title, description, count, icon]) => (
             <Link key={title} href="#community-discussion" className="flex items-center gap-2 transition hover:bg-white/[0.03]">
@@ -112,7 +110,7 @@ export default function CommunityDiscussionSidebar() {
       </DiscussionSidebarCard>
 
       <DiscussionSidebarCard>
-        <DiscussionSidebarHeader icon="👑" title="นักเขียนแนะนำ" />
+        <DiscussionSidebarHeader title="นักเขียนแนะนำ" />
         <div className="space-y-2.5">
           {recommendedWriters.map(([name, description, avatar]) => (
             <div key={name} className="flex items-center gap-2">

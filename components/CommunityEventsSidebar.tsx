@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 const schedule = [
-  { date: "วันนี้", label: "กิจกรรมกำลังมาแรง", title: "September Writing Challenge", detail: "1 - 30 กันยายน 2568", color: "bg-[#12df8a]" },
-  { date: "15 ก.ย.", label: "เริ่มกิจกรรม", title: "โหวตนักเขียนที่คุณรัก", detail: "15 - 25 กันยายน 2568", color: "bg-[#5aa9ff]" },
-  { date: "28 ก.ย.", label: "กิจกรรมพิเศษ", title: "AMA กับนักเขียน", detail: "28 กันยายน 2568", extra: "เวลา 20:00 น.", color: "bg-white" },
-  { date: "1 ต.ค.", label: "เร็ว ๆ นี้", title: "ประกวดเรื่องสั้น September Writing Challenge", detail: "1 ตุลาคม 2568", color: "bg-white" },
+  { slug: "september-writing-challenge", date: "วันนี้", title: "September Writing Challenge", detail: "1 - 30 กันยายน 2568", color: "bg-[#12df8a]" },
+  { slug: "favorite-writer-vote", date: "15 ก.ย.", title: "โหวตนักเขียนที่คุณรัก", detail: "15 - 25 กันยายน 2568", color: "bg-[#5aa9ff]" },
+  { slug: "writer-ama", date: "28 ก.ย.", title: "AMA กับนักเขียน", detail: "28 กันยายน 2568", extra: "เวลา 20:00 น.", color: "bg-white" },
+  { slug: "short-story-challenge", date: "1 ต.ค.", title: "ประกวดเรื่องสั้น September Writing Challenge", detail: "1 ตุลาคม 2568", color: "bg-white" },
 ];
 
 const joinedEvents = [
@@ -17,11 +17,11 @@ function SidebarCard({ children }: { children: React.ReactNode }) {
   return <section className="ds-card p-3">{children}</section>;
 }
 
-function CardHeader({ title }: { title: string }) {
+function CardHeader({ title, showAll = true }: { title: string; showAll?: boolean }) {
   return (
     <div className="mb-2.5 flex items-center gap-2">
       <h2 className="sidebar-title">{title}</h2>
-      <Link className="sidebar-link ml-auto transition hover:text-[#8affc0]" href="/community/events">ดูทั้งหมด →</Link>
+      {showAll && <Link className="sidebar-link ml-auto transition hover:text-[#8affc0]" href="/community/events">ดูทั้งหมด →</Link>}
     </div>
   );
 }
@@ -30,30 +30,29 @@ export default function CommunityEventsSidebar() {
   return (
     <aside aria-label="ข้อมูลกิจกรรมเพิ่มเติม" className="space-y-3">
       <SidebarCard>
-        <CardHeader title="กำหนดการถัดไป" />
+        <CardHeader showAll={false} title="กำหนดการถัดไป" />
         <div className="relative pl-1">
-          <div aria-hidden="true" className="absolute bottom-4 left-[8px] top-3 w-px bg-white/20" />
+          <div aria-hidden="true" className="absolute bottom-4 left-[10.5px] top-3 w-px bg-white/20" />
           <div className="space-y-0">
             {schedule.map((item) => (
-              <div className="relative grid grid-cols-[58px_minmax(0,1fr)] gap-2 border-b border-white/[0.06] py-2.5 last:border-b-0" key={`${item.date}-${item.title}`}>
+              <Link className="relative grid grid-cols-[58px_minmax(0,1fr)] gap-2 border-b border-white/[0.06] py-2.5 transition hover:bg-white/[0.025] last:border-b-0" href={`/community/events/${item.slug}`} key={`${item.date}-${item.title}`}>
                 <span className={`relative z-10 mt-0.5 h-3.5 w-3.5 rounded-full border-2 border-[#0d1a15] shadow-[0_0_0_2px_rgba(255,255,255,.08)] ${item.color}`} />
                 <div className="-ml-7 pl-7">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[10px] font-medium text-white/85">{item.date}</span>
-                    <span className="rounded-full bg-white/[0.08] px-2 py-1 text-[10px] text-white/70">{item.label}</span>
                   </div>
                   <p className="mt-1 text-[11px] font-medium leading-[1.35] text-white/90">{item.title}</p>
                   <p className="mt-0.5 text-[10px] text-white/50">{item.detail}</p>
                   {item.extra && <p className="text-[10px] text-white/50">{item.extra}</p>}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </SidebarCard>
 
       <SidebarCard>
-        <CardHeader title="กิจกรรมของคุณ" />
+        <CardHeader showAll={false} title="กิจกรรมของคุณ" />
         <div className="space-y-3">
           {joinedEvents.map((event) => (
             <div className="flex gap-2.5" key={event.title}>
@@ -76,16 +75,6 @@ export default function CommunityEventsSidebar() {
         </div>
       </SidebarCard>
 
-      <SidebarCard>
-        <div className="flex gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/[0.1] text-2xl" aria-hidden="true">📖</div>
-          <div className="min-w-0">
-            <h2 className="sidebar-title">กติกาการเข้าร่วมกิจกรรม</h2>
-            <p className="sidebar-body mt-1">อ่านกติกาและแนวทางการเข้าร่วม<br />เพื่อให้ทุกคนสนุกไปด้วยกันอย่างสร้างสรรค์</p>
-          </div>
-        </div>
-        <Link className="mt-3 flex h-8 w-full items-center justify-center gap-2 rounded-md border border-white/60 text-[10px] text-white/85 transition hover:border-[#12df8a] hover:text-[#7cf3b2]" href="/community/events/rules">ดูรายละเอียด <span aria-hidden="true" className="text-sm">→</span></Link>
-      </SidebarCard>
     </aside>
   );
 }

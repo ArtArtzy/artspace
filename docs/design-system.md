@@ -45,10 +45,11 @@
 
 | Section | Token | Value |
 | --- | --- | --- |
-| นิยาย | `--arn-accent-novel` | `#21D98B` Emerald |
-| แฟนฟิค | `--arn-accent-fanfic` | `#B86CFF` Violet |
-| การ์ตูน | `--arn-accent-cartoon` | `#39C7FF` Cyan |
-| ชุมชน | `--arn-accent-community` | `#12DF8A` Community Emerald |
+| หน้าแรก | `--arn-accent-home` | `#00E68A` Brand Green |
+| นิยาย | `--arn-accent-novel` | `#22C77A` Emerald |
+| แฟนฟิค | `--arn-accent-fanfic` | `#A76BF3` Violet |
+| การ์ตูน | `--arn-accent-cartoon` | `#36A9E1` Cyan Blue |
+| ชุมชน | `--arn-accent-community` | `#12DF8A` Emerald Green |
 
 สีประจำ Section ใช้กับ active state, icon, badge, progress และเส้นเน้นเท่านั้น ไม่ควรเปลี่ยนพื้นหลังทั้งหน้า
 
@@ -121,12 +122,26 @@
 ```tsx
 <section className="ds-card p-ds-4">...</section>
 <section className="ds-section p-ds-4">...</section>
+<div className="ds-page-banner-shell"><div className="ds-page-banner">...</div></div>
 <button className="ds-button-primary px-ds-4">บันทึก</button>
 <button className="ds-button-secondary px-ds-4">ยกเลิก</button>
 <span className="ds-chip px-ds-3">แฟนตาซี</span>
 ```
 
 Class เหล่านี้อยู่ใน `app/globals.css` และ Tailwind aliases อยู่ใน `tailwind.config.ts` โดย `.ds-card` ใช้กับ Card ทั่วไป, `.ds-section` ใช้กับ Section ที่มี heading/list ภายใน และ `.ds-input` ใช้กับช่องค้นหา/ฟอร์ม
+
+### Community content surface
+
+คอนเทนต์หลักฝั่งซ้ายของหน้าชุมชนใช้ wrapper `.ds-community-content` เพื่อให้ Card/Section ใช้พื้น `--arn-color-canvas` แบบเดียวกับหน้าการอ่านและไม่กลายเป็นพื้นเขียวทั้งแผง ส่วนสีเขียวของชุมชนยังใช้ได้กับ active state, badge, status และ CTA ตามความหมายของ UI
+
+### Sticky page title banner
+
+ใช้ `.ds-page-banner-shell` ครอบ `.ds-page-banner` สำหรับ Page Identity Bar ที่อยู่ระหว่าง Hero Banner และ Sub Menu โดยใช้พื้นผิวร่วมของระบบ และเติมสีประจำหน้าบาง ๆ เท่านั้น ไม่ใช้ glow หรือ gradient ที่เด่นจนกลายเป็นอีก Card หนึ่ง
+
+- คอมโพเนนต์กลางอยู่ที่ `components/PageTitleBar.tsx` และรองรับ `home`, `novel`, `fanfic`, `cartoon`, `community`
+- สีประจำหน้าใช้กับ icon, title, border และ tint ของ Identity Bar เท่านั้น ไม่เปลี่ยนสี CTA, header, notification, profile หรือ success state
+- Sub Menu ที่อยู่ถัดลงมาเป็น navigation แยกต่างหาก พื้นหลังยังคงเป็น neutral dark และใช้ accent เฉพาะ active indicator ได้
+- เมื่อมี banner สูงประมาณ 60px ให้แถบ filter/menu ถัดไปใช้ offset `top-[142px]` เพื่อไม่ทับกัน
 
 ## Accessibility baseline
 

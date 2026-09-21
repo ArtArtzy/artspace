@@ -19,10 +19,9 @@ function WritersSidebarCard({ children }: { children: React.ReactNode }) {
   return <section className="ds-card p-3">{children}</section>;
 }
 
-function WritersSidebarHeader({ icon, title, href }: { icon: string; title: string; href: string }) {
+function WritersSidebarHeader({ title, href }: { title: string; href: string }) {
   return (
     <div className="mb-2.5 flex items-center gap-2">
-      <span aria-hidden="true" className="text-base leading-none">{icon}</span>
       <h2 className="sidebar-title">{title}</h2>
       <Link className="sidebar-link ml-auto transition hover:text-[#8affc0]" href={href}>ดูทั้งหมด →</Link>
     </div>
@@ -33,7 +32,7 @@ export default function CommunityWritersSidebar() {
   return (
     <aside aria-label="เครื่องมือและกิจกรรมสำหรับนักเขียน" className="space-y-3">
       <WritersSidebarCard>
-        <WritersSidebarHeader href="/community/writers/resources/overview" icon="▦" title="แหล่งช่วยเขียน" />
+        <WritersSidebarHeader href="/community/writers/resources/overview" title="แหล่งช่วยเขียน" />
         <div className="space-y-1.5">
           {writingResources.map(([icon, title, description]) => (
             <Link className="flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-2 py-1.5 transition hover:border-[#1de38b]/50 hover:bg-[#12231a]" href={`/community/writers/resources/${encodeURIComponent(title)}`} key={title}>
@@ -48,7 +47,7 @@ export default function CommunityWritersSidebar() {
       </WritersSidebarCard>
 
       <WritersSidebarCard>
-        <WritersSidebarHeader href="/community/events" icon="♧" title="กิจกรรมสำหรับนักเขียน" />
+        <WritersSidebarHeader href="/community/events" title="กิจกรรมสำหรับนักเขียน" />
         <div className="space-y-2">
           {writingEvents.map((event) => (
             <Link className="flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-2 py-1.5 transition hover:border-[#1de38b]/50 hover:bg-[#12231a]" href={`/community/events/${event.slug}`} key={event.title}>

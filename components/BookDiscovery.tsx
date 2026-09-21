@@ -667,7 +667,7 @@ function LatestCompletedReviewsCard() {
           <SimpleTitleIcon className="h-5 w-5 shrink-0" name="star" />
           <h2 className="sidebar-title" id="latest-completed-reviews-title">รอรีวิวจากคุณ</h2>
         </div>
-        <Link aria-label="ดูเรื่องที่รอรีวิวจากคุณทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูเรื่องที่รอรีวิวจากคุณทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read?section=completed-reviews">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
@@ -676,18 +676,18 @@ function LatestCompletedReviewsCard() {
           const completedAgo = index + 1;
 
           return (
-            <div className="group flex min-w-0 gap-2.5 py-2 first:pt-1 last:pb-0" key={book.title}>
+            <Link aria-label={`เปิดเรื่อง ${displayTitle}`} className="group flex min-w-0 gap-2.5 rounded-[5px] py-2 first:pt-1 last:pb-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} key={book.title}>
               <div className="flex min-w-0 gap-2.5">
                 <Image alt={`ปกหนังสือ ${displayTitle}`} className="h-[42px] w-[32px] shrink-0 rounded-[4px] object-cover" height={42} src={book.image} width={32} />
                 <div className="min-w-0 flex-1">
-                  <Link className="sidebar-item-title block truncate transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} title={displayTitle}>{displayTitle}</Link>
+                  <span className="sidebar-item-title block truncate transition group-hover:text-white" title={displayTitle}>{displayTitle}</span>
                   <p className="sidebar-meta truncate text-white/45">{book.author}</p>
                   <div className="mt-0.5">
                     <p className="sidebar-caption truncate text-white/50">อ่านจบเมื่อ {completedAgo} วันที่แล้ว</p>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
@@ -705,19 +705,19 @@ function CompletedSavedCard() {
           <SimpleTitleIcon className="h-5 w-5 shrink-0" name="bookmark" />
           <h2 className="sidebar-title" id="completed-saved-title">เรื่องจบที่คุณติดตาม</h2>
         </div>
-        <Link aria-label="ดูเรื่องจบที่คุณติดตามทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
+        <Link aria-label="ดูเรื่องจบที่คุณติดตามทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read?section=completed-following">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="mt-2 divide-y divide-white/[0.08]">
         {savedBooks.map((book) => (
-          <div className="group flex min-w-0 items-center gap-2.5 py-2.5 first:pt-2 last:pb-1" key={book.title}>
+          <Link aria-label={`เปิดเรื่อง ${getDisplayBookTitle(book)}`} className="group flex min-w-0 items-center gap-2.5 rounded-[5px] py-2.5 first:pt-2 last:pb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} key={book.title}>
             <Image alt={`ปกหนังสือ ${book.title}`} className="h-[52px] w-[38px] shrink-0 rounded-[4px] object-cover" height={52} src={book.image} width={38} />
             <div className="min-w-0 flex-1">
-              <Link className="sidebar-item-title block truncate transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(book.title)}`} title={getDisplayBookTitle(book)}>{getDisplayBookTitle(book)}</Link>
+              <span className="sidebar-item-title block truncate transition group-hover:text-white" title={getDisplayBookTitle(book)}>{getDisplayBookTitle(book)}</span>
               <p className="sidebar-meta mt-1 truncate text-white/45">{book.author}</p>
               <p className="sidebar-caption mt-1 text-white/55">จบแล้ว {book.episodes} ตอน</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
@@ -944,10 +944,10 @@ function LatestFollowingUpdatesCard() {
 
 function FollowedManagementCard() {
   const actions: Array<{ title: string; icon: "bell" | "writers" | "stories" | "settings"; href: string }> = [
-    { title: "การแจ้งเตือน", icon: "bell", href: "/read" },
+    { title: "การแจ้งเตือน", icon: "bell", href: "/notifications" },
     { title: "จัดการนักเขียนที่ติดตาม", icon: "writers", href: "/writers" },
-    { title: "จัดการเรื่องที่ติดตาม", icon: "stories", href: "/read" },
-    { title: "ตั้งค่าการแนะนำจากที่ติดตาม", icon: "settings", href: "/read" },
+    { title: "จัดการเรื่องที่ติดตาม", icon: "stories", href: "/read?bookshelf=all" },
+    { title: "ตั้งค่าการแนะนำจากที่ติดตาม", icon: "settings", href: "/read?category=จากที่ติดตาม" },
   ];
 
   return (
@@ -1006,11 +1006,11 @@ function FollowingUpdateIcon({ type }: { type: "all" | "novel" | "fanfic" | "car
 }
 
 function TodayFollowingUpdatesCard() {
-  const updateTypes: Array<{ label: string; value: string; icon: "all" | "novel" | "fanfic" | "cartoon"; highlight?: boolean }> = [
-    { label: "ตอนใหม่ทั้งหมด", value: "5", icon: "all", highlight: true },
-    { label: "นิยาย", value: "3", icon: "novel" },
-    { label: "แฟนฟิค", value: "1", icon: "fanfic" },
-    { label: "การ์ตูน", value: "1", icon: "cartoon" },
+  const updateTypes: Array<{ label: string; value: string; icon: "all" | "novel" | "fanfic" | "cartoon"; href: string; highlight?: boolean }> = [
+    { label: "ตอนใหม่ทั้งหมด", value: "5", icon: "all", href: "/read?category=จากที่ติดตาม", highlight: true },
+    { label: "นิยาย", value: "3", icon: "novel", href: "/read?category=จากที่ติดตาม" },
+    { label: "แฟนฟิค", value: "1", icon: "fanfic", href: "/read?category=จากที่ติดตาม" },
+    { label: "การ์ตูน", value: "1", icon: "cartoon", href: "/read?category=จากที่ติดตาม" },
   ];
 
   return (
@@ -1022,10 +1022,10 @@ function TodayFollowingUpdatesCard() {
 
       <div className="mt-2 overflow-hidden rounded-[7px] border border-white/[0.1] bg-[#0d1210]">
           {updateTypes.map((type) => (
-            <div className="flex items-center justify-between gap-2 border-b border-white/[0.08] px-2 py-2 last:border-b-0" key={type.label}>
+            <Link className="flex items-center justify-between gap-2 border-b border-white/[0.08] px-2 py-2 transition hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#29ef82] last:border-b-0" href={type.href} key={type.label}>
               <span className="sidebar-item-title flex min-w-0 items-center gap-2 text-white/75"><FollowingUpdateIcon type={type.icon} /><span className="truncate">{type.label}</span></span>
               <span className={type.highlight ? "sidebar-item-title shrink-0 font-semibold text-[#1be27e]" : "sidebar-item-title shrink-0 font-normal text-white/75"}>{type.value} ตอน</span>
-            </div>
+            </Link>
           ))}
       </div>
     </section>
@@ -1335,7 +1335,8 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
                       ? completedSectionIcons[section.title]
                     : undefined;
 
-            const hideViewAll = (selectedCategory === "สำหรับคุณ" && ["คัดมาให้คุณ", 'เพราะคุณอ่าน "Sky of Tomorrow"', "เรื่องที่น่าจะชอบ"].includes(section.title))
+            const hideViewAll = selectedCategory === "กำลังมาแรง"
+              || (selectedCategory === "สำหรับคุณ" && ["คัดมาให้คุณ", 'เพราะคุณอ่าน "Sky of Tomorrow"', "เรื่องที่น่าจะชอบ"].includes(section.title))
               || (selectedCategory === "อ่านต่อ" && ["ใกล้อ่านจบ", "กลับไปเรื่องโปรด", "อัปเดตจากเรื่องที่กำลังอ่าน"].includes(section.title));
 
             return (

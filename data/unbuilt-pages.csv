@@ -16,6 +16,9 @@ READ-TAG-FANFIC-001,หน้ารวมเรื่องตามแท็ก
 READ-TAG-CARTOON-001,หน้ารวมเรื่องตามแท็กการ์ตูน,/read/cartoon?tag=:tag,กดแท็กใน Sidebar การ์ตูน,ยังไม่ได้ทำ
 READ-BOOKSHELF-001,ชั้นหนังสือของคุณ,/read?bookshelf=all,ดูทั้งหมดใน Sidebar หรือชั้นหนังสือของฉันใน Profile,ยังไม่ได้ทำ
 HOME-CONTINUE-001,หน้ารวมเรื่องอ่านต่อ,/read?category=อ่านต่อ,ดูทั้งหมดใน Section อ่านต่อจากที่ค้างไว้ หน้าแรก,ยังไม่ได้ทำ
+HOME-FOLLOWING-001,หน้ารวมเรื่องจากที่ติดตาม,/read?category=จากที่ติดตาม,ดูทั้งหมดในทุก Section จากที่ติดตาม หน้าแรก,ยังไม่ได้ทำ
+HOME-COMPLETED-REVIEWS-001,หน้ารวมเรื่องที่รอรีวิวจากคุณ,/read?section=completed-reviews,ดูทั้งหมดใน Sidebar รอรีวิวจากคุณ หน้าแรก,ยังไม่ได้ทำ
+HOME-COMPLETED-FOLLOWING-001,หน้ารวมเรื่องจบที่คุณติดตาม,/read?section=completed-following,ดูทั้งหมดใน Sidebar เรื่องจบที่คุณติดตาม หน้าแรก,ยังไม่ได้ทำ
 HOME-NEW-EPISODES-001,หน้ารวมตอนใหม่,/read?section=new-episodes,ดูทั้งหมดใน Sidebar มีตอนใหม่ หน้าแรก,ยังไม่ได้ทำ
 WRITER-PROFILE-001,หน้าโปรไฟล์นักเขียน,/writers/:slug,กดการ์ดนักเขียนใน Section นักเขียนแนะนำ,ยังไม่ได้ทำ
 WRITERS-LIST-001,หน้ารวมนักเขียน,/writers,เมนูนักเขียน หรือดูทั้งหมดใน Section นักเขียนแนะนำ,ยังไม่ได้ทำ
@@ -30,11 +33,15 @@ FOOTER-CONTACT-001,หน้าติดต่อเรา,/contact,Footer: ต�
 FOOTER-PRIVACY-001,หน้านโยบายความเป็นส่วนตัว,/privacy,Footer: นโยบายความเป็นส่วนตัว,ยังไม่ได้ทำ
 FOOTER-TERMS-001,หน้าเงื่อนไขการใช้งาน,/terms,Footer: เงื่อนไขการใช้งาน,ยังไม่ได้ทำ
 SOCIAL-LINK-001,หน้าลิงก์โซเชียลของ ARN SPACE,/social/:network,ไอคอน Social ใน Footer,ยังไม่ได้ทำ
+COMMUNITY-RULES-001,หน้ากติกาชุมชน,/community/rules,ปุ่มกติกาชุมชนใน Hero ชุมชน,ยังไม่ได้ทำ
 COMMUNITY-CREATE-POST-001,หน้าสร้างโพสต์ชุมชน,/community/create-post,ปุ่มสร้างโพสต์ใน Hero ชุมชน,ยังไม่ได้ทำ
 COMMUNITY-EVENTS-LIST-001,หน้ารวมกิจกรรมชุมชน,/community/events,ดูรายละเอียดหรือดูทั้งหมดของกิจกรรม,ยังไม่ได้ทำ
 COMMUNITY-EVENT-RULES-001,หน้ากติกาการเข้าร่วมกิจกรรม,/community/events/rules,ดูรายละเอียดกติกาการเข้าร่วมกิจกรรม,ยังไม่ได้ทำ
 COMMUNITY-EVENT-001,หน้ารายละเอียดกิจกรรมชุมชน,/community/events/:slug,ปุ่มเข้าร่วม/ดูรายละเอียดกิจกรรม หรือกิจกรรมใน Sidebar,ยังไม่ได้ทำ
+COMMUNITY-FEED-LATEST-001,หน้ารวมกระทู้พูดคุยล่าสุด,/community?section=discussion&filter=latest,ดูทั้งหมดใน Section พูดคุยล่าสุด หน้า สำหรับคุณ,ยังไม่ได้ทำ
+COMMUNITY-FEED-THREAD-001,หน้ารายละเอียดกระทู้จากหน้า สำหรับคุณ,/community/posts/:slug?from=community-feed,กด List กระทู้ในทุก Section ของหน้า สำหรับคุณ,ยังไม่ได้ทำ
 COMMUNITY-WRITER-TOPICS-001,หน้ารวมกระทู้ห้องนักเขียน,/community/writers/topics?filter=:filter,ดูทั้งหมดในแต่ละ Section ของห้องนักเขียน,ยังไม่ได้ทำ
 COMMUNITY-WRITER-RESOURCES-001,หน้ารวมแหล่งช่วยเขียน,/community/writers/resources/:slug,แหล่งช่วยเขียนใน Sidebar ห้องนักเขียน,ยังไม่ได้ทำ
+COMMUNITY-TOPICS-LIST-001,หน้ารวมกระทู้ตามหัวข้อ,/community/topics,ดูทั้งหมดใน Sidebar กำลังพูดถึง,ยังไม่ได้ทำ
 COMMUNITY-TOPIC-001,หน้ารายละเอียดกระทู้ชุมชน,/community/topics/:slug,กดกระทู้ใน Sidebar ชุมชนที่คุณสนใจ,ยังไม่ได้ทำ
 ARN-NEWS-001,หน้ารายละเอียดข่าว ARN SPACE,/community/news/:slug,กดรายการข่าวใน Sidebar ข่าวจาก ARN SPACE,ยังไม่ได้ทำ

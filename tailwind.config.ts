@@ -29,6 +29,7 @@ const config: Config = {
           faint: "var(--arn-color-text-faint)",
         },
         section: {
+          home: "var(--arn-accent-home)",
           novel: "var(--arn-accent-novel)",
           fanfic: "var(--arn-accent-fanfic)",
           cartoon: "var(--arn-accent-cartoon)",

@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type WriterTopic = {
   slug: string;
@@ -15,6 +14,8 @@ type WriterTopic = {
   tags: string[];
   stats: [string, string, string];
   action?: string;
+  topicType?: string;
+  topicTypeClass?: string;
 };
 
 type WriterTopicSection = {
@@ -87,6 +88,35 @@ const sections: WriterTopicSection[] = [
   },
 ];
 
+const allWriterTopics: WriterTopic[] = sections
+  .reduce<WriterTopic[][]>((rowsByPosition, section) => {
+    section.rows.forEach((topic, index) => {
+      rowsByPosition[index] ??= [];
+      rowsByPosition[index].push({
+        ...topic,
+        topicType: section.filter,
+        topicTypeClass: section.badgeClass,
+      });
+    });
+    return rowsByPosition;
+  }, [])
+  .flat();
+
+const pinnedWriterTopics: WriterTopic[] = [
+  { ...sections[0].rows[0], topicType: sections[0].filter, topicTypeClass: sections[0].badgeClass },
+  { ...sections[1].rows[0], topicType: sections[1].filter, topicTypeClass: sections[1].badgeClass },
+  { ...sections[2].rows[0], topicType: sections[2].filter, topicTypeClass: sections[2].badgeClass },
+];
+
+const allWriterSection: WriterTopicSection = {
+  icon: "",
+  title: "ทั้งหมด",
+  filter: "ทั้งหมด",
+  badge: "",
+  badgeClass: "",
+  rows: allWriterTopics,
+};
+
 function TopicStats({ stats }: { stats: WriterTopic["stats"] }) {
   return (
     <div className="flex shrink-0 items-center gap-2.5 text-[10px] text-white/55 sm:gap-4">
@@ -97,42 +127,50 @@ function TopicStats({ stats }: { stats: WriterTopic["stats"] }) {
   );
 }
 
-function TopicRow({ topic, section }: { topic: WriterTopic; section: WriterTopicSection }) {
+function WriterTitleIcon({ type }: { type: "pin" | "all" }) {
+  if (type === "pin") {
+    return <svg aria-hidden="true" className="h-5 w-5 shrink-0 text-section-community" viewBox="0 0 24 24"><path d="M16 9V4h1V2H7v2h1v5c0 1.66-1.34 3-3 3v2h5.97v7h2.06v-7H20v-2c-1.66 0-3-1.34-3-3Z" fill="currentColor" /></svg>;
+  }
+
+  return <svg aria-hidden="true" className="h-5 w-5 shrink-0 text-section-community" viewBox="0 0 24 24"><rect fill="currentColor" height="6" rx="1.2" width="6" x="3" y="3" /><rect fill="currentColor" height="6" rx="1.2" width="6" x="15" y="3" /><rect fill="currentColor" height="6" rx="1.2" width="6" x="3" y="15" /><rect fill="currentColor" height="6" rx="1.2" width="6" x="15" y="15" /></svg>;
+}
+
+function TopicRow({ topic }: { topic: WriterTopic }) {
   return (
-    <Link href={`/community/posts/${topic.slug}`} className="group grid min-w-0 grid-cols-[52px_minmax(0,1fr)] items-center gap-2 border-t border-white/[0.07] py-2 transition hover:bg-white/[0.025] sm:grid-cols-[52px_minmax(0,1fr)_auto] sm:gap-2.5">
-      <div className="relative h-10 w-12 overflow-hidden rounded bg-[#18251f]">
-        <Image alt={`ภาพประกอบ ${topic.title}`} className="object-cover" fill sizes="48px" src={topic.image} />
-      </div>
-      <div className="min-w-0">
-        <div className="flex min-w-0 items-center gap-2">
-          <span className={`shrink-0 rounded px-2 py-1 text-[10px] font-semibold ${section.badgeClass}`}>{section.badge}</span>
-          <p className="truncate text-[12px] font-medium leading-tight text-white/90 group-hover:text-[#7cf3b2]">{topic.title}</p>
-        </div>
-        <div className="mt-1 flex min-w-0 items-center gap-2 text-[10px] text-white/45">
-          <span className="truncate">{topic.user} · {topic.age}</span>
-          <span className="hidden truncate sm:inline">{topic.excerpt}</span>
-        </div>
-        <div className="mt-1 flex min-w-0 items-center gap-1.5 overflow-hidden">
-          {topic.tags.map((tag) => <span className="shrink-0 rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-white/60" key={tag}>{tag}</span>)}
+    <Link href={`/community/posts/${topic.slug}?from=community-writers`} className="group flex min-w-0 items-center gap-2 border-t border-white/[0.07] py-2 transition hover:bg-white/[0.025] sm:gap-2.5">
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 text-[13px] font-medium leading-tight text-white/90 group-hover:text-[#7cf3b2]">{topic.title}</p>
+        <p className="mt-1 truncate text-[11px] leading-tight text-white/55">{topic.excerpt}</p>
+        <div className="mt-1 flex min-w-0 items-center gap-2 text-[10px] text-white/50">
+          <span className="truncate">{topic.user}</span>
+          <span className="shrink-0">· {topic.age}</span>
         </div>
       </div>
-      <div className="col-span-2 flex items-center justify-between gap-3 sm:col-span-1 sm:justify-end">
-        <TopicStats stats={topic.stats} />
-        {topic.action && <span className="hidden shrink-0 rounded-full border border-[#1de38b]/60 px-2 py-1 text-[10px] text-[#63efaa] sm:inline-flex">{topic.action}</span>}
-      </div>
+      <TopicStats stats={topic.stats} />
     </Link>
   );
 }
 
-function TopicSection({ section }: { section: WriterTopicSection }) {
+function TopicCard({ title, rows, headingIcon }: { title: string; rows: WriterTopic[]; headingIcon?: "all" }) {
   return (
-    <section className="ds-section px-3 sm:px-4" aria-labelledby={`writer-section-${section.filter}`}>
+    <section className="ds-section px-3 sm:px-4" aria-labelledby={`writer-section-${title}`}>
       <div className="flex items-center gap-2 py-2.5">
-        <span aria-hidden="true" className="text-base leading-none">{section.icon}</span>
-        <h2 className="text-[16px] font-semibold leading-tight text-white" id={`writer-section-${section.filter}`}>{section.title}</h2>
-        <Link className="ml-auto text-[10px] font-medium text-[#1de38b] transition hover:text-[#8affc0]" href={`/community/writers/topics?filter=${encodeURIComponent(section.filter)}`}>ดูทั้งหมด →</Link>
+        {headingIcon && <WriterTitleIcon type={headingIcon} />}
+        <h2 className="text-[16px] font-semibold leading-tight text-white" id={`writer-section-${title}`}>{title}</h2>
       </div>
-      {section.rows.map((topic) => <TopicRow key={topic.title} section={section} topic={topic} />)}
+      {rows.map((topic, index) => <TopicRow key={`${topic.slug}-${topic.title}-${index}`} topic={topic} />)}
+    </section>
+  );
+}
+
+function PinnedTopicCard() {
+  return (
+    <section className="ds-section px-3 sm:px-4" aria-labelledby="pinned-writer-topics-title">
+      <div className="flex items-center gap-2 py-2.5">
+        <WriterTitleIcon type="pin" />
+        <h2 className="text-[16px] font-semibold leading-tight text-white" id="pinned-writer-topics-title">กระทู้ปักหมุด</h2>
+      </div>
+      {pinnedWriterTopics.map((topic, index) => <TopicRow key={`${topic.slug}-${index}`} topic={topic} />)}
     </section>
   );
 }
@@ -166,44 +204,56 @@ function createSimulatedTopicPage(section: WriterTopicSection) {
   });
 }
 
+type TopicSortOrder = "latest" | "popular" | "trending";
+
+function sortWriterTopics(rows: WriterTopic[], sortOrder: TopicSortOrder) {
+  if (sortOrder === "popular") return [...rows].sort((a, b) => Number.parseInt(b.stats[1], 10) - Number.parseInt(a.stats[1], 10));
+  if (sortOrder === "trending") return [...rows].sort((a, b) => Number.parseFloat(b.stats[2]) - Number.parseFloat(a.stats[2]));
+  return rows;
+}
+
 function TopicPagination() {
   return (
     <nav aria-label="หน้ารายการกระทู้ห้องนักเขียน" className="flex items-center justify-center gap-1.5 pt-2">
       <button aria-current="page" className="flex h-8 min-w-8 items-center justify-center rounded-md border border-[#12df8a] bg-[#12df8a] px-2 text-[11px] font-semibold text-[#03150d]" type="button">1</button>
-      {[2, 3, 4, 5].map((page) => <button aria-disabled="true" className="flex h-8 min-w-8 cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-[#101b17] px-2 text-[11px] text-white/35" disabled key={page} type="button">{page}</button>)}
+      {[2, 3, 4, 5].map((page) => <button aria-disabled="true" className="flex h-8 min-w-8 cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-arn-canvas px-2 text-[11px] text-white/35" disabled key={page} type="button">{page}</button>)}
       <span aria-hidden="true" className="px-1 text-[11px] text-white/35">…</span>
-      <button aria-disabled="true" className="flex h-8 min-w-8 cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-[#101b17] px-2 text-[11px] text-white/35" disabled type="button">50</button>
+      <button aria-disabled="true" className="flex h-8 min-w-8 cursor-not-allowed items-center justify-center rounded-md border border-white/10 bg-arn-canvas px-2 text-[11px] text-white/35" disabled type="button">50</button>
     </nav>
   );
 }
 
 export default function CommunityWriters() {
   const [selectedFilter, setSelectedFilter] = useState("ทั้งหมด");
+  const [sortOrder, setSortOrder] = useState<TopicSortOrder>("latest");
   const selectedSection = sections.find((section) => section.filter === selectedFilter);
-  const visibleSections = selectedFilter === "ทั้งหมด"
-    ? sections
-    : selectedSection ? [{ ...selectedSection, rows: createSimulatedTopicPage(selectedSection) }] : [];
+  const activeSection = selectedFilter === "ทั้งหมด" ? allWriterSection : selectedSection;
+  const visibleTopics = useMemo(() => {
+    if (!activeSection) return [];
+    return sortWriterTopics(createSimulatedTopicPage(activeSection), sortOrder);
+  }, [activeSection, sortOrder]);
 
   return (
     <div className="min-w-0" id="community-writers">
       <div className="mb-2.5 flex items-center gap-1.5 overflow-x-auto pb-0.5">
         {filters.map((filter) => (
-          <button aria-pressed={selectedFilter === filter} className={`shrink-0 rounded-full border px-4 py-1.5 text-[11px] transition ${selectedFilter === filter ? "border-[#12df8a] bg-[#12df8a] font-semibold text-[#03150d]" : "border-white/10 bg-[#101b17] text-white/70 hover:border-[#12df8a] hover:text-white"}`} key={filter} onClick={() => setSelectedFilter(filter)} type="button">{filter}</button>
+          <button aria-pressed={selectedFilter === filter} className={`shrink-0 rounded-full border px-4 py-1.5 text-[11px] transition ${selectedFilter === filter ? "border-[#12df8a] bg-[#12df8a] font-semibold text-[#03150d]" : "border-white/10 bg-arn-canvas text-white/70 hover:border-[#12df8a] hover:text-white"}`} key={filter} onClick={() => setSelectedFilter(filter)} type="button">{filter}</button>
         ))}
         <label className="relative ml-auto inline-flex shrink-0 items-center">
           <span className="sr-only">เรียงลำดับกระทู้</span>
-          <select aria-label="เรียงลำดับกระทู้" className="appearance-none rounded-full border border-white/10 bg-[#101b17] py-1.5 pl-4 pr-8 text-[11px] text-white/75 outline-none focus:border-[#12df8a]" defaultValue="latest">
-            <option className="bg-[#101b17]" value="latest">ล่าสุด</option>
-            <option className="bg-[#101b17]" value="popular">ยอดนิยม</option>
-            <option className="bg-[#101b17]" value="trending">มาแรง</option>
+          <select aria-label="เรียงลำดับกระทู้" className="appearance-none rounded-full border border-white/10 bg-arn-canvas py-1.5 pl-4 pr-8 text-[11px] text-white/75 outline-none focus:border-[#12df8a]" onChange={(event) => setSortOrder(event.target.value as TopicSortOrder)} value={sortOrder}>
+            <option className="bg-arn-canvas" value="latest">ล่าสุด</option>
+            <option className="bg-arn-canvas" value="popular">ยอดนิยม</option>
+            <option className="bg-arn-canvas" value="trending">มาแรง</option>
           </select>
           <span aria-hidden="true" className="pointer-events-none absolute right-3 text-[11px] text-white/60">⌄</span>
         </label>
       </div>
 
       <div className="space-y-3">
-        {visibleSections.map((section) => <TopicSection key={section.title} section={section} />)}
-        {selectedFilter !== "ทั้งหมด" && <TopicPagination />}
+        <PinnedTopicCard />
+        {activeSection && <TopicCard headingIcon={selectedFilter === "ทั้งหมด" ? "all" : undefined} rows={visibleTopics} title={activeSection.title} />}
+        <TopicPagination />
       </div>
     </div>
   );

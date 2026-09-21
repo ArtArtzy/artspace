@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommunitySidebar from "@/components/CommunitySidebar";
-import { feedPosts } from "@/components/CommunityFeed";
+import { communityThreadPosts } from "@/components/CommunityFeed";
 import Footer from "@/components/Footer";
 import TopMenu from "@/components/TopMenu";
 
@@ -11,12 +11,12 @@ type CommunityPostPageProps = {
 };
 
 export function generateStaticParams() {
-  return feedPosts.map((post) => ({ slug: post.slug }));
+  return communityThreadPosts.map((post) => ({ slug: post.slug }));
 }
 
 export default async function CommunityPostPage({ params }: CommunityPostPageProps) {
   const { slug } = await params;
-  const post = feedPosts.find((item) => item.slug === slug);
+  const post = communityThreadPosts.find((item) => item.slug === slug);
 
   if (!post) notFound();
 

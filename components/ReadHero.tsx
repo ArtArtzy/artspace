@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import BookshelfToggleButton from "@/components/BookshelfToggleButton";
+import PageTitleBar from "@/components/PageTitleBar";
 
 export type ReadModeId = "novel" | "fanfic" | "cartoon";
 
@@ -249,79 +250,7 @@ type ReadHeroProps = {
   activeMode: ReadModeId;
 };
 
-type ReadBannerIconName = "book" | "sparkle" | "panel";
-
-const readModeBannerContent: Record<ReadModeId, {
-  label: string;
-  description: string;
-  icon: ReadBannerIconName;
-  accentClass: string;
-  accentBorderClass: string;
-  borderClass: string;
-  backgroundClass: string;
-  shadowClass: string;
-}> = {
-  novel: {
-    label: "นิยาย",
-    description: "เรื่องราวดี ๆ จากนักเขียนใน ARN SPACE",
-    icon: "book",
-    accentClass: "text-[#21D98B]",
-    accentBorderClass: "border-[#21D98B]/15",
-    borderClass: "border-[#116b4b]",
-    backgroundClass: "bg-gradient-to-r from-[#0d2b20] via-[#0d2119] to-[#0b1712]",
-    shadowClass: "shadow-[0_0_18px_rgba(33,217,139,.08)]",
-  },
-  fanfic: {
-    label: "แฟนฟิค",
-    description: "เรื่องราวจากจักรวาลที่คุณชื่นชอบใน ARN SPACE",
-    icon: "sparkle",
-    accentClass: "text-[#B86CFF]",
-    accentBorderClass: "border-[#B86CFF]/15",
-    borderClass: "border-[#70418f]",
-    backgroundClass: "bg-gradient-to-r from-[#241533] via-[#1c1527] to-[#111016]",
-    shadowClass: "shadow-[0_0_18px_rgba(184,108,255,.1)]",
-  },
-  cartoon: {
-    label: "การ์ตูน",
-    description: "เรื่องราวภาพสวยจากนักเขียนใน ARN SPACE",
-    icon: "panel",
-    accentClass: "text-[#39C7FF]",
-    accentBorderClass: "border-[#39C7FF]/15",
-    borderClass: "border-[#236c89]",
-    backgroundClass: "bg-gradient-to-r from-[#102b38] via-[#10232d] to-[#0d151a]",
-    shadowClass: "shadow-[0_0_18px_rgba(57,199,255,.1)]",
-  },
-};
-
-function ReadBannerIcon({ icon, className }: { icon: ReadBannerIconName; className: string }) {
-  if (icon === "sparkle") {
-    return (
-      <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
-        <path d="m12 3 1.7 6.3L20 11l-6.3 1.7L12 19l-1.7-6.3L4 11l6.3-1.7L12 3Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
-        <path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (icon === "panel") {
-    return (
-      <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
-        <rect height="15" rx="2" stroke="currentColor" strokeWidth="1.7" width="15" x="4.5" y="4.5" />
-        <rect height="6" rx="1" stroke="currentColor" strokeWidth="1.5" width="6" x="9" y="9" />
-        <path d="M7.5 7.5h.01M16.5 16.5h.01" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
-      <path d="M4.5 5.5h5.2a2.3 2.3 0 0 1 2.3 2.3v11a2.3 2.3 0 0 0-2.3-2.3H4.5v-11ZM19.5 5.5h-5.2A2.3 2.3 0 0 0 12 7.8v11a2.3 2.3 0 0 1 2.3-2.3h5.2v-11Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
 export default function ReadHero({ activeMode }: ReadHeroProps) {
-  const activeBanner = readModeBannerContent[activeMode];
   const hero = activeMode === "novel"
     ? <HeroCarousel ariaLabel="นิยายแนะนำ" modePath="/read" slides={novelSlides} />
     : activeMode === "fanfic"
@@ -331,18 +260,7 @@ export default function ReadHero({ activeMode }: ReadHeroProps) {
   return (
     <>
       {hero}
-      <div className="sticky top-[82px] z-40 mx-auto w-full max-w-[1400px] bg-arn-canvas px-2 pb-1 pt-2">
-        <div className={`relative flex min-h-[48px] items-center gap-2.5 overflow-hidden rounded-[8px] border px-3 py-1.5 ${activeBanner.borderClass} ${activeBanner.backgroundClass} ${activeBanner.shadowClass}`}>
-          <div aria-hidden="true" className={`pointer-events-none absolute -right-10 top-1/2 h-24 w-48 -translate-y-1/2 rounded-full border blur-[1px] ${activeBanner.accentBorderClass}`} />
-          <ReadBannerIcon className={`relative h-8 w-8 shrink-0 ${activeBanner.accentClass}`} icon={activeBanner.icon} />
-          <h1 className="relative shrink-0 text-[23px] font-semibold leading-tight text-white sm:text-[25px]">{activeBanner.label}</h1>
-          <p className="relative min-w-0 flex-1 truncate text-[10px] text-white/55 sm:text-[11px]">{activeBanner.description}</p>
-          <div className="relative ml-auto hidden shrink-0 text-right leading-[1.45] sm:block">
-            <p className="text-[10px] text-white/45">“จินตนาการของคุณ</p>
-            <p className="text-[10px] text-white/45">อาจเป็นโลกใบใหม่หนึ่งเดียวในคราวหน้า”</p>
-          </div>
-        </div>
-      </div>
+      <PageTitleBar variant={activeMode} />
     </>
   );
 }
