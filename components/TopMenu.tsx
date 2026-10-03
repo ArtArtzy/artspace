@@ -6,6 +6,7 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 import { unbuiltPages, type UnbuiltPage } from "@/data/unbuilt-pages";
 import UnbuiltPageModal from "@/components/UnbuiltPageModal";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
+import type { ReadModeId } from "@/components/ReadSubMenu";
 
 function SearchIcon() {
   return (
@@ -181,9 +182,10 @@ export const authStateChangedEvent = "arnspace-auth-change";
 type TopMenuProps = {
   fixed?: boolean;
   initialLoggedIn?: boolean;
+  activeReadMode?: ReadModeId;
 };
 
-export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMenuProps) {
+export default function TopMenu({ fixed = false, initialLoggedIn = true, activeReadMode }: TopMenuProps) {
   const pathname = usePathname();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -194,6 +196,10 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true }: TopMe
   const notificationRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const isLinkActive = (href: string) => {
+    if (activeReadMode) {
+      const activeHref = { novel: "/read", fanfic: "/read/fanfic", cartoon: "/read/cartoon" }[activeReadMode];
+      return href === activeHref;
+    }
     if (href === "/" || href === "/read") return pathname === href;
     return pathname === href || pathname.startsWith(`${href}/`);
   };

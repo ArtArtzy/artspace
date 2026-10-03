@@ -54,27 +54,6 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
     status: "ยังไม่ได้ทำ",
   },
   {
-    code: "READ-NOVEL-001",
-    name: "หน้าสำหรับอ่านนิยาย",
-    url: "/read?title=:title",
-    trigger: "อ่านเลย หรือกดปกนิยาย",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
-    code: "READ-FANFIC-001",
-    name: "หน้าสำหรับอ่านแฟนฟิค",
-    url: "/read/fanfic?title=:title",
-    trigger: "อ่านเลย หรือกดปกแฟนฟิค",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
-    code: "READ-CARTOON-001",
-    name: "หน้าสำหรับอ่านการ์ตูน",
-    url: "/read/cartoon?title=:title",
-    trigger: "อ่านเลย หรือกดปกการ์ตูน",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
     code: "READ-TAG-MANAGE-NOVEL-001",
     name: "หน้าจัดการแท็กนิยาย",
     url: "/read?tag-settings=manage",
@@ -170,13 +149,6 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
     name: "หน้ารวมนักเขียน",
     url: "/writers",
     trigger: "เมนูนักเขียน หรือดูทั้งหมดใน Section นักเขียนแนะนำ",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
-    code: "WRITE-001",
-    name: "หน้าสร้างผลงาน",
-    url: "/write",
-    trigger: "ปุ่มเขียนเรื่อง หรือเริ่มต้นเขียน",
     status: "ยังไม่ได้ทำ",
   },
   {

@@ -1,0 +1,446 @@
+.page {
+  position: relative;
+  isolation: isolate;
+}
+.page :is(button, a, select, textarea, input):focus-visible {
+  outline: 2px solid var(--arn-color-accent);
+  outline-offset: 4px;
+}
+.backdrop {
+  position: absolute;
+  inset: 82px 0 0;
+  z-index: -1;
+  overflow: hidden;
+}
+.backdrop > img {
+  opacity: 0.32;
+  filter: saturate(0.75);
+}
+.backdropShade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      var(--arn-color-canvas),
+      transparent 45%,
+      var(--arn-color-canvas)
+    ),
+    linear-gradient(
+      180deg,
+      transparent,
+      var(--arn-color-canvas) 65%,
+      transparent
+    );
+}
+.body {
+  max-width: 1400px;
+  padding: 28px 32px 48px;
+  margin: auto;
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(220px, 31%) minmax(0, 1fr);
+  gap: 32px;
+  padding: 0 8px 20px;
+}
+.cover {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  align-self: start;
+  overflow: hidden;
+  border: 1px solid
+    color-mix(in srgb, var(--arn-status-warning) 70%, transparent);
+  border-radius: 10px;
+  box-shadow:
+    0 0 28px color-mix(in srgb, var(--arn-status-warning) 15%, transparent),
+    var(--arn-shadow-floating);
+}
+.heroHeading {
+  margin-top: 12px;
+  font-size: clamp(28px, 2.8vw, 40px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: color-mix(
+    in srgb,
+    var(--arn-status-warning) 55%,
+    var(--arn-color-text-primary)
+  );
+  overflow-wrap: anywhere;
+}
+.subtitle {
+  margin-top: 4px;
+  font-size: 24px;
+  font-weight: 500;
+  color: color-mix(
+    in srgb,
+    var(--arn-status-warning) 55%,
+    var(--arn-color-text-primary)
+  );
+}
+.status,
+.tag,
+.newBadge {
+  border: 1px solid color-mix(in srgb, var(--arn-accent-novel) 40%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--arn-accent-novel) 9%,
+    var(--arn-color-canvas)
+  );
+  color: var(--arn-accent-novel);
+}
+.status {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.stats {
+  display: flex;
+  margin-top: 28px;
+  width: 100%;
+}
+.stats > :is(div, button) {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  padding: 0 20px;
+  border-right: 1px solid var(--arn-color-border-strong);
+}
+.stats > :first-child {
+  padding-left: 0;
+  text-align: left;
+}
+.stats > :last-child {
+  border: 0;
+  padding-right: 0;
+}
+.stats strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+}
+.stats small {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--arn-color-text-muted);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+.actions > button {
+  min-height: 44px;
+}
+.progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  appearance: none;
+  background: var(--arn-color-border);
+  accent-color: var(--arn-accent-novel);
+}
+.progress::-webkit-progress-bar {
+  background: var(--arn-color-border);
+  border-radius: 999px;
+}
+.progress::-webkit-progress-value {
+  background: var(--arn-accent-novel);
+  border-radius: 999px;
+}
+.progress::-moz-progress-bar {
+  background: var(--arn-accent-novel);
+  border-radius: 999px;
+}
+.card {
+  background: color-mix(in srgb, var(--arn-color-surface) 94%, transparent);
+}
+.tag {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  transition: 180ms;
+}
+.tag:hover {
+  border-color: var(--arn-accent-novel);
+  color: var(--arn-color-accent-soft);
+}
+.ageNotice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid
+    color-mix(in srgb, var(--arn-status-warning) 50%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--arn-status-warning) 6%, transparent);
+  color: var(--arn-status-warning);
+}
+.ageBadge {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border: 2px solid var(--arn-status-warning);
+  border-radius: 8px;
+  font-size: 20px;
+}
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  gap: 20px;
+}
+.tabSection {
+  scroll-margin-top: 106px;
+}
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--arn-color-border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--arn-color-surface) 94%, transparent);
+}
+.tabs button {
+  position: relative;
+  min-height: 56px;
+  font-size: 14px;
+  color: var(--arn-color-text-muted);
+}
+.tabs button:hover {
+  color: var(--arn-color-accent-soft);
+}
+.tabs .activeTab {
+  color: var(--arn-accent-novel);
+  font-weight: 500;
+}
+.activeTab::after {
+  position: absolute;
+  content: "";
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--arn-accent-novel);
+  box-shadow: var(--arn-shadow-glow);
+}
+.episodeToolbar {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(120px, 240px) 140px;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--arn-color-border);
+}
+.episodeRow {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 110px 24px 32px;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  border-bottom: 1px solid var(--arn-color-border);
+}
+.episodeRow:last-child {
+  border-bottom: 0;
+}
+.newBadge {
+  flex-shrink: 0;
+  border-radius: 4px;
+  font-size: 11px;
+  padding: 2px 8px;
+}
+.bookRow {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.bookRow::-webkit-scrollbar {
+  display: none;
+}
+.bookCard {
+  display: block;
+  min-width: 0;
+  flex: 0 0 calc((100% - 72px) / 4);
+  scroll-snap-align: start;
+  padding: 4px;
+  border-radius: 8px;
+}
+.compactBooks {
+  gap: 8px;
+}
+.compactBooks .bookCard {
+  flex-basis: calc((100% - 24px) / 4);
+  padding: 0;
+}
+.compactBooks h3 {
+  font-size: 11px;
+}
+.carouselButton {
+  position: absolute;
+  top: 40%;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--arn-color-border-strong);
+  background: var(--arn-color-surface);
+  color: var(--arn-color-text-primary);
+  box-shadow: var(--arn-shadow-floating);
+}
+.carouselButton:hover {
+  border-color: var(--arn-color-accent);
+}
+.carouselPrevious {
+  left: -16px;
+}
+.carouselNext {
+  right: -16px;
+}
+.shareButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--arn-color-border-strong);
+  border-radius: 50%;
+  color: var(--arn-color-accent-soft);
+  background: var(--arn-color-surface-soft);
+  font-size: 10px;
+  font-weight: 600;
+  transition: 180ms;
+}
+.shareButton:hover {
+  border-color: var(--arn-color-accent);
+  background: var(--arn-color-surface-raised);
+}
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: color-mix(in srgb, var(--arn-color-canvas) 80%, transparent);
+  backdrop-filter: blur(8px);
+}
+.dialog {
+  max-width: 640px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 32px;
+}
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 14px 24px;
+  border: 1px solid var(--arn-color-accent);
+  border-radius: 8px;
+  background: var(--arn-color-surface);
+  color: var(--arn-color-text-primary);
+  font-size: 13px;
+  box-shadow: var(--arn-shadow-floating);
+}
+@media (max-width: 1199px) {
+  .body {
+    padding-inline: 24px;
+  }
+  .grid {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 20px;
+  }
+  .hero {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 20px;
+    padding-inline: 0;
+  }
+  .stats > :is(div, button) {
+    padding-inline: 12px;
+  }
+  .stats strong {
+    font-size: 18px;
+  }
+  .subtitle {
+    font-size: 20px;
+  }
+  .actions {
+    margin-top: 20px;
+  }
+  .episodeToolbar {
+    grid-template-columns: 1fr 130px;
+  }
+  .episodeToolbar h2 {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .hero {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .body {
+    padding-inline: 16px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .cover {
+    width: 200px;
+    margin: auto;
+  }
+  .sidebar {
+    display: flex;
+  }
+  .episodeRow {
+    grid-template-columns: 24px minmax(0, 1fr) 20px 24px;
+    gap: 8px;
+  }
+  .episodeRow time {
+    display: none;
+  }
+  .bookCard {
+    flex-basis: calc((100% - 24px) / 2);
+  }
+  .tabs button {
+    font-size: 12px;
+  }
+  .dialogOverlay {
+    padding: 16px;
+  }
+  .dialog {
+    padding: 24px;
+  }
+}

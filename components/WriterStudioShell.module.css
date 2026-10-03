@@ -1,0 +1,16 @@
+.stage { padding: 32px 24px 48px; }
+.layout { display: grid; grid-template-columns: 188px minmax(0, 1fr) 296px; gap: 24px; max-width: 1400px; margin: auto; }
+.navigation { padding: 20px 8px; margin-top: 24px; display: flex; flex-direction: column; align-self: start; min-height: calc(100vh - 164px); position: relative; overflow: hidden; background: color-mix(in srgb, var(--arn-color-canvas) 93%, transparent); }
+.navigation h2 { padding: 0 12px 16px; }
+.navItem { display: flex; align-items: center; width: 100%; gap: 16px; padding: 12px; margin-bottom: 4px; border: 1px solid transparent; border-left-width: 3px; border-radius: 6px; color: var(--arn-color-text-muted); font-size: 13px; text-align: left; transition: 180ms; }
+.navItem > svg { width: 20px; height: 20px; flex-shrink: 0; }
+.navItem:hover { background: var(--arn-color-surface-raised); color: var(--arn-color-accent); }
+.navItem:focus-visible { outline: 2px solid var(--arn-color-accent); outline-offset: 3px; }
+.activeNav { color: var(--arn-color-accent); border-color: var(--arn-color-border); border-left-color: var(--arn-color-accent); background: color-mix(in srgb, var(--arn-color-accent) 8%, transparent); }
+.quote { margin-top: auto; padding: 64px 8px 100px; text-align: center; color: var(--arn-status-warning); font-size: 13px; line-height: 2; opacity: .75; }
+.quote span { display: block; padding-top: 12px; }
+@media (min-width: 1500px) { .layout { gap: 20px; } }
+@media (max-width: 1279px) { .layout { grid-template-columns: 172px minmax(0, 1fr) 264px; gap: 16px; } }
+@media (max-width: 1100px) { .layout { grid-template-columns: 172px minmax(0, 1fr); } .layout > aside:last-child { grid-column: 2; } .navigation { grid-row: span 2; } }
+@media (max-width: 760px) { .stage { padding: 16px 12px 24px; } .layout { display: block; } .navigation { padding: 12px; margin: 0 0 20px; min-height: auto; } .navigation h2 { padding: 0 0 8px; } .navigation nav { display: flex; overflow-x: auto; gap: 8px; } .navItem { width: auto; flex-shrink: 0; margin: 0; padding: 8px 12px; } .quote { display: none; } }
+@media (prefers-reduced-motion: reduce) { .navItem { transition: none; } }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { getCategorySections } from "@/data/categoryBooks";
+import { discoverySections } from "@/data/discoverySections";
 import StoryMetadata from "@/components/StoryMetadata";
 import type { StoryStatus } from "@/data/storyStatus";
 import { recommendedWriters, type RecommendedWriter } from "@/components/writerData";
@@ -32,56 +33,7 @@ const followedContentWriters: RecommendedWriter[] = [
   { slug: "sorayoru", name: "sorayoru", type: "แฟนฟิค", image: "/images/writers/sorayoru.webp", bio: "เรื่องราวแฟนตาซีจากมุมมองที่ไม่เหมือนใคร", followers: "4.2K", works: "10" },
 ];
 
-const sections: DiscoverySection[] = [
-  {
-    title: "คัดมาให้คุณ",
-    subtitle: "เรื่องที่เลือกมาให้เข้ากับความสนใจของคุณ",
-    books: [
-      { title: "Not Just Friends (BTS)", author: "purplemoon", category: "วาย", episodes: "58", views: "1.8M", likes: "32.1K", image: "/images/book-not-just-friends.webp" },
-      { title: "Sky of Tomorrow", author: "AkiStudio", category: "แฟนตาซี", episodes: "26", views: "620K", likes: "14.1K", image: "/images/book-sky-tomorrow.webp" },
-      { title: "Pixel Heart", author: "Mochi", category: "คอมเมดี้", episodes: "22", views: "430K", likes: "10.4K", image: "/images/book-pixel-heart.webp" },
-      { title: "Love in Parallel (Harry Potter)", author: "felixs", category: "แฟนตาซี", episodes: "44", views: "1.1M", likes: "24.3K", image: "/images/book-love-parallel.webp" },
-      { title: "The Villain's Side (Harry Potter)", author: "sorayoru", category: "ลึกลับ", episodes: "39", views: "780K", likes: "18.7K", image: "/images/book-villains-side.webp" },
-      { title: "พันธนาการทิวลิป", author: "Krittanai", category: "แฟนตาซี", episodes: "36", views: "980K", likes: "18.6K", image: "/images/book-tulip-bound.webp" },
-    ],
-  },
-  {
-    title: "เพราะคุณอ่าน...",
-    subtitle: "เรื่องราวที่คัดสรรจากแนวและสไตล์ที่คุณสนใจ",
-    books: [
-      { title: "แสงระหว่างบรรทัด", author: "LunarBlack", category: "โรแมนติก", episodes: "42", views: "1.2M", likes: "24.5K", image: "/images/book-between-lines.webp" },
-      { title: "สอนใจในหน้าร้อน", author: "Moonlit", category: "โรแมนติก", episodes: "28", views: "856K", likes: "18.2K", image: "/images/book-summer-lessons.webp" },
-      { title: "พันธนาการทิวลิป", author: "Krittanai", category: "แฟนตาซี", episodes: "36", views: "980K", likes: "18.6K", image: "/images/book-tulip-bound.webp" },
-      { title: "ภาพถ่ายในสายฝน", author: "mebell", category: "โรแมนติก", episodes: "19", views: "620K", likes: "12.4K", image: "/images/book-photographs-rain.webp" },
-      { title: "บ้านหลังสุดท้าย", author: "NaowWriter", category: "ลึกลับ", episodes: "31", views: "540K", likes: "11.8K", image: "/images/book-last-house.webp" },
-      { title: "กุหลาบในเงาไฟ", author: "Aris", category: "โรแมนติก", episodes: "24", views: "430K", likes: "9.4K", image: "/images/book-roses-fire.webp" },
-    ],
-  },
-  {
-    title: "เรื่องที่น่าจะชอบ",
-    subtitle: "เรื่องราวที่คัดมาให้คุณลองเปิดใจทำความรู้จัก",
-    books: [
-      { title: "Not Just Friends (BTS)", author: "purplemoon", category: "วาย", episodes: "58", views: "1.8M", likes: "32.1K", image: "/images/book-not-just-friends.webp" },
-      { title: "Our Classroom (SEVENTEEN)", author: "rainymew", category: "วาย", episodes: "33", views: "920K", likes: "20.5K", image: "/images/book-our-classroom.webp" },
-      { title: "Kissed by the Stars (TWICE)", author: "seriian", category: "แฟนตาซี", episodes: "27", views: "660K", likes: "15.2K", image: "/images/book-kissed-stars.webp" },
-      { title: "Rewrite the End (NCT)", author: "felixs", category: "แอ๊กชั่น", episodes: "21", views: "410K", likes: "11.4K", image: "/images/book-rewrite-end.webp" },
-      { title: "Love in Parallel (Harry Potter)", author: "felixs", category: "แฟนตาซี", episodes: "44", views: "1.1M", likes: "24.3K", image: "/images/book-love-parallel.webp" },
-      { title: "The Villain's Side (Harry Potter)", author: "sorayoru", category: "ลึกลับ", episodes: "39", views: "780K", likes: "18.7K", image: "/images/book-villains-side.webp" },
-    ],
-  },
-  {
-    title: "อ่านต่อ",
-    subtitle: "กลับไปอ่านเรื่องที่คุณกำลังติดตามต่อได้ทันที",
-    books: [
-      { title: "Sky of Tomorrow", author: "AkiStudio", category: "แฟนตาซี", episodes: "26", views: "620K", likes: "14.1K", image: "/images/book-sky-tomorrow.webp", status: "completed" },
-      { title: "Lemon Days", author: "sorani", category: "โรแมนติก", episodes: "32", views: "950K", likes: "18.9K", image: "/images/book-lemon-days.webp", status: "completed" },
-      { title: "Blood Moon", author: "Kuroi", category: "สยองขวัญ", episodes: "18", views: "520K", likes: "22.7K", image: "/images/book-blood-moon.webp", status: "completed" },
-      { title: "City of Echoes", author: "Panthera", category: "ลึกลับ", episodes: "29", views: "480K", likes: "11.9K", image: "/images/book-city-echoes.webp", status: "completed" },
-      { title: "Pixel Heart", author: "Mochi", category: "คอมเมดี้", episodes: "22", views: "430K", likes: "10.4K", image: "/images/book-pixel-heart.webp", status: "completed" },
-      { title: "Parallel World", author: "Nagi", category: "แฟนตาซี", episodes: "25", views: "390K", likes: "9.8K", image: "/images/book-parallel-world.webp", status: "completed" },
-    ],
-  },
-];
+const sections: DiscoverySection[] = discoverySections;
 
 const forYouSections: DiscoverySection[] = [
   { ...sections[0], books: sections[3].books },
