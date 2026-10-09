@@ -2,44 +2,62 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faHouse, faFolderOpen, faFilePen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faLightbulb, faGear, faPen, faBookOpen, faUsers, faDiagramProject, faFileLines, faChevronRight, faEllipsis, faEye, faHeart, faClipboardCheck, faArrowUp, faTableCellsLarge, faList, faPlus, faStar, faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faPen, faBookOpen, faUsers, faDiagramProject, faFileLines, faChevronRight, faEye, faHeart, faArrowUp, faPlus, faClock, faEllipsisVertical, faPalette, faGlobe, faArrowRight, faBookmark, faComments, faPenToSquare, faTrashCan, faCircleInfo, faShareNodes, faPuzzlePiece } from "@fortawesome/free-solid-svg-icons";
 import UnbuiltPageModal from "@/components/UnbuiltPageModal";
 import type { UnbuiltPage } from "@/data/unbuilt-pages";
+import { initialPublications, scheduleProjects, parseDay, type Publication } from "@/data/writer-schedule";
+import { ScheduleEditor } from "./WriterSchedule";
 import shell from "./WriterStudioShell.module.css";
 import styles from "./WriterStudio.module.css";
 
 const projects = [
-  { id: "moon", title: "จันทร์เหนือวังหลวง", cover: "/images/category-books/china-01.webp", status: "writing", tags: ["ย้อนยุค", "ดราม่า", "Coming of Age"], chapters: 32, updated: "2 ชั่วโมงที่แล้ว", views: "421K", likes: "17.9K", comments: 326 },
-  { id: "sky", title: "Sky of Tomorrow", cover: "/images/book-sky-tomorrow.webp", status: "writing", tags: ["แฟนตาซี", "โรแมนติก", "ผจญภัย"], chapters: 18, updated: "1 วันที่แล้ว", views: "128K", likes: "6.4K", comments: 142 },
-  { id: "fog", title: "เสียงในม่านหมอก", cover: "/images/book-between-lines.webp", status: "draft", tags: ["ลึกลับ", "เหนือธรรมชาติ"], chapters: 0, updated: "3 วันที่แล้ว", views: "0", likes: "0", comments: 0 },
+  { id: "moon", title: "จันทร์เหนือวังหลวง", cover: "/images/category-books/china-01.webp", kind: "novel", statusLabel: "กำลังเขียน", tags: ["ย้อนยุค", "ดราม่า", "Coming of Age"], chapters: 32, target: 50, percent: 64, updated: "2 ชั่วโมงที่แล้ว", views: "421K", likes: "17.9K", comments: 326 },
+  { id: "sky", title: "Sky of Tomorrow", cover: "/images/book-sky-tomorrow.webp", kind: "fanfic", statusLabel: "กำหนดเผยแพร่", tags: ["แฟนตาซี", "โรแมนติก", "ผจญภัย"], chapters: 18, target: 30, percent: 60, updated: "1 วันที่แล้ว", views: "128K", likes: "6.4K", comments: 142 },
+  { id: "fog", title: "เสียงในม่านหมอก", cover: "/images/book-between-lines.webp", kind: "novel", statusLabel: "จบแล้ว", tags: ["ลึกลับ", "เหนือธรรมชาติ"], chapters: 24, target: 24, percent: 38, updated: "3 วันที่แล้ว", views: "24K", likes: "12K", comments: 45 },
 ] as const;
 
 const navigation = [
-  ["หน้าหลัก", faHouse, "home"], ["โปรเจกต์ของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ AI", faWandMagicSparkles, "tools"],
+  ["ภาพรวม", faHouse, "home"], ["โปรเจกต์", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ AI", faWandMagicSparkles, "tools"],
 ] as const;
 const tools = [
-  { title: "AI Writing Assistant", description: "ช่วยคิด พัฒนา แก้ไข และต่อยอดเนื้อหา", icon: faWandMagicSparkles, image: "/images/book-sky-tomorrow.webp", tone: "blue" },
-  { title: "Story Bible", description: "จัดระบบโลกของเรื่อง เนื้อหา และกฎต่าง ๆ", icon: faBookOpen, image: "/images/book-between-lines.webp", tone: "gold" },
-  { title: "ตัวละคร", description: "สร้างและจัดการ ตัวละครของคุณ", icon: faUsers, image: "/images/book-villains-side.webp", tone: "gold" },
-  { title: "Timeline", description: "จัดลำดับเหตุการณ์ และความต่อเนื่อง", icon: faDiagramProject, image: "/images/book-parallel-world.webp", tone: "green" },
-  { title: "สรุปตอนก่อนหน้า", description: "สรุปเนื้อหาตอนก่อน ด้วย AI อย่างรวดเร็ว", icon: faFileLines, image: "/images/book-blood-moon.webp", tone: "violet" },
-  { title: "ไอเดีย & ฉาก", description: "ค้นหาไอเดียใหม่ ๆ สำหรับตอนต่อไป", icon: faLightbulb, image: "/images/book-between-lines.webp", tone: "gold" },
+  { title: "ตัวละคร", icon: faUsers, tone: "green" },
+  { title: "Timeline", icon: faDiagramProject, tone: "green" },
+  { title: "Story World", icon: faGlobe, tone: "violet" },
+  { title: "ปมเรื่อง", icon: faDiagramProject, tone: "pink" },
+  { title: "แผนผังความสัมพันธ์", icon: faShareNodes, tone: "green" },
+  { title: "ปมปูทางและเฉลย", icon: faPuzzlePiece, tone: "gold" },
 ];
-const taskLabels = ["เขียนตอนที่ 32 — เมื่อดอกเหมยผลิบาน", "ตรวจคำผิดก่อนเผยแพร่", "ตอบความคิดเห็นจากผู้อ่าน", "วางแผนเนื้อหาตอนถัดไป"];
+const upcomingPublications = ["moon", "sky", "fog"].map((projectId) => initialPublications.find((publication) => publication.project === projectId && ["scheduled", "draft"].includes(publication.status))!);
 
 function Icon({ icon, className = "" }: { icon: IconDefinition; className?: string }) {
   return <FontAwesomeIcon icon={icon} aria-hidden="true" className={`${styles.icon} ${className}`} />;
 }
 
 export default function WriterStudio() {
-  const [filter, setFilter] = useState("all");
-  const [view, setView] = useState("grid");
-  const [sort, setSort] = useState("updated");
-  const [period, setPeriod] = useState("30");
-  const [checked, setChecked] = useState([true, false, false, false]);
+  const [publications, setPublications] = useState<Publication[]>(upcomingPublications);
+  const [scheduleMenu, setScheduleMenu] = useState<string | null>(null);
+  const [scheduleEditor, setScheduleEditor] = useState<{ item?: Publication; date: string; repeat: "once" } | null>(null);
+  const [scheduleNotice, setScheduleNotice] = useState("");
+  const scheduleTrigger = useRef<HTMLElement | null>(null);
+  const visiblePublications = publications.filter((item) => item.status === "scheduled" || item.status === "draft").sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)).slice(0, 3);
+  const openScheduleEditor = (item?: Publication) => {
+    scheduleTrigger.current = (item ? document.getElementById(`schedule-trigger-${item.id}`) : document.activeElement) as HTMLElement;
+    setScheduleMenu(null);
+    setScheduleEditor({ item, date: item?.date ?? "2026-10-09", repeat: "once" });
+  };
+  const closeScheduleEditor = () => { setScheduleEditor(null); if (scheduleTrigger.current?.isConnected) scheduleTrigger.current.focus(); else document.getElementById("schedule-preview-title")?.focus(); };
+  useEffect(() => {
+    if (!scheduleMenu) return;
+    const dismiss = (event: PointerEvent) => { if (!(event.target as Element).closest("[data-schedule-menu]")) setScheduleMenu(null); };
+    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setScheduleMenu(null); document.getElementById(`schedule-trigger-${scheduleMenu}`)?.focus(); } };
+    document.getElementById(`schedule-menu-${scheduleMenu}`)?.querySelector<HTMLButtonElement>("button")?.focus();
+    document.addEventListener("pointerdown", dismiss);
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("pointerdown", dismiss); document.removeEventListener("keydown", escape); };
+  }, [scheduleMenu]);
   const [pending, setPending] = useState<UnbuiltPage | null>(null);
   const openFeature = (name: string, code: string) => setPending({ name, code: `WRITE-${code.toUpperCase()}`, url: `/write/${code}`, trigger: name, status: "ยังไม่ได้ทำ" });
   useEffect(() => {
@@ -48,11 +66,9 @@ export default function WriterStudio() {
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, [pending]);
-  const visibleProjects = projects.filter((project) => filter === "all" || project.status === filter).sort((a, b) => sort === "title" ? a.title.localeCompare(b.title, "th") : sort === "views" ? parseFloat(b.views) - parseFloat(a.views) : projects.indexOf(a) - projects.indexOf(b));
   const navigate = (id: string, label: string) => {
     if (id === "home") { window.scrollTo({ top: 0, behavior: "smooth" }); return; }
     if (["projects", "draft", "tools", "insights"].includes(id)) {
-      if (id === "draft" || id === "projects") setFilter(id === "draft" ? "draft" : "all");
       document.getElementById(id === "draft" ? "projects" : id)?.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
@@ -61,8 +77,8 @@ export default function WriterStudio() {
 
   return (
     <main className={`${shell.stage} ${styles.stage}`}>
-      <div className={shell.layout}>
-        <aside className={`ds-card ${shell.navigation}`}>
+      <div className={`${shell.layout} ${styles.layout}`}>
+        <aside className={`ds-card ${shell.navigation} ${styles.navigation}`}>
           <h2 className="text-ds-h3">Writer Studio</h2>
           <nav aria-label="เมนูนักเขียน">
             {navigation.map(([label, icon, id]) => id === "projects" || id === "insights" || id === "comments" || id === "schedule" ? <Link key={id} href={`/write/${id}`} className={shell.navItem}><Icon icon={icon} /><span>{label}</span></Link> : <button key={id} type="button" className={`${shell.navItem} ${id === "home" ? shell.activeNav : ""}`} onClick={() => navigate(id, label)}><Icon icon={icon} /><span>{label}</span></button>)}
@@ -72,51 +88,106 @@ export default function WriterStudio() {
 
         <div className={styles.center}>
           <header className={styles.heading}>
-            <div><h1 className="text-ds-h1"><Icon icon={faWandMagicSparkles} /> Writer Studio</h1><p className="text-ds-body">เครื่องมือและพื้นที่ทำงานสำหรับสร้างสรรค์เรื่องราวของคุณ</p></div>
-            <blockquote>“เรื่องราวที่ดี ไม่ได้เกิดขึ้นแค่ในจินตนาการ<br />แต่เริ่มต้นจากการลงมือเขียน”</blockquote>
+            <Image src="/images/writer-studio-hero.webp" alt="" fill sizes="(max-width: 760px) 100vw, 900px" className={styles.heroArt} preload />
+            <div><h1 className="text-ds-h1"><Icon icon={faWandMagicSparkles} /> Writer Studio</h1><p className="text-ds-body">พื้นที่สำหรับนักเขียน สร้างสรรค์เรื่องราวของคุณให้เป็นจริง</p><span className={styles.heroTagline}>◇ &nbsp; Story comes alive.</span></div>
           </header>
 
-          <section className={`ds-card ${styles.continue}`} aria-labelledby="continue-title">
-            <div className={styles.sectionHeading}><Icon icon={faPen} /><h2 id="continue-title" className="text-ds-h3">เขียนต่อ</h2><span className="text-ds-body-sm text-arn-muted">กลับเข้าสู่เรื่องราวของคุณ</span></div>
-            <div className={styles.continueBody}>
-              <Image src={projects[0].cover} alt="ปกจันทร์เหนือวังหลวง หญิงสาวในชุดจีนสีแดง" width={160} height={240} sizes="160px" className={styles.featureCover} />
-              <div className={styles.continueText}>
-                <div className={styles.titleRow}><h3 className="text-ds-h2">จันทร์เหนือวังหลวง</h3><span className={styles.badge}>กำลังเขียน</span></div>
-                <h4 className="text-ds-h3">ตอนที่ 32 — เมื่อดอกเหมยผลิบาน</h4>
-                <p className="text-ds-body-sm text-arn-muted">ลมหิมะพัดผ่านตำหนักตะวันออก กลิ่นดอกเหมยลอยมาพร้อมกับข่าวลือ<br />ที่อาจเปลี่ยนชะตาของทุกคนในวัง...</p>
-                <div className={styles.featureMeta}><span><Icon icon={faFilePen} /> แก้ไขล่าสุด 2 ชั่วโมงที่แล้ว</span><span><Icon icon={faFileLines} /> คำทั้งหมด 42,560 คำ</span></div>
+          <div className={styles.primaryGrid}>
+            <section className={`ds-card ${styles.continue}`} aria-labelledby="continue-title">
+              <div className={styles.sectionHeading}><Icon icon={faPen} /><h2 id="continue-title">เขียนต่อ</h2></div>
+              <div className={styles.continueBody}>
+                <Image src={projects[0].cover} alt="ปกจันทร์เหนือวังหลวง" width={160} height={224} sizes="(max-width: 480px) 104px, 144px" className={styles.featureCover} />
+                <div className={styles.continueText}>
+                  <div className={styles.titleRow}><h3>จันทร์เหนือวังหลวง</h3><span className={styles.badge}>กำลังเขียน</span></div>
+                  <h4>ตอนที่ 32 — เมื่อดอกเหมยผลิบาน</h4>
+                  <p>ลมหิมะพัดผ่านตำหนักตะวันออก กลิ่นดอกเหมยลอยมาพร้อมกับข่าวลือ ที่อาจเปลี่ยนชะตาของทุกคนในวัง...</p>
+                  <div className={styles.featureMeta}><span><Icon icon={faFileLines} /> 1,842 คำ</span><span><Icon icon={faClock} /> แก้ไขล่าสุด 2 ชั่วโมงที่แล้ว</span><span><Icon icon={faPenToSquare} /> ฉบับร่าง</span></div>
+                  <div className={styles.continueBottom}><button className="ds-button-primary" type="button" onClick={() => openFeature("เขียนตอนที่ 32", "editor/moon")}><Icon icon={faPen} />เขียนต่อ<Icon icon={faArrowRight} /></button></div>
+                </div>
               </div>
-              <div className={styles.continueActions}><button className="ds-button-primary" type="button" onClick={() => openFeature("เขียนตอนที่ 32", "editor/moon")}><Icon icon={faPen} />เขียนต่อ</button><div><button className="ds-button-secondary" type="button" onClick={() => openFeature("จัดการเรื่อง จันทร์เหนือวังหลวง", "manage/moon")}><Icon icon={faGear} />จัดการเรื่อง</button><button aria-label="ตัวเลือกจันทร์เหนือวังหลวง" className="ds-button-secondary" type="button" onClick={() => openFeature("ตัวเลือกผลงาน", "options/moon")}><Icon icon={faEllipsis} /></button></div></div>
-            </div>
-          </section>
+            </section>
+            <section className={`ds-card ${styles.newStory}`} aria-labelledby="new-story-title">
+              <div className={styles.sectionHeading}><Icon icon={faPlus} className={styles.createIcon} /><h2 id="new-story-title">สร้างเรื่องใหม่</h2></div>
+              <div className={styles.storyActions}>{[{ title: "นิยาย", description: "สร้างโลกและตัวละครในจินตนาการ", icon: faBookOpen, tone: "novelTone", code: "novel" }, { title: "แฟนฟิค", description: "ต่อยอดเรื่องราวที่คุณชื่นชอบ", icon: faPen, tone: "fanficTone", code: "fanfic" }, { title: "การ์ตูน", description: "เล่าเรื่องผ่านภาพและบท", icon: faPalette, tone: "cartoonTone", code: "cartoon" }].map((category) => <button key={category.code} className={`ds-button-secondary ${styles.categoryButton} ${styles[category.tone]}`} type="button" onClick={() => openFeature(`สร้าง${category.title}ใหม่`, `new/${category.code}`)}><Icon icon={category.icon} /><span><strong>{category.title}</strong><small>{category.description}</small></span><Icon icon={faChevronRight} /></button>)}</div>
+            </section>
+          </div>
+          <div className={styles.secondaryGrid}>
+            <section className={`ds-card ${styles.schedulePreview}`} aria-labelledby="schedule-preview-title">
+              <div className={styles.sectionHeading}><Icon icon={faCalendarDays} /><h2 id="schedule-preview-title" tabIndex={-1}>ตารางเผยแพร่</h2><div className={styles.scheduleHeadingActions}><button type="button" className="ds-button-secondary" onClick={() => openScheduleEditor()}><Icon icon={faPlus} />ตั้งเวลา</button><Link className={styles.textAction} href="/write/schedule">ดูทั้งหมด<Icon icon={faChevronRight} /></Link></div></div>
+              <div className={styles.scheduleList}>{visiblePublications.map((publication) => {
+                const project = scheduleProjects.find((item) => item.id === publication.project)!;
+                const date = parseDay(publication.date);
+                const datePart = (options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("th-TH-u-ca-gregory", { ...options, timeZone: "UTC" }).format(date);
+                return <article key={publication.id} className={styles.scheduleRow}>
+                  <time className={styles.publicationDay} dateTime={publication.date}><span>{datePart({ weekday: "short" })}</span><strong>{datePart({ day: "numeric" })}</strong><span>{datePart({ month: "short" })}</span><span>{datePart({ year: "numeric" })}</span></time>
+                  <Image src={project.cover} alt={`ปก ${project.title}`} width={56} height={80} sizes="(max-width: 480px) 40px, 56px" />
+                  <div className={styles.scheduleBook}><h3>{project.title}</h3><p>ตอนที่ {publication.chapter} — {publication.title}</p><span className={styles.publicationTime}><Icon icon={faClock} /><time dateTime={`${publication.date}T${publication.time}:00+07:00`}>{publication.time} น.</time></span></div>
+                  <span className={`${styles.scheduleStatus} ${publication.status === "draft" ? styles.awaitingStatus : ""}`}><Icon icon={faClock} />{publication.status === "draft" ? "รอเผยแพร่" : "ตั้งเวลาแล้ว"}</span>
+                  <div className={styles.scheduleMenuWrapper} data-schedule-menu>
+                    <button id={`schedule-trigger-${publication.id}`} className={styles.scheduleOptions} aria-label={`ตัวเลือกเผยแพร่ ${project.title}`} aria-haspopup="menu" aria-expanded={scheduleMenu === publication.id} aria-controls={scheduleMenu === publication.id ? `schedule-menu-${publication.id}` : undefined} type="button" onClick={() => setScheduleMenu((current) => current === publication.id ? null : publication.id)}><Icon icon={faEllipsisVertical} /></button>
+                    {scheduleMenu === publication.id && <div id={`schedule-menu-${publication.id}`} className={styles.scheduleDropdown} role="menu" aria-label={`ตัวเลือกเผยแพร่ ${project.title}`} onKeyDown={(event) => {
+                      const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("button"));
+                      const index = buttons.indexOf(document.activeElement as HTMLButtonElement);
+                      if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) { event.preventDefault(); const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (index + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length; buttons[next]?.focus(); }
+                      if (event.key === "Tab") setScheduleMenu(null);
+                    }}>
+                      <button type="button" role="menuitem" onClick={() => { setScheduleMenu(null); openFeature(`เปิดตอนที่ ${publication.chapter} — ${project.title}`, `editor/${publication.project}`); }}><Icon icon={faEye} />เปิดตอน</button>
+                      <button type="button" role="menuitem" onClick={() => openScheduleEditor(publication)}><Icon icon={faPen} />แก้ไขเวลาเผยแพร่</button>
+                      <button type="button" role="menuitem" className={styles.cancelSchedule} onClick={() => { setPublications((items) => items.map((item) => item.id === publication.id ? { ...item, status: "cancelled" } : item)); setScheduleMenu(null); setScheduleNotice(`ยกเลิกการตั้งเวลา ${project.title} ตอนที่ ${publication.chapter} แล้ว`); document.getElementById("schedule-preview-title")?.focus(); }}><Icon icon={faTrashCan} />ยกเลิกการตั้งเวลา</button>
+                    </div>}
+                  </div>
+                </article>;
+              })}{!visiblePublications.length && <p className={styles.scheduleEmpty}>ยังไม่มีตอนที่ตั้งเวลาเผยแพร่ไว้ กด “ตั้งเวลา” เพื่อเพิ่มกำหนดการ</p>}</div>
+              {scheduleNotice && <p role="status" className={styles.scheduleNotice}>{scheduleNotice}</p>}
+            </section>
+            <section id="tools" className={`ds-card ${styles.toolsSection}`} aria-labelledby="tools-title">
+              <div className={styles.sectionHeading}><Icon icon={faWandMagicSparkles} /><h2 id="tools-title">เครื่องมือสร้างสรรค์</h2><button className={styles.textAction} onClick={() => openFeature("เครื่องมือทั้งหมด", "tools")} type="button">ดูทั้งหมด<Icon icon={faChevronRight} /></button></div>
+              <div className={styles.tools}>{tools.map((tool, index) => <button type="button" key={tool.title} className={`ds-card ${styles.tool} ${styles[tool.tone]}`} onClick={() => openFeature(tool.title, `tool/${index + 1}`)}><Icon icon={tool.icon} /><span><strong>{tool.title}</strong></span><Icon icon={faChevronRight} /></button>)}</div>
+            </section>
+          </div>
 
-          <section id="tools" className={styles.toolsSection} aria-labelledby="tools-title">
-            <div className={styles.sectionHeading}><Icon icon={faStar} className={styles.gold} /><h2 id="tools-title" className="text-ds-h3">เครื่องมือสร้างสรรค์</h2><span className="text-ds-meta text-arn-muted">ตัวช่วยที่จะทำให้การเขียนของคุณง่ายและสนุกยิ่งขึ้น</span><button className={styles.textAction} onClick={() => openFeature("เครื่องมือทั้งหมด", "tools")} type="button">ดูเครื่องมือทั้งหมด <Icon icon={faChevronRight} /></button></div>
-            <div className={styles.tools}>{tools.map((tool, index) => <button type="button" key={tool.title} className={`ds-card ${styles.tool} ${styles[tool.tone]}`} onClick={() => openFeature(tool.title, `tool/${index + 1}`)}><Image src={tool.image} alt="" fill sizes="140px" /><span className={styles.toolContent}><Icon icon={tool.icon} /><strong>{tool.title}</strong><span>{tool.description}</span></span><span className={styles.roundArrow}><Icon icon={faChevronRight} /></span></button>)}</div>
-          </section>
-
-          <section id="projects" className={styles.projectsSection} aria-labelledby="projects-title">
-            <div className={styles.sectionHeading}><Icon icon={faBookOpen} /><h2 id="projects-title" className="text-ds-h3">ผลงานของฉัน</h2><span className="text-ds-meta text-arn-muted">จัดการนิยายและโปรเจกต์ทั้งหมดของคุณ</span><div className={styles.viewControls}><label className="text-ds-meta" htmlFor="project-sort">เรียงตาม</label><select id="project-sort" className="ds-input" value={sort} onChange={(event) => setSort(event.target.value)}><option value="updated">อัปเดตล่าสุด</option><option value="title">ชื่อผลงาน</option><option value="views">ยอดอ่าน</option></select><div className={styles.viewToggle}>{[["grid", faTableCellsLarge, "มุมมองตาราง"], ["list", faList, "มุมมองรายการ"]].map(([id, icon, label]) => <button key={id as string} type="button" aria-label={label as string} aria-pressed={view === id} className={view === id ? styles.selected : ""} onClick={() => setView(id as string)}><Icon icon={icon as IconDefinition} /></button>)}</div></div></div>
-            <div className={styles.filters}>{[["all", "ทั้งหมด (3)"], ["writing", "กำลังเขียน (2)"], ["draft", "ร่างต้นฉบับ (1)"], ["finished", "จบแล้ว (0)"]].map(([id, label]) => <button key={id} className={filter === id ? styles.selected : ""} aria-pressed={filter === id} type="button" onClick={() => setFilter(id)}>{label}</button>)}</div>
-            <div className={`${styles.projects} ${view === "list" ? styles.listView : ""}`}>
-              {visibleProjects.map((project) => <article key={project.id} className={`ds-card ${styles.project}`}><div className={styles.projectBody}><Image src={project.cover} alt={`ปก ${project.title}`} width={88} height={132} sizes="88px" className={styles.projectCover} /><div className={styles.projectText}><div className={styles.projectTop}><span className={`${styles.badge} ${project.status === "draft" ? styles.draft : ""}`}>{project.status === "draft" ? "ร่างต้นฉบับ" : "กำลังเขียน"}</span><button aria-label={`ตัวเลือก ${project.title}`} type="button" onClick={() => openFeature(`ตัวเลือก ${project.title}`, `options/${project.id}`)}><Icon icon={faEllipsis} /></button></div><h3 className="text-ds-body-sm font-semibold">{project.title}</h3><div className={styles.tags}>{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><p className="text-ds-caption text-arn-muted">{project.chapters} ตอน · อัปเดตล่าสุด {project.updated}</p><div className={styles.stats}><span><Icon icon={faEye} />{project.views}</span><span><Icon icon={faHeart} className={styles.pink} />{project.likes}</span><span><Icon icon={faComment} />{project.comments}</span></div></div></div><div className={styles.projectActions}><button className={project.status === "draft" ? "ds-button-secondary" : "ds-button-primary"} type="button" onClick={() => openFeature(`เขียน ${project.title}`, `editor/${project.id}`)}><Icon icon={faPen} />เขียนต่อ</button><button className="ds-button-secondary" type="button" onClick={() => openFeature(`รายละเอียด ${project.title}`, `manage/${project.id}`)}>ดูรายละเอียด</button></div></article>)}
-              {visibleProjects.length === 0 && <div className={`ds-card ${styles.empty}`}><Icon icon={faBookOpen} /><h3 className="text-ds-h3">ยังไม่มีผลงานที่จบแล้ว</h3><p className="text-ds-body-sm text-arn-muted">เรื่องราวของคุณกำลังเติบโต เขียนต่ออีกนิดนะ</p></div>}
+          <section id="projects" aria-labelledby="projects-title">
+            <div className={styles.sectionHeading}><Icon icon={faFolderOpen} className={styles.gold} /><h2 id="projects-title" className="text-ds-h2">โปรเจกต์ล่าสุด</h2><Link className={styles.textAction} href="/write/projects">ดูโปรเจกต์ทั้งหมด<Icon icon={faChevronRight} /></Link></div>
+            <div className={styles.projects}>
+              {projects.map((project) => (
+                <article key={project.id} className={`ds-card ${styles.project}`}>
+                  <button type="button" className={styles.projectButton} aria-label={`เปิดโปรเจกต์ ${project.title}`} onClick={() => openFeature(`รายละเอียด ${project.title}`, `manage/${project.id}`)}>
+                    <Image src={project.cover} alt={`ปก ${project.title}`} width={68} height={84} sizes="68px" className={styles.projectCover} />
+                    <span className={styles.projectText}>
+                      <span className={`text-ds-body-sm ${styles.projectTitle}`}>{project.title}</span>
+                      <span className={`text-ds-meta text-arn-muted ${styles.projectMeta}`}>{project.kind === "fanfic" ? "แฟนฟิค" : "นิยาย"} · {project.chapters} ตอน</span>
+                      <span className={`text-ds-meta text-arn-subtle ${styles.projectMeta}`}>แก้ไข {project.updated}</span>
+                    </span>
+                    <Icon icon={faChevronRight} className={styles.projectChevron} />
+                  </button>
+                </article>
+              ))}
             </div>
-            <button className={`ds-button-secondary ${styles.newProject}`} type="button" onClick={() => openFeature("สร้างผลงานใหม่", "new")}><Icon icon={faPlus} />สร้างผลงานใหม่</button>
           </section>
         </div>
 
-        <aside className={styles.rightRail} aria-label="ภาพรวมการเขียน">
-          <section id="insights" className={`ds-card ${styles.insights}`}>
-            <div className={styles.railHeading}><Icon icon={faChartSimple} /><div><h2 className="sidebar-title">Writer Intelligence <Icon icon={faCircleQuestion} /></h2><p className="sidebar-meta text-arn-muted">ข้อมูลเชิงลึกจากผลงานของคุณ</p></div><Link aria-label="ดูข้อมูลเชิงลึก" href="/write/insights"><Icon icon={faChevronRight} /></Link></div>
-            <select aria-label="ช่วงเวลาของข้อมูลเชิงลึก" className={`ds-input ${styles.period}`} value={period} onChange={(event) => setPeriod(event.target.value)}><option value="30">รอบ 30 วันที่ผ่านมา</option><option value="7">รอบ 7 วันที่ผ่านมา</option></select>
-            <div className={styles.metricGrid}>{[{ label: "ยอดอ่านทั้งหมด", value: period === "30" ? "421K" : "98.2K", growth: "12%", icon: faEye }, { label: "ผู้ติดตามใหม่", value: period === "30" ? "1.2K" : "286", growth: "28%", icon: faUsers }, { label: "คนที่ชอบเรื่องนี้", value: period === "30" ? "17.9K" : "4.1K", growth: "16%", icon: faHeart }, { label: "ความคิดเห็น", value: period === "30" ? "326" : "84", growth: "43%", icon: faComment }].map((metric) => <div className={styles.metric} key={metric.label}><Icon icon={metric.icon} className={metric.icon === faHeart ? styles.pink : ""} /><div><p className="sidebar-meta text-arn-muted">{metric.label}</p><strong className="text-ds-h3">{metric.value}</strong><span><Icon icon={faArrowUp} /> {metric.growth}</span></div></div>)}</div>
-            <div className={styles.aiInsight}><h3 className="text-ds-body-sm font-semibold">AI Insight <Icon icon={faStar} className={styles.gold} /><span className="sidebar-meta text-arn-muted">จากความคิดเห็นของผู้อ่าน</span></h3><p className="sidebar-body text-arn-muted">ผู้อ่านกำลังพูดถึง “เสวี่ยหลิน” และ “องค์รัชทายาท” มากขึ้นในตอนล่าสุด โดยเฉพาะความสัมพันธ์ที่เริ่มชัดเจนขึ้นของทั้งสองตัวละคร คุณอาจพิจารณาขยายฉากความสัมพันธ์นี้ในตอนถัดไป</p><Link className="ds-button-secondary" href="/write/insights">ดูรายละเอียดเพิ่มเติม <Icon icon={faChevronRight} /></Link></div>
+        <aside className={styles.rightRail} aria-label="ข้อมูลและกิจกรรมจากผู้อ่าน">
+          <section id="insights" className={`ds-card ${styles.readerOverview}`} aria-labelledby="reader-overview-title">
+            <div className={styles.readerHeading}><Icon icon={faChartSimple} /><h2 id="reader-overview-title" className="sidebar-title">ภาพรวมผู้อ่าน</h2><Link href="/write/insights" className="sidebar-link">ดูทั้งหมด<Icon icon={faChevronRight} /></Link></div>
+            <div className={styles.readerMetrics}>{[{ label: "ยอดอ่านทั้งหมด", value: "421K", growth: "12%", icon: faEye }, { label: "ผู้ติดตาม", value: "1.2K", growth: "28%", icon: faUsers }, { label: "คนชอบเรื่องนี้", value: "17.9K", growth: "16%", icon: faHeart }, { label: "ความคิดเห็น", value: "326", growth: "43%", icon: faComments }].map((metric) => <div className={styles.readerMetric} key={metric.label}><Icon icon={metric.icon} className={metric.icon === faHeart ? styles.readerHeart : ""} /><div><strong>{metric.value}</strong><p className="sidebar-meta">{metric.label}</p><span className={styles.readerGrowth}><Icon icon={faArrowUp} />{metric.growth}<span className="sr-only">เพิ่มขึ้นจากช่วงก่อนหน้า</span></span></div></div>)}</div>
           </section>
-          <section className={`ds-card ${styles.tasks}`}><div className={styles.railHeading}><Icon icon={faClipboardCheck} /><h2 className="sidebar-title">งานที่ควรทำ</h2><span className="sidebar-meta text-arn-muted">{checked.filter((value) => !value).length} รายการ</span></div><div className={styles.taskList}>{taskLabels.map((label, index) => <label key={label}><input type="checkbox" checked={checked[index]} onChange={() => setChecked((items) => items.map((value, position) => position === index ? !value : value))} /><span>{label}</span>{index === 2 && <span className={styles.counter}>12</span>}</label>)}</div><button type="button" className={styles.textAction} onClick={() => openFeature("งานทั้งหมด", "tasks")}>ดูทั้งหมด <Icon icon={faChevronRight} /></button></section>
-          <section className={`ds-card ${styles.draftProgress}`}><div className={styles.railHeading}><Icon icon={faClipboardCheck} className={styles.gold} /><h2 className="sidebar-title">ความคืบหน้าร่างต้นฉบับ</h2></div><div className={styles.progressLabel}><span>1 จาก 5 ขั้นตอน</span><strong>20%</strong></div><progress aria-label="ความคืบหน้าร่างต้นฉบับ" value={20} max={100}>20%</progress><div className={styles.draftBook}><Image src={projects[2].cover} alt="ปกเสียงในม่านหมอก" width={36} height={52} sizes="36px" /><span className="sidebar-item-title">เสียงในม่านหมอก</span><button type="button" className="ds-button-secondary" onClick={() => openFeature("เขียนเสียงในม่านหมอก", "editor/fog")}>ทำต่อ <Icon icon={faChevronRight} /></button></div></section>
+          <section className={`ds-card ${styles.readerActivity}`} aria-labelledby="reader-activity-title">
+            <div className={styles.readerHeading}><Icon icon={faFileLines} /><h2 id="reader-activity-title" className="sidebar-title">กิจกรรมจากผู้อ่าน</h2><button type="button" className="sidebar-link" onClick={() => openFeature("กิจกรรมจากผู้อ่านทั้งหมด", "activity")}>ดูทั้งหมด<Icon icon={faChevronRight} /></button></div>
+            <ul className={styles.activityList}>{[
+              { title: "ความคิดเห็นใหม่", detail: "“รอตอนต่อไปเลยค่ะ สนุกมาก!”", meta: "จันทร์เหนือวังหลวง · ตอนที่ 31", time: "2 ชม.", icon: faComments, heart: false },
+              { title: "มีคนกดถูกใจตอนล่าสุด", detail: "Sky of Tomorrow · ตอนที่ 18", meta: "", time: "5 ชม.", icon: faHeart, heart: true },
+              { title: "ผู้อ่านเพิ่มเรื่องลงชั้นหนังสือ", detail: "จันทร์เหนือวังหลวง", meta: "", time: "1 วัน", icon: faBookmark, heart: false },
+              { title: "เริ่มติดตามคุณ", detail: "มีผู้ติดตามใหม่ 3 คน", meta: "", time: "2 วัน", icon: faUsers, heart: false },
+            ].map((activity) => <li key={activity.title} className={styles.activityRow}><span className={styles.activityIcon}><Icon icon={activity.icon} className={activity.heart ? styles.readerHeart : ""} /></span><div className={styles.activityText}><h3 className="sidebar-item-title">{activity.title}</h3><p className="sidebar-body">{activity.detail}</p>{activity.meta && <p className="sidebar-caption">{activity.meta}</p>}</div><span className={`sidebar-meta ${styles.activityTime}`}>{activity.time}</span></li>)}</ul>
+          </section>
         </aside>
       </div>
+      {scheduleEditor && <ScheduleEditor initial={scheduleEditor} onClose={closeScheduleEditor} onSave={(newItems) => {
+        const collision = newItems.some((item) => publications.some((existing) => existing.id !== item.id && existing.status !== "cancelled" && existing.project === item.project && (existing.chapter === item.chapter || existing.date === item.date && existing.time === item.time)));
+        if (collision) return "เรื่องนี้มีเลขตอนหรือวันและเวลาซ้ำกับกำหนดการเดิม";
+        setPublications((items) => [...items.filter((item) => !newItems.some((next) => next.id === item.id)), ...newItems]);
+        setScheduleNotice("บันทึกกำหนดการทดลองแล้ว"); closeScheduleEditor(); return undefined;
+      }} />}
       {pending && <UnbuiltPageModal page={pending} href={pending.url} onClose={() => setPending(null)} />}
     </main>
   );

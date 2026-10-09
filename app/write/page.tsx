@@ -5,7 +5,7 @@ import WriterStudio from "@/components/WriterStudio";
 export default function WritePage() {
   return (
     <div className="ds-page-shell min-h-screen">
-      <TopMenu />
+      <TopMenu sticky />
       <WriterStudio />
       <Footer />
     </div>

@@ -18,7 +18,7 @@ function Icon({ icon }: { icon: IconDefinition }) { return <FontAwesomeIcon icon
 function Segments({ items, value, onChange, label }: { items: readonly (readonly [string, string])[]; value: string; onChange: (value: string) => void; label: string }) { return <div className={styles.segments} role="group" aria-label={label}>{items.map(([id, text]) => <button key={id} type="button" aria-pressed={value === id} className={value === id ? styles.selected : ""} onClick={() => onChange(id)}>{text}</button>)}</div>; }
 type EditorState = { item?: Publication; date: string; repeat: "once" | "daily" | "weekly" };
 
-function ScheduleEditor({ initial, onClose, onSave }: { initial: EditorState; onClose: () => void; onSave: (items: Publication[]) => string | undefined }) {
+export function ScheduleEditor({ initial, onClose, onSave }: { initial: EditorState; onClose: () => void; onSave: (items: Publication[]) => string | undefined }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [project, setProject] = useState(initial.item?.project ?? "moon");
   const [chapter, setChapter] = useState(initial.item?.chapter ?? 36);

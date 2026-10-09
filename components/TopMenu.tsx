@@ -181,11 +181,12 @@ export const authStateChangedEvent = "arnspace-auth-change";
 
 type TopMenuProps = {
   fixed?: boolean;
+  sticky?: boolean;
   initialLoggedIn?: boolean;
   activeReadMode?: ReadModeId;
 };
 
-export default function TopMenu({ fixed = false, initialLoggedIn = true, activeReadMode }: TopMenuProps) {
+export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn = true, activeReadMode }: TopMenuProps) {
   const pathname = usePathname();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -248,7 +249,7 @@ export default function TopMenu({ fixed = false, initialLoggedIn = true, activeR
 
   return (
     <UnbuiltPageGuard>
-      <header className={`${fixed ? "fixed inset-x-0 top-0 z-50" : ""} border-b border-arn-border bg-arn-canvas text-arn-text`}>
+      <header className={`${fixed ? "fixed inset-x-0 top-0 z-50" : sticky ? "sticky top-0 z-50" : ""} border-b border-arn-border bg-arn-canvas text-arn-text`}>
       <div className="mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-8">
         <a aria-label="ARN SPACE หน้าหลัก" className="-ml-4 flex shrink-0 items-center" href="/">
           <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[238px]" height={80} priority src="/images/arnspace-logo.webp" width={238} />
