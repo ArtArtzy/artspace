@@ -76,9 +76,9 @@ export default function WriterStudio() {
   };
 
   return (
-    <main className={`${shell.stage} ${styles.stage}`}>
-      <div className={`${shell.layout} ${styles.layout}`}>
-        <aside className={`ds-card ${shell.navigation} ${styles.navigation}`}>
+    <main className={`${shell.stage} ${shell.overviewStage} ${styles.stage}`}>
+      <div className={`${shell.layout} ${shell.overviewLayout} ${styles.layout}`}>
+        <aside className={`ds-card ${shell.navigation} ${shell.overviewNavigation} ${styles.navigation}`}>
           <h2 className="text-ds-h3">Writer Studio</h2>
           <nav aria-label="เมนูนักเขียน">
             {navigation.map(([label, icon, id]) => id === "projects" || id === "insights" || id === "comments" || id === "schedule" ? <Link key={id} href={`/write/${id}`} className={shell.navItem}><Icon icon={icon} /><span>{label}</span></Link> : <button key={id} type="button" className={`${shell.navItem} ${id === "home" ? shell.activeNav : ""}`} onClick={() => navigate(id, label)}><Icon icon={icon} /><span>{label}</span></button>)}
