@@ -12,7 +12,7 @@ import { commentProjects, initialComments } from "@/data/writer-comments";
 import shell from "./WriterStudioShell.module.css";
 import styles from "./WriterComments.module.css";
 
-const navigation = [["หน้าหลัก", faHouse, "home"], ["โปรเจกต์ของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ AI", faWandMagicSparkles, "tools"]] as const;
+const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ", faWandMagicSparkles, "tools"]] as const;
 const tabs = [["all", "ทั้งหมด"], ["unanswered", "ยังไม่ได้ตอบ"], ["mine", "การตอบของฉัน"], ["liked", "ถูกใจความคิดเห็น"], ["questions", "คำถามจากนักอ่าน"]] as const;
 const sentiments = { positive: "เชิงบวก", neutral: "เป็นกลาง", negative: "เชิงลบ" };
 function Icon({ icon }: { icon: IconDefinition }) { return <FontAwesomeIcon icon={icon} aria-hidden="true" className={styles.icon} />; }
