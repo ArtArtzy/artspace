@@ -143,7 +143,6 @@
 .empty p { margin: 12px auto 24px; max-width: 400px; }
 .stage button:focus-visible, .stage input:focus-visible, .stage select:focus-visible, .stage a:focus-visible { outline: 2px solid var(--arn-color-accent); outline-offset: 3px; }
 .navigation { align-self: stretch; min-height: 0; margin-top: 0; padding-top: 20px; }
-.navigation nav a[aria-current="page"] { border: 1px solid var(--arn-color-accent); background: transparent; }
 .navigation > div { padding: 96px 8px 32px; opacity: 1; }
 @media (max-width: 1399px) { .stage .layout { grid-template-columns: 172px minmax(0, 1fr); gap: 16px; } .metric { gap: 8px; padding: 12px 8px; } .metricIcon { width: 28px; height: 28px; font-size: 16px; } .metric strong { font-size: 22px; } }
 @media (max-width: 1100px) { .stage .layout { grid-template-columns: 164px minmax(0, 1fr); } .heading { align-items: flex-start; flex-wrap: wrap; } .metrics { gap: 8px; } .metric { display: block; } .metricIcon { margin-bottom: 8px; } .panelHeading h2 { font-size: 15px; } .panelHeading > .tabs { width: 100%; margin-left: 0; } .sources li { grid-template-columns: 24px minmax(72px, .6fr) minmax(0, 1fr) 32px; gap: 6px; } .bottomGrid { grid-template-columns: 1fr; } }

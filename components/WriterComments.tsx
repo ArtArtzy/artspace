@@ -5,86 +5,138 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faHeart, faMagnifyingGlass, faSliders, faReply, faCrown, faCircleQuestion, faRotateLeft, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faHeart, faPaperPlane, faChevronLeft, faChevronRight, faArrowUpRightFromSquare, faQuoteLeft, faCircleCheck, faImage } from "@fortawesome/free-solid-svg-icons";
+import CommentEmojiPicker from "./CommentEmojiPicker";
 import UnbuiltPageModal from "./UnbuiltPageModal";
 import type { UnbuiltPage } from "@/data/unbuilt-pages";
-import { commentProjects, initialComments } from "@/data/writer-comments";
+import { commentProjects, initialComments, initialHandledThreads, latestReaderMessageId, receiveReaderReply, type ReaderReply, type CommentQuote, type ReaderComment } from "@/data/writer-comments";
+import { getNovelDetails } from "@/data/novelDetails";
 import shell from "./WriterStudioShell.module.css";
 import styles from "./WriterComments.module.css";
 
 const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ", faWandMagicSparkles, "tools"]] as const;
-const tabs = [["all", "ทั้งหมด"], ["unanswered", "ยังไม่ได้ตอบ"], ["mine", "การตอบของฉัน"], ["liked", "ถูกใจความคิดเห็น"], ["questions", "คำถามจากนักอ่าน"]] as const;
-const sentiments = { positive: "เชิงบวก", neutral: "เป็นกลาง", negative: "เชิงลบ" };
+const tabs = [["pending", "รอจัดการ"], ["unread", "ยังไม่อ่าน"], ["all", "ทั้งหมด"]] as const;
+type Scope = { project: string; chapter: number | null } | null;
+const startingHandled = initialHandledThreads(initialComments);
+const startingThread = initialComments.find(item => startingHandled[item.id] !== latestReaderMessageId(item))!;
+const timeAgo = (hours: number) => hours === 0 ? "เมื่อสักครู่" : hours < 24 ? `${hours} ชั่วโมงที่แล้ว` : `${Math.floor(hours / 24)} วันที่แล้ว`;
+const scopeLabel = (thread: ReaderComment) => thread.chapter === null ? "ความคิดเห็นระดับเรื่อง" : `ตอนที่ ${thread.chapter}`;
+const activityAge = (thread: ReaderComment) => thread.replies.at(-1)?.hoursAgo ?? thread.hoursAgo;
 function Icon({ icon }: { icon: IconDefinition }) { return <FontAwesomeIcon icon={icon} aria-hidden="true" className={styles.icon} />; }
-const isAnswered = (comment: typeof initialComments[number]) => comment.replies.some(reply => reply.writer);
+function QuotedMessage({ quote }: { quote: CommentQuote }) {
+  return <blockquote className={styles.quotePreview}><strong>อ้างถึง {quote.author}</strong><p>{quote.text}</p></blockquote>;
+}
 
 export default function WriterComments() {
   const [comments, setComments] = useState(initialComments);
-  const [projectId, setProjectId] = useState("moon");
-  const [tab, setTab] = useState("all");
-  const [query, setQuery] = useState("");
-  const [sentiment, setSentiment] = useState("all");
-  const [kind, setKind] = useState("all");
-  const [range, setRange] = useState("all");
-  const [unanswered, setUnanswered] = useState(false);
-  const [sort, setSort] = useState("newest");
+  const [selectedId, setSelectedId] = useState(startingThread.id);
+  const [tab, setTab] = useState("pending");
+  const [projectId, setProjectId] = useState("all");
+  const [scope, setScope] = useState<Scope>(null);
+  const [sort, setSort] = useState("latest");
+  const [pageSize, setPageSize] = useState(30);
+  const [page, setPage] = useState(1);
+  const [handledThrough, setHandledThrough] = useState(startingHandled);
+  const [readThrough, setReadThrough] = useState<Record<string, string>>({ ...startingHandled, [startingThread.id]: latestReaderMessageId(startingThread) });
   const [liked, setLiked] = useState<string[]>([]);
-  const [replyTo, setReplyTo] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [quote, setQuote] = useState<CommentQuote | null>(null);
   const [notice, setNotice] = useState("");
-  const [limit, setLimit] = useState(6);
-  const [chartDays, setChartDays] = useState("30");
-  const [hoverDay, setHoverDay] = useState<number | null>(null);
   const [pending, setPending] = useState<UnbuiltPage | null>(null);
-  const filterRef = useRef<HTMLSelectElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const detailRef = useRef<HTMLElement>(null);
+
   useEffect(() => {
     if (!pending) return;
     const close = (event: KeyboardEvent) => { if (event.key === "Escape") setPending(null); };
-    window.addEventListener("keydown", close); return () => window.removeEventListener("keydown", close);
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
   }, [pending]);
-  const openFeature = (name: string, code: string) => setPending({ name, code: `WRITE-${code.toUpperCase()}`, url: `/write/${code}`, trigger: name, status: "ยังไม่ได้ทำ" });
-  const project = commentProjects.find(item => item.id === projectId);
-  const scoped = comments.filter(comment => projectId === "all" || comment.project === projectId);
-  const counts: Record<string, number> = { all: scoped.length, unanswered: scoped.filter(comment => !isAnswered(comment)).length, mine: scoped.filter(isAnswered).length, liked: scoped.filter(comment => liked.includes(comment.id)).length, questions: scoped.filter(comment => comment.question).length };
-  const positive = Math.round(scoped.filter(comment => comment.sentiment === "positive").length / Math.max(1, scoped.length) * 100);
-  const neutral = Math.round(scoped.filter(comment => comment.sentiment === "neutral").length / Math.max(1, scoped.length) * 100);
-  const negative = 100 - positive - neutral;
-  const filtered = scoped.filter(comment => {
-    const text = [comment.text, comment.author, ...comment.replies.map(reply => reply.text)].join(" ").toLocaleLowerCase("th");
-    return (tab === "all" || tab === "unanswered" && !isAnswered(comment) || tab === "mine" && isAnswered(comment) || tab === "liked" && liked.includes(comment.id) || tab === "questions" && comment.question)
-      && (!query.trim() || text.includes(query.trim().toLocaleLowerCase("th")))
-      && (sentiment === "all" || comment.sentiment === sentiment) && (kind === "all" || kind === "question" && comment.question || kind === "comment" && !comment.question)
-      && (range === "all" || comment.hoursAgo <= Number(range) * 24) && (!unanswered || !isAnswered(comment));
-  }).sort((a, b) => sort === "likes" ? (b.likes + Number(liked.includes(b.id))) - (a.likes + Number(liked.includes(a.id))) : sort === "oldest" ? b.hoursAgo - a.hoursAgo : a.hoursAgo - b.hoursAgo);
-  const reset = () => { setTab("all"); setQuery(""); setSentiment("all"); setKind("all"); setRange("all"); setUnanswered(false); setLimit(6); setNotice(""); };
-  const selectProject = (id: string) => { setProjectId(id); setLimit(6); setReplyTo(null); setDraft(""); setNotice(""); setHoverDay(null); };
-  const days = Number(chartDays);
-  const daily = Array.from({ length: days }, (_, i) => scoped.filter(comment => Math.floor(comment.hoursAgo / 24) === days - 1 - i).length);
-  const topicWords = projectId === "sky" ? ["ประตู", "ท้องฟ้า", "เมือง", "การผจญภัย", "โลก"] : ["หลินเยว่", "ตัวละคร", "จดหมาย", "ตอนใหม่", "พัฒนาการ"];
-  const topicCounts = topicWords.map(word => ({ word, count: scoped.filter(comment => comment.text.includes(word)).length })).sort((a, b) => b.count - a.count);
-  const projectOptions = <><option value="all">ทุกเรื่อง</option>{commentProjects.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</>;
+  useEffect(() => {
+    // Integration point for incoming reader replies; checkpoints intentionally
+    // remain unchanged so a new message becomes unread and pending again.
+    const receive = (event: Event) => {
+      const detail = (event as CustomEvent<{ threadId: string; reply: ReaderReply }>).detail;
+      if (!detail || typeof detail.threadId !== "string" || !detail.reply ||
+        typeof detail.reply.id !== "string" || typeof detail.reply.author !== "string" ||
+        typeof detail.reply.text !== "string" || !detail.reply.text.trim()) return;
+      setComments(values => receiveReaderReply(values, detail.threadId, detail.reply));
+    };
+    window.addEventListener("arnspace:comment-reply", receive);
+    return () => window.removeEventListener("arnspace:comment-reply", receive);
+  }, []);
 
-  return <main className={`${shell.stage} ${styles.stage}`}><div className={styles.layout}>
-    <aside className={`ds-card ${shell.navigation} ${styles.navigation}`}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => ["home", "projects", "insights", "comments", "schedule"].includes(id) ? <Link key={id} href={id === "home" ? "/write" : `/write/${id}`} aria-current={id === "comments" ? "page" : undefined} className={`${shell.navItem} ${id === "comments" ? shell.activeNav : ""}`}><Icon icon={icon} />{label}</Link> : <button key={id} type="button" className={shell.navItem} onClick={() => openFeature(label, id)}><Icon icon={icon} />{label}</button>)}</nav><div className={`${shell.quote} ${styles.quote}`}>“ทุกเรื่องราว<br />เริ่มต้นจากจินตนาการ<br />และเติบโตได้เสมอ<br />ที่นี่... ARN SPACE”<span>— ◇ —</span></div></aside>
+  const openFeature = (name: string, code: string) => setPending({ name, code: `WRITE-${code.toUpperCase()}`, url: `/write/${code}`, trigger: name, status: "ยังไม่ได้ทำ" });
+  const isPending = (item: ReaderComment) => handledThrough[item.id] !== latestReaderMessageId(item);
+  const isUnread = (item: ReaderComment) => readThrough[item.id] !== latestReaderMessageId(item);
+  const scoped = comments.filter(item => (projectId === "all" || item.project === projectId) && (!scope || item.project === scope.project && item.chapter === scope.chapter));
+  const counts = { pending: scoped.filter(isPending).length, unread: scoped.filter(isUnread).length, all: scoped.length };
+  const filtered = scoped.filter(item => tab === "all" || tab === "pending" && isPending(item) || tab === "unread" && isUnread(item)).sort((a, b) =>
+    (sort === "oldest" ? b.hoursAgo - a.hoursAgo : sort === "messages" ? b.replies.length - a.replies.length : activityAge(a) - activityAge(b)) || a.id.localeCompare(b.id));
+  const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pages);
+  const selected = comments.find(item => item.id === selectedId)!;
+  const project = commentProjects.find(item => item.id === selected.project)!;
+  const readableEpisode = selected.chapter !== null && getNovelDetails(project.title).episodes.some(item => item.number === selected.chapter && !item.locked);
+  const pageNumbers = [...new Set([1, pages, ...Array.from({ length: 5 }, (_, index) => currentPage + index - 2).filter(value => value >= 1 && value <= pages)])].sort((a, b) => a - b);
+  const selectComment = (item: ReaderComment) => {
+    setSelectedId(item.id);
+    setReadThrough(values => ({ ...values, [item.id]: latestReaderMessageId(item) }));
+    setDraft(""); setQuote(null); setNotice("");
+    if (window.matchMedia("(max-width: 1100px)").matches) detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const markHandled = () => {
+    const checkpoint = latestReaderMessageId(selected);
+    setHandledThrough(values => ({ ...values, [selected.id]: checkpoint }));
+    setReadThrough(values => ({ ...values, [selected.id]: checkpoint }));
+  };
+  const toggleLike = (id: string) => setLiked(values => values.includes(id) ? values.filter(value => value !== id) : [...values, id]);
+  const replyWithQuote = (messageId: string, author: string, text: string) => { setQuote({ messageId, author, text }); inputRef.current?.focus(); };
+  const viewScope = (episode: boolean) => {
+    setProjectId(selected.project); setScope(episode ? { project: selected.project, chapter: selected.chapter } : null);
+    setTab("all"); setPage(1);
+  };
+
+  const messageActions = (id: string, author: string, text: string, likes = 0) => <div className={styles.actions}>
+    <button type="button" aria-label={`ถูกใจข้อความของ ${author}`} aria-pressed={liked.includes(id)} onClick={() => toggleLike(id)}><Icon icon={faHeart} />{likes + Number(liked.includes(id))}</button>
+    <button type="button" onClick={() => replyWithQuote(id, author, text)}><Icon icon={faQuoteLeft} />ตอบพร้อมอ้างข้อความ</button>
+  </div>;
+
+  return <main className={`${shell.stage} ${shell.overviewStage} ${styles.stage}`}><div className={`${shell.layout} ${shell.overviewLayout}`}>
+    <aside className={`ds-card ${shell.navigation} ${shell.overviewNavigation}`}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => id !== "tools" ? <Link key={id} href={id === "home" ? "/write" : `/write/${id}`} aria-current={id === "comments" ? "page" : undefined} className={`${shell.navItem} ${id === "comments" ? shell.activeNav : ""}`}><Icon icon={icon} /><span>{label}</span></Link> : <button key={id} type="button" className={shell.navItem} onClick={() => openFeature(label, id)}><Icon icon={icon} /><span>{label}</span></button>)}</nav><div className={shell.quote}>“ทุกเรื่องราว<br />เริ่มต้นจากจินตนาการ<br />และเติบโตได้เสมอ<br />ที่นี่... ARN SPACE”<span aria-hidden="true">— ◇ —</span></div></aside>
     <div className={styles.content}>
-      <header className={styles.header}><div className={styles.title}><Icon icon={faComment} /><div><h1 className="text-ds-h1">ความคิดเห็น</h1><p className="text-ds-body text-arn-muted">พูดคุยกับนักอ่าน รับฟังความคิดเห็น และสร้างชุมชนรอบผลงานของคุณ</p><p className={styles.demo}>ข้อมูลตัวอย่าง · ตอบกลับและถูกใจเพื่อทดลองในหน้านี้ ข้อมูลจะรีเซ็ตเมื่อโหลดหน้าใหม่</p></div></div><div className={styles.searchTools}><select aria-label="ผลงานที่แสดงความคิดเห็น" className="ds-input" value={projectId} onChange={event => selectProject(event.target.value)}>{projectOptions}</select><label className={styles.search}><Icon icon={faMagnifyingGlass} /><input className="ds-input" aria-label="ค้นหาความคิดเห็น" placeholder="ค้นหาความคิดเห็น…" value={query} onChange={event => { setQuery(event.target.value); setLimit(6); }} /></label><button className="ds-button-secondary" type="button" aria-label="ไปที่ตัวกรองความคิดเห็น" aria-controls="comment-filters" onClick={() => filterRef.current?.focus()}><Icon icon={faSliders} /></button></div></header>
-      <div className={styles.tabs} role="group" aria-label="กลุ่มความคิดเห็น">{tabs.map(([id, label]) => <button key={id} type="button" aria-pressed={tab === id} className={tab === id ? styles.activeTab : ""} onClick={() => { setTab(id); setLimit(6); }}><span>{label}</span><span className={id === "unanswered" ? styles.unansweredBadge : styles.countBadge}>{counts[id]}</span></button>)}</div>
-      <div className={styles.mainGrid}><div className={styles.mainColumn}>
-        <div className={styles.metrics} aria-label="ภาพรวมความคิดเห็น">{[{ label: "ความคิดเห็นทั้งหมด", value: scoped.length, icon: faComment, tone: "green", note: "จากผลงานที่เลือก" }, { label: "ยังไม่ได้ตอบ", value: counts.unanswered, icon: faReply, tone: "gold", note: "รอการตอบจากคุณ" }, { label: "คำถามจากนักอ่าน", value: counts.questions, icon: faCircleQuestion, tone: "violet", note: "ชวนพูดคุยต่อ" }, { label: "ความคิดเห็นเชิงบวก", value: `${positive}%`, icon: faHeart, tone: "pink", note: "จากความคิดเห็นตัวอย่าง" }].map(metric => <section key={metric.label} className={`ds-card ${styles.metric} ${styles[metric.tone]}`}><Icon icon={metric.icon} /><div><p className="text-ds-caption text-arn-muted">{metric.label}</p><strong className="text-ds-h2">{metric.value}</strong><span className="text-ds-caption text-arn-subtle">{metric.note}</span></div></section>)}</div>
-        <div className={styles.inbox}><aside className={`ds-card ${styles.books}`} aria-label="ความคิดเห็นแยกตามผลงาน"><button className={`${styles.allBooks} ${projectId === "all" ? styles.selectedBook : ""}`} type="button" aria-pressed={projectId === "all"} onClick={() => selectProject("all")}>ทุกเรื่อง <span>{comments.length}</span></button>{commentProjects.map(item => <button key={item.id} type="button" aria-pressed={item.id === projectId} onClick={() => selectProject(item.id)} className={`${styles.book} ${item.id === projectId ? styles.selectedBook : ""}`}><Image src={item.cover} alt="" width={44} height={64} sizes="44px" /><span><strong className="sidebar-item-title">{item.title}</strong><span className="sidebar-meta text-arn-muted"><Icon icon={faComment} /> {comments.filter(comment => comment.project === item.id).length}</span></span></button>)}</aside>
-          <section className={styles.threads} aria-label="รายการความคิดเห็น"><div className={`ds-card ${styles.storyHeader}`}>{project ? <><Image src={project.cover} alt={`ปก ${project.title}`} width={52} height={72} sizes="52px" /><div><h2 className="text-ds-h3">{project.title}</h2><div className={styles.tags}>{project.tags.map(tag => <span className="ds-chip" key={tag}>{tag}</span>)}</div></div></> : <div><h2 className="text-ds-h3">บทสนทนาจากทุกเรื่อง</h2><p className="text-ds-body-sm text-arn-muted">ติดตามเสียงของผู้อ่านในที่เดียว</p></div>}</div><div className={styles.listHeading}><h3 className="text-ds-body-sm">{tabs.find(([id]) => id === tab)![1]} <span>{filtered.length}</span></h3><select aria-label="เรียงความคิดเห็น" className="ds-input" value={sort} onChange={event => setSort(event.target.value)}><option value="newest">ล่าสุดก่อน</option><option value="oldest">เก่าสุดก่อน</option><option value="likes">ถูกใจมากที่สุด</option></select></div><p className={styles.notice} role="status">{notice}</p>
-          {filtered.slice(0, limit).map(comment => <article key={comment.id} className={`ds-card ${styles.thread}`} aria-label={`ความคิดเห็นของ ${comment.author}`}><Image className={styles.avatar} src={comment.avatar} alt="" width={40} height={40} sizes="40px" /><div className={styles.threadBody}><div className={styles.commentMeta}><h4 className="text-ds-body-sm font-medium">{comment.author}</h4>{comment.badge && <span className={styles.fanBadge}><Icon icon={faCrown} /> {comment.badge}</span>}<span className="text-ds-caption text-arn-subtle">{comment.hoursAgo < 24 ? `${comment.hoursAgo} ชั่วโมงที่แล้ว` : `${Math.floor(comment.hoursAgo / 24)} วันที่แล้ว`}</span></div><div className={styles.chapterMeta}><span>ตอนที่ {comment.chapter}</span>{!project && <span>{commentProjects.find(item => item.id === comment.project)!.title}</span>}{comment.question && <span className={styles.questionBadge}>คำถาม</span>}<span className={styles[comment.sentiment]}>{sentiments[comment.sentiment]}</span></div><p className="text-ds-body-sm">{comment.text}</p><div className={styles.actions}><button type="button" aria-label={`ถูกใจความคิดเห็นของ ${comment.author}`} aria-pressed={liked.includes(comment.id)} className={liked.includes(comment.id) ? styles.isLiked : ""} onClick={() => setLiked(values => values.includes(comment.id) ? values.filter(id => id !== comment.id) : [...values, comment.id])}><Icon icon={faHeart} /> {comment.likes + Number(liked.includes(comment.id))}</button><button type="button" className="ds-button-secondary" aria-expanded={replyTo === comment.id} onClick={() => { setReplyTo(replyTo === comment.id ? null : comment.id); setDraft(""); }}>ตอบกลับ</button>{isAnswered(comment) && <span className={styles.answered}><Icon icon={faReply} /> ตอบแล้ว</span>}</div>
-            {comment.replies.length > 0 && <details className={styles.replies} open={comment.id === "reader-1" || comment.replies.some(reply => reply.id.startsWith("local-")) || undefined}><summary>ดูการตอบกลับ {comment.replies.length} รายการ</summary>{comment.replies.map(reply => <div key={reply.id} className={`${styles.reply} ${reply.writer ? styles.writerReply : ""}`}><Image className={styles.avatar} src={reply.writer ? "/images/writers/akistudio.webp" : "/images/writers/rainymew.webp"} alt="" width={28} height={28} sizes="28px" /><div><div className={styles.commentMeta}><strong className="text-ds-body-sm font-medium">{reply.author}</strong>{reply.writer && <span className={styles.writerBadge}>นักเขียน</span>}</div><p className="text-ds-body-sm">{reply.text}</p></div></div>)}</details>}
-            {replyTo === comment.id && <form className={styles.replyForm} onSubmit={event => { event.preventDefault(); const text = draft.trim(); if (!text) return; setComments(values => values.map(item => item.id === comment.id ? { ...item, replies: [...item.replies, { id: `local-${item.id}-${item.replies.length}`, author: "HanYue", writer: true, text }] } : item)); setReplyTo(null); setDraft(""); setNotice(`เพิ่มคำตอบถึง ${comment.author} แล้ว (ข้อมูลทดลองในหน้านี้)`); }}><label htmlFor={`reply-${comment.id}`} className="text-ds-body-sm">ตอบกลับ {comment.author}</label><textarea autoFocus id={`reply-${comment.id}`} className="ds-input" value={draft} onChange={event => setDraft(event.target.value)} placeholder="เขียนคำตอบถึงนักอ่าน…" maxLength={500} rows={3} required /><div><span className="text-ds-caption text-arn-subtle">{draft.length}/500</span><button className="ds-button-secondary" type="button" onClick={() => { setReplyTo(null); setDraft(""); }}>ยกเลิก</button><button className="ds-button-primary" type="submit" disabled={!draft.trim()}><Icon icon={faPaperPlane} /> เพิ่มคำตอบทดลอง</button></div></form>}
-          </div></article>)}
-          {filtered.length === 0 && <div className={`ds-card ${styles.empty}`}><Icon icon={faComment} /><h3 className="text-ds-h3">{tab === "liked" && !liked.length ? "ยังไม่มีความคิดเห็นที่คุณถูกใจ" : "ไม่พบความคิดเห็นในกลุ่มนี้"}</h3><p className="text-ds-body-sm text-arn-muted">ลองเลือกผลงานอื่นหรือปรับตัวกรองความคิดเห็น</p><button className="ds-button-secondary" type="button" onClick={reset}>แสดงความคิดเห็นทั้งหมด</button></div>}
-          {filtered.length > limit && <button className={`ds-button-secondary ${styles.loadMore}`} type="button" onClick={() => setLimit(value => value + 6)}>แสดงเพิ่มเติม ({filtered.length - limit})</button>}
-          </section>
-        </div>
-      </div>
-      <aside className={styles.rail} aria-label="ภาพรวมและตัวกรอง"><section className={`ds-card ${styles.panel}`}><div className={styles.panelHeading}><h2 className="sidebar-title">ภาพรวมความคิดเห็น</h2><select aria-label="ช่วงเวลากราฟความคิดเห็น" className="ds-input" value={chartDays} onChange={event => { setChartDays(event.target.value); setHoverDay(null); }}><option value="30">30 วันที่ผ่านมา</option><option value="7">7 วันที่ผ่านมา</option></select></div><p className={styles.chartReadout}>{hoverDay === null ? "ความคิดเห็นรายวัน · ข้อมูลตัวอย่าง" : `${days - 1 - hoverDay} วันก่อน · ${daily[hoverDay]} ความคิดเห็น`}</p><div className={styles.chart} role="group" aria-label="ความคิดเห็นรายวัน">{daily.map((count, i) => <button type="button" key={i} aria-label={`${days - 1 - i} วันก่อน ${count} ความคิดเห็น`} className={hoverDay === i ? styles.activeBar : ""} onMouseEnter={() => setHoverDay(i)} onFocus={() => setHoverDay(i)} onClick={() => setHoverDay(i)}><span style={{ height: `${Math.max(3, count / Math.max(1, ...daily) * 100)}%` }} /></button>)}</div><div className={styles.chartDates}><span>{days - 1} วันก่อน</span><span>วันนี้</span></div><div className={styles.sentimentSection}><h3 className="text-ds-body-sm font-medium">ความรู้สึกของนักอ่าน</h3><div className={styles.sentimentBar} role="img" aria-label={`เชิงบวก ${positive}% เป็นกลาง ${neutral}% เชิงลบ ${negative}%`}><span style={{ width: `${positive}%` }} /><span style={{ width: `${neutral}%` }} /><span style={{ width: `${negative}%` }} /></div><div className={styles.sentimentLabels}><span className={styles.positive}>● {positive}% เชิงบวก</span><span className={styles.neutral}>● {neutral}% เป็นกลาง</span><span className={styles.negative}>● {negative}% เชิงลบ</span></div></div><h3 className="text-ds-body-sm font-medium">หัวข้อที่ถูกพูดถึงมากที่สุด</h3><ol className={styles.topics}>{topicCounts.map(({ word, count }, i) => <li key={word}><span>{i + 1}</span><button type="button" onClick={() => { reset(); setQuery(word); }}>{word}</button><strong>{count}</strong></li>)}</ol><p className="sidebar-meta text-arn-subtle">นับความคิดเห็นที่มีคำนี้ในผลงานที่เลือก</p></section>
-        <section className={`ds-card ${styles.panel}`} id="comment-filters"><h2 className="sidebar-title">ตัวกรอง</h2><div className={styles.filters}><label>ความรู้สึก<select ref={filterRef} className="ds-input" value={sentiment} onChange={event => setSentiment(event.target.value)}><option value="all">ทั้งหมด</option><option value="positive">เชิงบวก</option><option value="neutral">เป็นกลาง</option><option value="negative">เชิงลบ</option></select></label><label>ประเภท<select className="ds-input" value={kind} onChange={event => setKind(event.target.value)}><option value="all">ทั้งหมด</option><option value="comment">ความคิดเห็น</option><option value="question">คำถาม</option></select></label><label className={styles.fullWidth}>ช่วงเวลา<select className="ds-input" value={range} onChange={event => setRange(event.target.value)}><option value="all">ทั้งหมด</option><option value="1">24 ชั่วโมงที่ผ่านมา</option><option value="7">7 วันที่ผ่านมา</option><option value="30">30 วันที่ผ่านมา</option></select></label></div><label className={styles.checkFilter}><input type="checkbox" checked={unanswered} onChange={event => setUnanswered(event.target.checked)} />เฉพาะที่ยังไม่ได้ตอบ <span className={styles.unansweredBadge}>{counts.unanswered}</span></label><button type="button" className={styles.reset} onClick={reset}><Icon icon={faRotateLeft} /> ล้างตัวกรอง</button></section>
-      </aside></div>
+      <section className={styles.inbox} aria-label="กล่องความคิดเห็น">
+        <header className={styles.heading}><Icon icon={faComment} /><div><h1>ความคิดเห็น</h1><p>จัดการความคิดเห็นจากผู้อ่าน และติดตามบทสนทนาในทุกเรื่อง</p></div></header>
+        <div className={styles.tabs} role="group" aria-label="กลุ่มความคิดเห็น">{tabs.map(([id, label]) => <button key={id} type="button" aria-pressed={tab === id} className={`${styles.statusCard} ${styles[id]} ${tab === id ? styles.activeTab : ""}`} onClick={() => { setTab(id); setPage(1); }}><Icon icon={faComment} /><span><span>{label}</span><strong>{counts[id]}</strong></span><Icon icon={faChevronRight} /></button>)}</div>
+        <div className={styles.filters}><label>เลือกเรื่อง<select className="ds-input" aria-label="เลือกเรื่อง" value={projectId} onChange={event => { setProjectId(event.target.value); setScope(null); setPage(1); }}><option value="all">ทุกเรื่อง</option>{commentProjects.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label><label>เรียงตาม<select className="ds-input" aria-label="เรียงลำดับความคิดเห็น" value={sort} onChange={event => { setSort(event.target.value); setPage(1); }}><option value="latest">ล่าสุด</option><option value="oldest">เก่าสุด</option><option value="messages">ข้อความมากที่สุด</option></select></label><label>แสดง<select className="ds-input" aria-label="จำนวนรายการต่อหน้า" value={pageSize} onChange={event => { setPageSize(Number(event.target.value)); setPage(1); }}>{[30, 50, 100].map(value => <option key={value} value={value}>{value} รายการ</option>)}</select></label></div>
+        {scope && <div className={styles.scopeNotice}><span>ความคิดเห็นทั้งหมดของตอนที่ {scope.chapter}</span><button type="button" onClick={() => { setScope(null); setPage(1); }}>ดูทุกกระทู้ของเรื่อง</button></div>}
+        <div className={styles.list}>{filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize).map(item => {
+          const book = commentProjects.find(value => value.id === item.project)!;
+          return <button key={item.id} type="button" className={`${styles.listItem} ${item.id === selectedId ? styles.selected : ""}`} aria-pressed={item.id === selectedId} onClick={() => selectComment(item)}>
+            <Image src={book.cover} alt="" width={72} height={88} sizes="72px" /><span className={styles.preview}><span className={styles.previewTitle}><strong>{book.title}</strong><span className={styles.chapterChip}>{item.chapter === null ? "ระดับเรื่อง" : scopeLabel(item)}</span></span><span className={styles.metadata}><Image src={item.avatar} alt="" width={20} height={20} sizes="20px" />{item.author} · {timeAgo(activityAge(item))}</span><span className={styles.excerpt}>{item.text}</span></span>
+            <span className={styles.listStatus}><span className={`${styles.statusBadge} ${isUnread(item) ? styles.unread : isPending(item) ? styles.waiting : styles.done}`}>{isUnread(item) ? "ยังไม่อ่าน" : isPending(item) ? "รอจัดการ" : "จัดการแล้ว"}</span><span><Icon icon={faComment} />{item.replies.length + 1} ข้อความ</span></span>
+          </button>;
+        })}{filtered.length === 0 && <div className={styles.empty}><Icon icon={faComment} /><h2>{tab === "pending" ? "ไม่มีกระทู้รอจัดการ" : "ไม่พบกระทู้ในกลุ่มนี้"}</h2><p>เลือกกลุ่ม “ทั้งหมด” เพื่อดูประวัติความคิดเห็น</p></div>}</div>
+        <div className={styles.listFooter}><span>แสดง {filtered.length ? (currentPage - 1) * pageSize + 1 : 0}–{Math.min(currentPage * pageSize, filtered.length)} จาก {filtered.length} กระทู้</span></div>
+        <nav className={styles.pagination} aria-label="หน้ารายการความคิดเห็น"><button type="button" aria-label="หน้าก่อนหน้า" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)}><Icon icon={faChevronLeft} /></button>{pageNumbers.map((value, index) => <span key={value}>{index > 0 && value - pageNumbers[index - 1] > 1 && <span aria-hidden="true">…</span>}<button type="button" aria-current={currentPage === value ? "page" : undefined} onClick={() => setPage(value)}>{value}</button></span>)}<button type="button" aria-label="หน้าถัดไป" disabled={currentPage === pages} onClick={() => setPage(currentPage + 1)}><Icon icon={faChevronRight} /></button></nav>
+      </section>
+      <section ref={detailRef} className={styles.conversation} aria-label={`บทสนทนาของ ${selected.author}`}>
+        <header className={styles.storyHeader}><Image src={project.cover} alt={`ปก ${project.title}`} width={64} height={84} sizes="64px" /><div><div className={styles.detailTitle}><h2>{project.title}{selected.chapter !== null && ` · ตอนที่ ${selected.chapter}`}</h2><span className={`${styles.statusBadge} ${isUnread(selected) ? styles.unread : isPending(selected) ? styles.waiting : styles.done}`}>{isUnread(selected) ? "ยังไม่อ่าน" : isPending(selected) ? "รอจัดการ" : "จัดการแล้ว"}</span></div><p>{selected.chapter === null ? "ความคิดเห็นระดับเรื่อง · " : ""}กระทู้โดย {selected.author} · {selected.replies.length + 1} ข้อความ</p></div></header>
+        <div className={styles.threadNavigation}>{selected.chapter !== null && <>
+          {readableEpisode ? <Link className="ds-button-secondary" href={`/read/episode?title=${encodeURIComponent(project.title)}&episode=${selected.chapter}`}><Icon icon={faArrowUpRightFromSquare} />เปิดตอนที่ {selected.chapter}</Link> : <button type="button" className="ds-button-secondary" onClick={() => openFeature(`เปิดตอนที่ ${selected.chapter}`, `reader/${selected.project}/${selected.chapter}`)}><Icon icon={faArrowUpRightFromSquare} />เปิดตอนที่ {selected.chapter}</button>}
+          <button type="button" className="ds-button-secondary" onClick={() => openFeature("ดูความคิดเห็นทั้งหมดของตอน", `reader/${selected.project}/${selected.chapter}/comments`)}><Icon icon={faComment} />ดูความคิดเห็นทั้งหมดของตอน</button>
+        </>}{selected.chapter === null && <button type="button" className="ds-button-secondary" onClick={() => viewScope(false)}><Icon icon={faComment} />ดูทุกกระทู้ของเรื่อง</button>}</div>
+        <div className={styles.discussion}><article className={styles.message}><Image className={styles.avatar} src={selected.avatar} alt="" width={48} height={48} sizes="48px" /><div className={styles.messageBody}><div className={styles.messageMeta}><strong>{selected.author}</strong><span>{timeAgo(selected.hoursAgo)}</span><span>ผู้เริ่มกระทู้</span></div><p>{selected.text}</p>{messageActions(selected.id, selected.author, selected.text, selected.likes)}</div></article>
+        <div className={styles.replyTimeline}>{selected.replies.map(reply => <article key={reply.id} className={`${styles.message} ${reply.writer ? styles.writerReply : ""}`}><Image className={styles.avatar} src={reply.writer ? "/images/writers/akistudio.webp" : selected.avatar} alt="" width={48} height={48} sizes="48px" /><div className={styles.messageBody}><div className={styles.messageMeta}><strong>{reply.author}</strong>{reply.writer && <span className={styles.writerBadge}>นักเขียน</span>}{reply.hoursAgo !== undefined && <span>{timeAgo(reply.hoursAgo)}</span>}{!reply.writer && isUnread(selected) && latestReaderMessageId(selected) === reply.id && <span className={styles.unreadLabel}>ยังไม่อ่าน</span>}</div>{reply.quote && <QuotedMessage quote={reply.quote} />}<p>{reply.text}</p>{messageActions(reply.id, reply.author, reply.text)}</div></article>)}</div>
+        </div><form className={styles.composer} onSubmit={event => {
+          event.preventDefault(); const text = draft.trim(); if (!text) return;
+          const reply: ReaderReply = { id: `local-${crypto.randomUUID()}`, author: "HanYue", writer: true, text, quote: quote ?? undefined, hoursAgo: 0 };
+          setComments(values => values.map(item => item.id === selectedId ? { ...item, replies: [...item.replies, reply] } : item));
+          markHandled(); setDraft(""); setQuote(null); setNotice("ส่งคำตอบแล้ว กระทู้นี้อยู่ในประวัติความคิดเห็นทั้งหมด");
+        }}>
+          <div className={styles.composerBody}><div className={styles.composerModes}><button type="button" aria-pressed={!quote} onClick={() => { setQuote(null); inputRef.current?.focus(); }}>ตอบกลับ</button><button type="button" aria-pressed={Boolean(quote)} onClick={() => replyWithQuote(selected.id, selected.author, selected.text)}><Icon icon={faQuoteLeft} />ตอบพร้อมอ้างข้อความ</button></div><label className={styles.visuallyHidden} htmlFor="comment-reply">ข้อความตอบกลับ</label>{quote && <div><QuotedMessage quote={quote} /><button className={styles.cancelQuote} type="button" onClick={() => setQuote(null)}>ยกเลิกอ้างข้อความ</button></div>}<div className={styles.editor}><textarea id="comment-reply" ref={inputRef} value={draft} onChange={event => setDraft(event.target.value)} placeholder="เขียนคำตอบถึงผู้อ่าน..." maxLength={1000} rows={4} /><div className={styles.editorTools}><button type="button" aria-label="ใส่รูปภาพ" title="ใส่รูปภาพ" onClick={() => openFeature("ใส่รูปภาพในคำตอบ", "comment-image")}><Icon icon={faImage} /></button><CommentEmojiPicker key={selected.id} value={draft} onChange={setDraft} inputRef={inputRef} /><span>{draft.length}/1,000</span></div></div><div className={styles.composerActions}><button type="button" className="ds-button-secondary" onClick={() => { markHandled(); setNotice("อ่านแล้ว ไม่ต้องตอบ · เก็บกระทู้ไว้ในความคิดเห็นทั้งหมด"); }}><Icon icon={faCircleCheck} />อ่านแล้ว ไม่ต้องตอบ</button><button type="submit" className="ds-button-primary" disabled={!draft.trim()}><Icon icon={faPaperPlane} />ส่งคำตอบ</button></div><p className={styles.notice} role="status">{notice}</p></div>
+        </form>
+      </section>
     </div>
   </div>{pending && <UnbuiltPageModal page={pending} href={pending.url} onClose={() => setPending(null)} />}</main>;
 }

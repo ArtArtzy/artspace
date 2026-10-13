@@ -1,5 +1,6 @@
-export type ReaderReply = { id: string; author: string; text: string; writer?: boolean };
-export type ReaderComment = { id: string; project: string; author: string; avatar: string; text: string; hoursAgo: number; chapter: number; likes: number; sentiment: "positive" | "neutral" | "negative"; question: boolean; badge?: string; replies: ReaderReply[] };
+export type CommentQuote = { messageId: string; author: string; text: string };
+export type ReaderReply = { id: string; author: string; text: string; writer?: boolean; quote?: CommentQuote; hoursAgo?: number };
+export type ReaderComment = { id: string; project: string; author: string; avatar: string; text: string; hoursAgo: number; chapter: number | null; likes: number; sentiment: "positive" | "neutral" | "negative"; question: boolean; badge?: string; replies: ReaderReply[] };
 export const commentProjects = [
   { id: "moon", title: "จันทร์เหนือวังหลวง", cover: "/images/category-books/china-01.webp", tags: ["นิยายรัก", "ดราม่า", "Coming of Age"] },
   { id: "sky", title: "Sky of Tomorrow", cover: "/images/book-sky-tomorrow.webp", tags: ["แฟนตาซี", "ผจญภัย", "ไซไฟ"] },
@@ -33,8 +34,44 @@ const entries: [string, string, string, number, number, number, ReaderComment["s
   ["lemon", "Kuroi", "ตัวละครเพื่อนในห้องน่ารักทุกคนเลย อยากเห็นเรื่องราวของแต่ละคนมากขึ้น", 260, 5, 7, "positive", false],
 ];
 const avatars = ["moonlit", "sorayoru", "rainymew", "akistudio", "rainymew", "purplemoon", "felixs", "lunarblack"];
-export const initialComments: ReaderComment[] = entries.map(([project, author, text, hoursAgo, chapter, likes, sentiment, question], i) => ({
+const originalComments: ReaderComment[] = entries.map(([project, author, text, hoursAgo, chapter, likes, sentiment, question], i) => ({
   id: `reader-${i + 1}`, project, author, avatar: `/images/writers/${avatars[i % avatars.length]}.webp`, text, hoursAgo, chapter, likes, sentiment, question,
   badge: i === 0 ? "แฟนพันธุ์แท้" : i === 2 ? "ผู้ติดตามนาน" : undefined,
   replies: i === 0 ? [{ id: "reply-1", author: "HanYue", text: "ขอบคุณมาก ๆ ครับ ดีใจที่ชอบครับ ตอนหน้าจะเริ่มเฉลยที่มาของจดหมายแล้ว ฝากติดตามด้วยนะครับ", writer: true }] : i === 1 ? [{ id: "reply-2", author: "RainyMew", text: "เห็นด้วยเลยค่ะ ลุ้นทุกตอน" }, { id: "reply-3", author: "HanYue", text: "ขอบคุณครับ จะค่อย ๆ เปิดเผยความจริงในตอนถัดไป", writer: true }] : i % 3 === 0 ? [{ id: `reply-${i + 4}`, author: "HanYue", text: "ขอบคุณที่ติดตามและส่งความคิดเห็นมานะครับ", writer: true }] : [],
 }));
+
+// Additional demo threads exercise pagination and story-level conversations.
+const sampleTexts = [
+  "อ่านแล้วชอบบรรยากาศมากค่ะ ขอบคุณที่เขียนเรื่องดี ๆ ให้อ่านนะคะ",
+  "ตัวละครแต่ละคนมีเสน่ห์มากครับ รอติดตามเรื่องราวต่อไป",
+  "ชอบการเล่าเรื่องและรายละเอียดเล็ก ๆ ที่เชื่อมกันค่ะ",
+  "อ่านซ้ำแล้วเจอรายละเอียดที่พลาดไปตอนแรก สนุกมากครับ",
+  "อยากรู้ว่าตัวละครจะตัดสินใจอย่างไรต่อไป ลุ้นมากค่ะ",
+  "เรื่องนี้จะมีตอนพิเศษไหมครับ อยากอ่านมุมมองของตัวละครรอง",
+];
+export const initialComments: ReaderComment[] = [
+  ...originalComments,
+  ...Array.from({ length: 68 }, (_, index): ReaderComment => {
+    const project = commentProjects[index % commentProjects.length];
+    return {
+      id: `sample-thread-${index + 1}`, project: project.id, author: `นักอ่าน${index + 1}`,
+      avatar: `/images/writers/${avatars[index % avatars.length]}.webp`,
+      text: sampleTexts[index % sampleTexts.length], hoursAgo: 320 + index * 4,
+      chapter: index % 3 === 0 ? null : index % 12 + 1, likes: index % 17,
+      sentiment: "positive", question: index % 6 === 5, replies: [],
+    };
+  }),
+];
+
+/** A new reader message changes this checkpoint and reopens a handled thread. */
+export function latestReaderMessageId(thread: ReaderComment): string {
+  return thread.replies.findLast(reply => !reply.writer)?.id ?? thread.id;
+}
+export function initialHandledThreads(threads: ReaderComment[]): Record<string, string> {
+  return Object.fromEntries(threads.filter(thread => thread.replies.at(-1)?.writer)
+    .map(thread => [thread.id, latestReaderMessageId(thread)]));
+}
+export function receiveReaderReply(threads: ReaderComment[], threadId: string, reply: ReaderReply): ReaderComment[] {
+  return threads.map(thread => thread.id !== threadId || thread.id === reply.id || thread.replies.some(message => message.id === reply.id)
+    ? thread : { ...thread, replies: [...thread.replies, { ...reply, writer: false, hoursAgo: reply.hoursAgo ?? 0 }] });
+}
