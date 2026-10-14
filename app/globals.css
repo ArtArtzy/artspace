@@ -297,6 +297,10 @@ body {
   body:has(.login-page)::before {
     display: none;
   }
+
+  body:has(#tools)::before {
+    display: none;
+  }
 }
 
 ::selection {

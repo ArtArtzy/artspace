@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faChevronLeft, faChevronRight, faClock, faCalendarCheck, faXmark, faCircleInfo, faBookOpen, faArrowDownWideShort } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faChevronLeft, faChevronRight, faClock, faCalendarCheck, faXmark, faCircleInfo, faBookOpen, faArrowDownWideShort } from "@fortawesome/free-solid-svg-icons";
 import { initialSchedulePublications, scheduleWorkspaceToday, scheduleProjects, scheduleStatuses, scheduleToday, parseDay, dayKey, addDays, type Publication, type ScheduleStatus } from "@/data/writer-schedule";
 import UnbuiltPageModal from "./UnbuiltPageModal";
 import type { UnbuiltPage } from "@/data/unbuilt-pages";
 import shell from "./WriterStudioShell.module.css";
 import styles from "./WriterSchedule.module.css";
 
-const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ", faWandMagicSparkles, "tools"]] as const;
+const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"]] as const;
 function Icon({ icon }: { icon: IconDefinition }) { return <FontAwesomeIcon icon={icon} aria-hidden="true" className={styles.icon} />; }
 type EditorState = { item?: Publication; date: string; repeat: "once" | "daily" | "weekly" };
 
@@ -101,7 +101,7 @@ export default function WriterSchedule() {
   const timeOptions = [...new Set([...Array.from({ length: 96 }, (_, index) => `${String(Math.floor(index / 4)).padStart(2, "0")}:${String(index % 4 * 15).padStart(2, "0")}`), time])].sort();
 
   return <main className={`${shell.stage} ${shell.overviewStage} ${styles.stage}`}><div className={`${shell.layout} ${shell.overviewLayout}`}>
-    <aside className={`ds-card ${shell.navigation} ${shell.overviewNavigation}`}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => id !== "tools" ? <Link key={id} href={id === "home" ? "/write" : `/write/${id}`} aria-current={id === "schedule" ? "page" : undefined} className={`${shell.navItem} ${id === "schedule" ? shell.activeNav : ""}`}><Icon icon={icon} /><span>{label}</span></Link> : <button key={id} type="button" className={shell.navItem} onClick={() => setPending({ name: label, code: "WRITE-TOOLS", url: "/write/tools", trigger: label, status: "ยังไม่ได้ทำ" })}><Icon icon={icon} /><span>{label}</span></button>)}</nav><div className={shell.quote}>“ทุกเรื่องราว<br />เริ่มต้นจากจินตนาการ<br />และเติบโตได้เสมอ<br />ที่นี่... ARN SPACE”<span aria-hidden="true">— ◇ —</span></div></aside>
+    <aside className={`ds-card ${shell.navigation} ${shell.overviewNavigation}`}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => <Link key={id} href={id === "home" ? "/write" : `/write/${id}`} aria-current={id === "schedule" ? "page" : undefined} className={`${shell.navItem} ${id === "schedule" ? shell.activeNav : ""}`}><Icon icon={icon} /><span>{label}</span></Link>)}</nav><div className={shell.quote}>“ทุกเรื่องราว<br />เริ่มต้นจากจินตนาการ<br />และเติบโตได้เสมอ<br />ที่นี่... ARN SPACE”<span aria-hidden="true">— ◇ —</span></div></aside>
     <div className={styles.center}>
       <header className={styles.heading}><Icon icon={faCalendarDays} /><div><h1>ตารางเผยแพร่</h1><p>จัดการวันเวลาเผยแพร่ตอนที่เขียนเสร็จแล้วได้อย่างง่ายดาย</p></div></header>
       <div className={`${styles.workspace} ${!selected ? styles.withoutPanel : ""}`}>

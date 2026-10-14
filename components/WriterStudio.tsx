@@ -7,6 +7,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faPen, faBookOpen, faUsers, faDiagramProject, faFileLines, faChevronRight, faEye, faPlus, faClock, faEllipsisVertical, faPalette, faGlobe, faArrowRight,  faPenToSquare, faTrashCan,  faShareNodes, faPuzzlePiece } from "@fortawesome/free-solid-svg-icons";
 import UnbuiltPageModal from "@/components/UnbuiltPageModal";
+import WriterCharacterModal from "@/components/WriterCharacterModal";
+import WriterPlotModal from "@/components/WriterPlotModal";
+import WriterTimelineModal from "@/components/WriterTimelineModal";
+import WriterStoryWorldModal from "@/components/WriterStoryWorldModal";
+import WriterRelationshipsModal from "@/components/WriterRelationshipsModal";
+import WriterPlotThreadsModal from "@/components/WriterPlotThreadsModal";
 import type { UnbuiltPage } from "@/data/unbuilt-pages";
 import { initialPublications, scheduleProjects, parseDay, type Publication } from "@/data/writer-schedule";
 import { ScheduleEditor } from "./WriterSchedule";
@@ -20,15 +26,15 @@ const projects = [
 ] as const;
 
 const navigation = [
-  ["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ", faWandMagicSparkles, "tools"],
+  ["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"],
 ] as const;
 const tools = [
-  { title: "ตัวละคร", description: "สร้างและจัดการตัวละครให้มีมิติและชีวิต", icon: faUsers, tone: "green" },
-  { title: "Timeline", description: "จัดลำดับเหตุการณ์ในเรื่องของคุณ", icon: faDiagramProject, tone: "green" },
-  { title: "Story World", description: "สร้างโลกและตั้งค่ากฎเกณฑ์ของเรื่อง", icon: faGlobe, tone: "violet" },
-  { title: "ปมเรื่อง", description: "วางโครงเรื่องและปมสำคัญให้น่าติดตาม", icon: faDiagramProject, tone: "pink" },
-  { title: "แผนผังความสัมพันธ์", description: "เชื่อมโยงความสัมพันธ์ของตัวละคร", icon: faShareNodes, tone: "green" },
-  { title: "ปมปูทางและเฉลย", description: "วางปริศนา เบาะแส และจุดเฉลย", icon: faPuzzlePiece, tone: "gold" },
+  { title: "ตัวละคร", description: "สร้างตัวละครให้มีชีวิต", icon: faUsers, tone: "green" },
+  { title: "โครงเรื่อง", description: "วางเรื่องตั้งแต่ต้นจนจบ", icon: faDiagramProject, tone: "pink" },
+  { title: "Timeline", description: "จัดลำดับเหตุการณ์", icon: faClock, tone: "green" },
+  { title: "Story World", description: "สร้างโลกในเรื่อง", icon: faGlobe, tone: "violet" },
+  { title: "แผนผังความสัมพันธ์", description: "เชื่อมโยงตัวละคร", icon: faShareNodes, tone: "green" },
+  { title: "ปมและการเฉลย", description: "ติดตามปมสำคัญ", icon: faPuzzlePiece, tone: "gold" },
 ];
 const upcomingPublications = ["moon", "sky", "fog"].map((projectId) => initialPublications.find((publication) => publication.project === projectId && ["scheduled", "draft"].includes(publication.status))!);
 
@@ -59,6 +65,12 @@ export default function WriterStudio() {
     return () => { document.removeEventListener("pointerdown", dismiss); document.removeEventListener("keydown", escape); };
   }, [scheduleMenu]);
   const [pending, setPending] = useState<UnbuiltPage | null>(null);
+  const [showCharacterModal, setShowCharacterModal] = useState(false);
+  const [showPlotModal, setShowPlotModal] = useState(false);
+  const [showTimelineModal, setShowTimelineModal] = useState(false);
+  const [showStoryWorldModal, setShowStoryWorldModal] = useState(false);
+  const [showRelationshipsModal, setShowRelationshipsModal] = useState(false);
+  const [showPlotThreadsModal, setShowPlotThreadsModal] = useState(false);
   const openFeature = (name: string, code: string) => setPending({ name, code: `WRITE-${code.toUpperCase()}`, url: `/write/${code}`, trigger: name, status: "ยังไม่ได้ทำ" });
   useEffect(() => {
     if (!pending) return;
@@ -108,7 +120,13 @@ export default function WriterStudio() {
             </section>
             <section className={`ds-card ${styles.newStory}`} aria-labelledby="new-story-title">
               <div className={styles.sectionHeading}><Icon icon={faPlus} className={styles.createIcon} /><h2 id="new-story-title">สร้างเรื่องใหม่</h2></div>
-              <div className={styles.storyActions}>{[{ title: "นิยาย", description: "สร้างโลกและตัวละคร เริ่มต้นจินตนาการของคุณ", image: "/images/writer-studio-new-story.webp", icon: faBookOpen, tone: "novelTone", code: "novel" }, { title: "แฟนฟิค", description: "ต่อยอดเรื่องราวที่คุณชื่นชอบ", image: "/images/writer-tool-story-world-v2.webp", icon: faPen, tone: "fanficTone", code: "fanfic" }, { title: "การ์ตูน", description: "เล่าเรื่องผ่านภาพและบทสนทนา", image: "/images/writer-tool-timeline-v2.webp", icon: faPalette, tone: "cartoonTone", code: "cartoon" }].map((category) => <button key={category.code} className={`ds-button-secondary ${styles.categoryButton} ${styles[category.tone]}`} type="button" onClick={() => openFeature(`สร้าง${category.title}ใหม่`, `new/${category.code}`)}><Image src={category.image} alt="" fill sizes="(max-width: 480px) 100vw, (max-width: 1100px) 25vw, 200px" className={styles.categoryArt} /><Icon icon={category.icon} /><span><strong>{category.title}</strong><small>{category.description}</small></span><span className={styles.categoryArrow}><Icon icon={faArrowRight} /></span></button>)}</div>
+              <div className={styles.storyActions}>
+                <Link href="/write/new" className={`ds-button-secondary ${styles.categoryButton} ${styles.novelTone}`}>
+                  <Image src="/images/writer-studio-new-story.webp" alt="" fill sizes="(max-width: 480px) 100vw, (max-width: 1100px) 25vw, 200px" className={styles.categoryArt} />
+                  <Icon icon={faBookOpen} /><span><strong>นิยาย</strong><small>สร้างโลกและตัวละคร เริ่มต้นจินตนาการของคุณ</small></span><span className={styles.categoryArrow}><Icon icon={faArrowRight} /></span>
+                </Link>
+                {[{ title: "แฟนฟิค", description: "ต่อยอดเรื่องราวที่คุณชื่นชอบ", image: "/images/writer-tool-story-world-v2.webp", icon: faPen, tone: "fanficTone", code: "fanfic" }, { title: "การ์ตูน", description: "เล่าเรื่องผ่านภาพและบทสนทนา", image: "/images/writer-tool-timeline-v2.webp", icon: faPalette, tone: "cartoonTone", code: "cartoon" }].map((category) => <button key={category.code} className={`ds-button-secondary ${styles.categoryButton} ${styles[category.tone]}`} type="button" onClick={() => openFeature(`สร้าง${category.title}ใหม่`, `new/${category.code}`)}><Image src={category.image} alt="" fill sizes="(max-width: 480px) 100vw, (max-width: 1100px) 25vw, 200px" className={styles.categoryArt} /><Icon icon={category.icon} /><span><strong>{category.title}</strong><small>{category.description}</small></span><span className={styles.categoryArrow}><Icon icon={faArrowRight} /></span></button>)}
+              </div>
             </section>
           </div>
           <div className={styles.secondaryGrid}>
@@ -141,8 +159,8 @@ export default function WriterStudio() {
               {scheduleNotice && <p role="status" className={styles.scheduleNotice}>{scheduleNotice}</p>}
             </section>
             <section id="tools" className={`ds-card ${styles.toolsSection}`} aria-labelledby="tools-title">
-              <div className={styles.sectionHeading}><Icon icon={faWandMagicSparkles} /><h2 id="tools-title">เครื่องมือ</h2><button className={styles.textAction} onClick={() => openFeature("เครื่องมือทั้งหมด", "tools")} type="button">ดูทั้งหมด<Icon icon={faChevronRight} /></button></div>
-              <div className={styles.tools}>{tools.map((tool, index) => <button type="button" key={tool.title} className={`ds-card ${styles.tool} ${styles[tool.tone]}`} onClick={() => openFeature(tool.title, `tool/${index + 1}`)}><Icon icon={tool.icon} /><span><strong>{tool.title}</strong><small>{tool.description}</small></span></button>)}</div>
+              <div className={styles.sectionHeading}><Icon icon={faWandMagicSparkles} /><h2 id="tools-title">เครื่องมือช่วยเขียน</h2></div>
+              <div className={styles.tools}>{tools.map((tool, index) => <button type="button" key={tool.title} className={`ds-card ${styles.tool} ${styles[tool.tone]}`} onClick={() => index === 0 ? setShowCharacterModal(true) : index === 1 ? setShowPlotModal(true) : index === 2 ? setShowTimelineModal(true) : index === 3 ? setShowStoryWorldModal(true) : index === 4 ? setShowRelationshipsModal(true) : index === 5 ? setShowPlotThreadsModal(true) : openFeature(tool.title, `tool/${index + 1}`)}><Icon icon={tool.icon} /><span><strong>{tool.title}</strong><small>{tool.description}</small></span></button>)}</div>
             </section>
           </div>
 
@@ -175,6 +193,12 @@ export default function WriterStudio() {
         setScheduleNotice("บันทึกกำหนดการทดลองแล้ว"); closeScheduleEditor(); return undefined;
       }} />}
       {pending && <UnbuiltPageModal page={pending} href={pending.url} onClose={() => setPending(null)} />}
+      {showCharacterModal && <WriterCharacterModal onClose={() => setShowCharacterModal(false)} />}
+      {showPlotModal && <WriterPlotModal onClose={() => setShowPlotModal(false)} />}
+      {showTimelineModal && <WriterTimelineModal onClose={() => setShowTimelineModal(false)} />}
+      {showStoryWorldModal && <WriterStoryWorldModal onClose={() => setShowStoryWorldModal(false)} />}
+      {showRelationshipsModal && <WriterRelationshipsModal onClose={() => setShowRelationshipsModal(false)} />}
+      {showPlotThreadsModal && <WriterPlotThreadsModal onClose={() => setShowPlotThreadsModal(false)} />}
     </main>
   );
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faHeart, faPaperPlane, faChevronLeft, faChevronRight, faArrowUpRightFromSquare, faQuoteLeft, faCircleCheck, faImage } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faHeart, faPaperPlane, faChevronLeft, faChevronRight, faArrowUpRightFromSquare, faQuoteLeft, faCircleCheck, faImage } from "@fortawesome/free-solid-svg-icons";
 import CommentEmojiPicker from "./CommentEmojiPicker";
 import UnbuiltPageModal from "./UnbuiltPageModal";
 import type { UnbuiltPage } from "@/data/unbuilt-pages";
@@ -14,7 +14,7 @@ import { getNovelDetails } from "@/data/novelDetails";
 import shell from "./WriterStudioShell.module.css";
 import styles from "./WriterComments.module.css";
 
-const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ", faWandMagicSparkles, "tools"]] as const;
+const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"]] as const;
 const tabs = [["pending", "รอจัดการ"], ["unread", "ยังไม่อ่าน"], ["all", "ทั้งหมด"]] as const;
 type Scope = { project: string; chapter: number | null } | null;
 const startingHandled = initialHandledThreads(initialComments);
@@ -103,7 +103,7 @@ export default function WriterComments() {
   </div>;
 
   return <main className={`${shell.stage} ${shell.overviewStage} ${styles.stage}`}><div className={`${shell.layout} ${shell.overviewLayout}`}>
-    <aside className={`ds-card ${shell.navigation} ${shell.overviewNavigation}`}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => id !== "tools" ? <Link key={id} href={id === "home" ? "/write" : `/write/${id}`} aria-current={id === "comments" ? "page" : undefined} className={`${shell.navItem} ${id === "comments" ? shell.activeNav : ""}`}><Icon icon={icon} /><span>{label}</span></Link> : <button key={id} type="button" className={shell.navItem} onClick={() => openFeature(label, id)}><Icon icon={icon} /><span>{label}</span></button>)}</nav><div className={shell.quote}>“ทุกเรื่องราว<br />เริ่มต้นจากจินตนาการ<br />และเติบโตได้เสมอ<br />ที่นี่... ARN SPACE”<span aria-hidden="true">— ◇ —</span></div></aside>
+    <aside className={`ds-card ${shell.navigation} ${shell.overviewNavigation}`}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => <Link key={id} href={id === "home" ? "/write" : `/write/${id}`} aria-current={id === "comments" ? "page" : undefined} className={`${shell.navItem} ${id === "comments" ? shell.activeNav : ""}`}><Icon icon={icon} /><span>{label}</span></Link>)}</nav><div className={shell.quote}>“ทุกเรื่องราว<br />เริ่มต้นจากจินตนาการ<br />และเติบโตได้เสมอ<br />ที่นี่... ARN SPACE”<span aria-hidden="true">— ◇ —</span></div></aside>
     <div className={styles.content}>
       <section className={styles.inbox} aria-label="กล่องความคิดเห็น">
         <header className={styles.heading}><Icon icon={faComment} /><div><h1>ความคิดเห็น</h1><p>จัดการความคิดเห็นจากผู้อ่าน และติดตามบทสนทนาในทุกเรื่อง</p></div></header>

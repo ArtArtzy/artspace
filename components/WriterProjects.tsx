@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faPen, faBookOpen, faFileLines, faPlus, faMagnifyingGlass, faCircleCheck, faPause, faArrowRight, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faPen, faBookOpen, faFileLines, faPlus, faMagnifyingGlass, faCircleCheck, faPause, faArrowRight, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import UnbuiltPageModal from "@/components/UnbuiltPageModal";
 import type { UnbuiltPage } from "@/data/unbuilt-pages";
+import { readWriterDrafts } from "@/data/writer-drafts";
 import shell from "./WriterStudioShell.module.css";
 import styles from "./WriterProjects.module.css";
 
@@ -26,7 +27,7 @@ const projects: Project[] = [
 const statuses: { id: "all" | Status; label: string; icon: IconDefinition }[] = [
   { id: "all", label: "ทั้งหมด", icon: faBookOpen }, { id: "draft", label: "ยังไม่มีตอน", icon: faFileLines }, { id: "writing", label: "กำลังเขียน", icon: faPen }, { id: "published", label: "กำลังเผยแพร่", icon: faChartSimple }, { id: "finished", label: "เขียนจบแล้ว", icon: faCircleCheck }, { id: "paused", label: "พักเขียน", icon: faPause },
 ];
-const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ", faWandMagicSparkles, "tools"]] as const;
+const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"]] as const;
 const currentDrafts: Record<string, { chapter: number; updated: string }> = {
   moon: { chapter: 20, updated: "2 ชั่วโมงที่แล้ว" }, summer: { chapter: 14, updated: "3 วันที่แล้ว" },
   rain: { chapter: 7, updated: "1 วันที่แล้ว" }, lemon: { chapter: 5, updated: "1 สัปดาห์ที่แล้ว" },
@@ -35,6 +36,13 @@ function Icon({ icon }: { icon: IconDefinition }) { return <FontAwesomeIcon icon
 const editorLabel = "เขียนต่อ";
 
 export default function WriterProjects() {
+  const [localProjects, setLocalProjects] = useState<Project[]>([]);
+  useEffect(() => {
+    try {
+      setLocalProjects(readWriterDrafts().map((draft) => ({ id: draft.id, title: draft.title, description: draft.description, cover: draft.cover || "/images/writer-studio-new-story.webp", status: "draft", tags: [draft.format === "chat" ? "นิยายแชท" : "นิยาย", ...(draft.category ? [draft.category] : []), ...draft.tags], chapters: 0, published: 0 })));
+    } catch { /* Existing preview stories remain available if storage is unavailable. */ }
+  }, []);
+  const allProjects = [...localProjects, ...projects];
   const [filter, setFilter] = useState("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("updated");
@@ -42,12 +50,12 @@ export default function WriterProjects() {
   const openFeature = (name: string, code: string) => setPending({ name, code: `WRITE-${code.toUpperCase()}`, url: `/write/${code}`, trigger: name, status: "ยังไม่ได้ทำ" });
   useEffect(() => { if (!pending) return; const close = (event: KeyboardEvent) => { if (event.key === "Escape") setPending(null); }; window.addEventListener("keydown", close); return () => window.removeEventListener("keydown", close); }, [pending]);
   const selectFilter = (value: string) => { setFilter(value); };
-  const count = (value: string) => projects.filter(p => value === "all" || p.status === value).length;
-  const filtered = projects.filter(p => (filter === "all" || p.status === filter) && `${p.title} ${p.tags.join(" ")}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())).sort((a, b) => sort === "title" ? a.title.localeCompare(b.title, "th") : sort === "chapters" ? b.chapters - a.chapters : projects.indexOf(a) - projects.indexOf(b));
+  const count = (value: string) => allProjects.filter(p => value === "all" || p.status === value).length;
+  const filtered = allProjects.filter(p => (filter === "all" || p.status === filter) && `${p.title} ${p.tags.join(" ")}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())).sort((a, b) => sort === "title" ? a.title.localeCompare(b.title, "th") : sort === "chapters" ? b.chapters - a.chapters : allProjects.indexOf(a) - allProjects.indexOf(b));
   return <main className={`${shell.stage} ${shell.overviewStage} ${styles.stage}`}><div className={`${shell.layout} ${shell.overviewLayout}`}>
-    <aside className={`ds-card ${shell.navigation} ${shell.overviewNavigation}`}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => id !== "tools" ? <Link key={id} href={id === "home" ? "/write" : `/write/${id}`} aria-current={id === "projects" ? "page" : undefined} className={`${shell.navItem} ${id === "projects" ? shell.activeNav : ""}`}><Icon icon={icon} /><span>{label}</span></Link> : <button type="button" key={id} className={shell.navItem} onClick={() => openFeature(label, id)}><Icon icon={icon} /><span>{label}</span></button>)}</nav><div className={shell.quote}>“ทุกเรื่องราว<br />เริ่มต้นจากจินตนาการ<br />และเติบโตได้เสมอ<br />ที่นี่... ARN SPACE”<span aria-hidden="true">— ◇ —</span></div></aside>
+    <aside className={`ds-card ${shell.navigation} ${shell.overviewNavigation}`}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => <Link key={id} href={id === "home" ? "/write" : `/write/${id}`} aria-current={id === "projects" ? "page" : undefined} className={`${shell.navItem} ${id === "projects" ? shell.activeNav : ""}`}><Icon icon={icon} /><span>{label}</span></Link>)}</nav><div className={shell.quote}>“ทุกเรื่องราว<br />เริ่มต้นจากจินตนาการ<br />และเติบโตได้เสมอ<br />ที่นี่... ARN SPACE”<span aria-hidden="true">— ◇ —</span></div></aside>
     <div className={styles.center}>
-      <header className={styles.heading}><Icon icon={faFolderOpen} /><div><h1 className="text-ds-h1">เรื่องของฉัน</h1><p className="text-ds-body-sm">พื้นที่สำหรับจัดการผลงานและติดตามความคืบหน้าของเรื่องที่คุณสร้างขึ้น</p></div><button type="button" className="ds-button-primary" onClick={() => openFeature("สร้างเรื่องใหม่", "new")}><Icon icon={faPlus} />สร้างเรื่องใหม่</button></header>
+      <header className={styles.heading}><Icon icon={faFolderOpen} /><div><h1 className="text-ds-h1">เรื่องของฉัน</h1><p className="text-ds-body-sm">พื้นที่สำหรับจัดการผลงานและติดตามความคืบหน้าของเรื่องที่คุณสร้างขึ้น</p></div><Link href="/write/new" className="ds-button-primary"><Icon icon={faPlus} />สร้างเรื่องใหม่</Link></header>
       <section aria-label="รายการเรื่อง"><div className={styles.controls}>
         <div className={styles.filters}>{statuses.filter(s => s.id !== "published").sort((a,b) => ["all","writing","draft","paused","finished"].indexOf(a.id) - ["all","writing","draft","paused","finished"].indexOf(b.id)).map(({ id, label }) => <button type="button" key={id} aria-pressed={filter === id} className={filter === id ? styles.selected : ""} onClick={() => selectFilter(id)}>{label}<span>{count(id)}</span></button>)}</div>
         <div className={styles.toolbar}><label className={`ds-input ${styles.search}`}><Icon icon={faMagnifyingGlass} /><input aria-label="ค้นหาเรื่อง" placeholder="ค้นหาเรื่อง..." value={query} onChange={e => setQuery(e.target.value)} /></label><select aria-label="เรียงลำดับเรื่อง" className={`ds-input ${styles.sort}`} value={sort} onChange={e => setSort(e.target.value)}><option value="updated">เรียงตาม: ล่าสุด</option><option value="title">เรียงตาม: ชื่อเรื่อง</option><option value="chapters">เรียงตาม: จำนวนตอน</option></select></div>

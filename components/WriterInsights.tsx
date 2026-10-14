@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faWandMagicSparkles, faEye, faUsers, faBookmark, faArrowUp, faHeart, faArrowRight, faShieldHalved, faMagnifyingGlass, faTags, faBookOpen, faLink, faEllipsis, faChevronDown, faCircleCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faFolderOpen, faChartSimple, faComment, faCalendarDays, faEye, faUsers, faBookmark, faArrowUp, faHeart, faArrowRight, faShieldHalved, faMagnifyingGlass, faTags, faBookOpen, faLink, faEllipsis, faChevronDown, faCircleCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import UnbuiltPageModal from "./UnbuiltPageModal";
 import type { UnbuiltPage } from "@/data/unbuilt-pages";
 import { insightProjects, periods, chapterTitles, sources, formatCount, dateLabel, insightDates } from "@/data/writer-insights";
 import shell from "./WriterStudioShell.module.css";
 import styles from "./WriterInsights.module.css";
 
-const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"], ["เครื่องมือ", faWandMagicSparkles, "tools"]] as const;
+const navigation = [["ภาพรวม", faHouse, "home"], ["เรื่องของฉัน", faFolderOpen, "projects"], ["ข้อมูลเชิงลึก", faChartSimple, "insights"], ["ความคิดเห็น", faComment, "comments"], ["ตารางเผยแพร่", faCalendarDays, "schedule"]] as const;
 const sourceIcons: Record<string, IconDefinition> = {
   "หน้าแรก": faHouse,
   "ค้นหา": faMagnifyingGlass,
@@ -112,7 +112,7 @@ export default function WriterInsights() {
     { label: "ความคิดเห็น", value: String(currentChapter.comments), change: chapterIndex > 0 ? currentChapter.comments - chapters[chapterIndex - 1].comments : null, unit: "", icon: faComment },
   ];
   return <main className={shell.stage + " " + shell.overviewStage + " " + styles.stage}><div className={shell.layout + " " + styles.layout}>
-    <aside className={"ds-card " + shell.navigation + " " + shell.overviewNavigation + " " + styles.navigation}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => ["home", "projects", "insights", "comments", "schedule"].includes(id) ? <Link key={id} href={id === "home" ? "/write" : "/write/" + id} aria-current={id === "insights" ? "page" : undefined} className={shell.navItem + " " + (id === "insights" ? shell.activeNav : "")}><Icon icon={icon} />{label}</Link> : <button key={id} type="button" className={shell.navItem} onClick={() => openFeature(label, id)}><Icon icon={icon} />{label}</button>)}</nav><div className={shell.quote}>ข้อมูลที่ดี<br />ทำให้เรื่องราวของคุณ<br />ไปได้ไกลกว่าเดิม<span>— ARN SPACE —</span></div></aside>
+    <aside className={"ds-card " + shell.navigation + " " + shell.overviewNavigation + " " + styles.navigation}><h2 className="text-ds-h3">Writer Studio</h2><nav aria-label="เมนูนักเขียน">{navigation.map(([label, icon, id]) => <Link key={id} href={id === "home" ? "/write" : "/write/" + id} aria-current={id === "insights" ? "page" : undefined} className={shell.navItem + " " + (id === "insights" ? shell.activeNav : "")}><Icon icon={icon} />{label}</Link>)}</nav><div className={shell.quote}>ข้อมูลที่ดี<br />ทำให้เรื่องราวของคุณ<br />ไปได้ไกลกว่าเดิม<span>— ARN SPACE —</span></div></aside>
     <div className={styles.center}>
       <header className={styles.heading}><div><h1 className="text-ds-h1"><Icon icon={faChartSimple} /> ข้อมูลเชิงลึก</h1><p className="text-ds-body-sm text-arn-muted">เข้าใจผลงานและผู้อ่านของคุณให้ลึกขึ้น</p><span className={styles.demo}>ข้อมูลตัวอย่าง · ยังไม่เชื่อมต่อสถิติจริง</span></div><div className={styles.periodControl}><Tabs items={periods.map(item => item.label)} value={period.label} label="ช่วงเวลาของข้อมูล" onChange={label => { setDays(periods.find(item => item.label === label)!.days); setActivePoint(null); setHoveredTrend(null); setHoveredChapter(null); }} /><span className={styles.dateRange}><Icon icon={faCalendarDays} /> {dateLabel(start)} – {dateLabel(end)}</span></div></header>
       <section className={"ds-card " + styles.projectPicker} aria-labelledby="project-picker-title">
