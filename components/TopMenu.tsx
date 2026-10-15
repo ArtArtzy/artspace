@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { unbuiltPages, type UnbuiltPage } from "@/data/unbuilt-pages";
 import UnbuiltPageModal from "@/components/UnbuiltPageModal";
@@ -195,6 +195,7 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(initialLoggedIn);
   const notificationRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const profileRef = useRef<HTMLDivElement>(null);
   const isLinkActive = (href: string) => {
     if (activeReadMode) {
@@ -308,7 +309,7 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
                 <button aria-expanded={isProfileOpen} aria-haspopup="menu" aria-label="โปรไฟล์" className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-[#ccebbf] bg-[#967260] p-0 shadow-[0_0_0_3px_rgba(81,164,109,0.3)] transition hover:scale-105" onClick={() => { setIsProfileOpen((open) => !open); setIsNotificationsOpen(false); }} type="button">
                   <Image alt="โปรไฟล์" className="h-full w-full object-cover" height={44} src="/images/profile-arn.webp" width={44} />
                 </button>
-                {isProfileOpen && <ProfileMenu onClose={() => setIsProfileOpen(false)} onOpenBookshelf={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "READ-BOOKSHELF-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenFollowing={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "FOLLOWING-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenProfile={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "PROFILE-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onRequestLogout={() => { setIsProfileOpen(false); setIsLogoutConfirmOpen(true); }} />}
+                {isProfileOpen && <ProfileMenu onClose={() => setIsProfileOpen(false)} onOpenBookshelf={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "READ-BOOKSHELF-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenFollowing={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "FOLLOWING-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenProfile={() => { setIsProfileOpen(false); router.push("/profile"); }} onRequestLogout={() => { setIsProfileOpen(false); setIsLogoutConfirmOpen(true); }} />}
               </div>
             </>
           ) : (

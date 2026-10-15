@@ -33,13 +33,6 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
     status: "ยังไม่ได้ทำ",
   },
   {
-    code: "PROFILE-001",
-    name: "หน้าจัดการโปรไฟล์ของฉัน",
-    url: "/profile",
-    trigger: "กด Block โปรไฟล์ของฉันในเมนู Profile",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
     code: "FOLLOWING-001",
     name: "หน้าจัดการการติดตาม",
     url: "/following",
