@@ -1,0 +1,59 @@
+.container { max-width: 1400px; margin: 0 auto; padding: 0 24px 48px; }
+.breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-height: 44px; font-size: 13px; color: var(--arn-color-text-subtle); }
+.breadcrumb svg { width: 10px; }
+.breadcrumb a:hover, .breadcrumb [aria-current='page'] { color: var(--arn-color-accent-soft); }
+.hero { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 184px; padding: 32px; border-radius: 12px; }
+.heading { display: flex; align-items: center; gap: 24px; }
+.heroIcon { display: grid; place-items: center; flex-shrink: 0; width: 64px; height: 64px; border-radius: 12px; background: var(--arn-color-surface-soft); color: var(--arn-color-accent); font-size: 28px; }
+.total { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; gap: 8px; padding: 0 32px; border-left: 1px solid var(--arn-color-border); }
+.total strong { font-size: 40px; line-height: 1.15; font-weight: 600; color: var(--arn-color-accent); }
+.total span { font-size: 13px; color: var(--arn-color-text-muted); }
+.collection { margin-top: 24px; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.filters button { min-height: 44px; font-size: 13px; transition: color 180ms, border-color 180ms, background 180ms; }
+.filters button:hover { border-color: var(--arn-color-border-strong); color: var(--arn-color-accent-soft); }
+.filters .active { background: var(--arn-color-accent); border-color: var(--arn-color-accent); color: var(--arn-color-accent-ink); font-weight: 600; }
+.filters .active:hover { background: var(--arn-color-accent-soft); color: var(--arn-color-accent-ink); }
+.sort { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--arn-color-text-muted); }
+.sort select { min-height: 44px; padding: 8px 32px 8px 12px; color-scheme: dark; }
+.list { display: grid; gap: 12px; margin-top: 16px; }
+.review { display: flex; align-items: flex-start; gap: 24px; padding: 24px; transition: border-color 180ms; }
+.review:hover { border-color: var(--arn-color-border-strong); }
+.cover { width: 104px; height: 150px; object-fit: cover; flex-shrink: 0; border-radius: 6px; }
+.content { min-width: 0; flex: 1; }
+.content h2 { overflow-wrap: anywhere; }
+.meta { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 8px 0 12px; font-size: 12px; color: var(--arn-color-text-subtle); }
+.stars { display: inline-flex; gap: 2px; color: var(--arn-status-warning); }
+.emptyStar { color: var(--arn-color-text-faint); }
+.engagement { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; font-size: 12px; color: var(--arn-color-text-subtle); }
+.engagement span, .engagement button { display: inline-flex; align-items: center; gap: 8px; }
+.engagement button { min-height: 44px; text-align: left; color: var(--arn-color-accent); }
+.engagement button:hover { color: var(--arn-color-accent-soft); text-decoration: underline; }
+.comments { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--arn-color-border); }
+.comment { display: flex; align-items: flex-start; gap: 12px; padding: 16px 0; }
+.comment + .comment { border-top: 1px solid var(--arn-color-border); }
+.comment p { overflow-wrap: anywhere; line-height: 1.6; }
+.comment p + p { margin-top: 4px; }
+.avatar { flex-shrink: 0; width: 32px; height: 32px; border-radius: 999px; object-fit: cover; border: 1px solid var(--arn-color-border); background: var(--arn-color-surface-soft); }
+.pagination { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.pagination button { min-height: 44px; }
+.pagination button:disabled { opacity: .4; cursor: not-allowed; }
+.back { display: inline-flex; align-items: center; gap: 12px; margin-top: 24px; font-size: 13px; color: var(--arn-color-text-muted); }
+.back:hover { color: var(--arn-color-accent); }
+.container a:focus-visible, .container button:focus-visible, .container select:focus-visible { outline: 2px solid var(--arn-color-accent); outline-offset: 4px; }
+.empty { display: grid; justify-items: center; gap: 16px; margin-top: 16px; padding: 48px 24px; text-align: center; color: var(--arn-color-text-muted); }
+.empty > svg { font-size: 32px; color: var(--arn-color-accent); }
+@media (max-width: 600px) {
+  .container { padding: 0 16px 32px; }
+  .hero { padding: 24px 16px; gap: 16px; }
+  .heading { gap: 12px; }
+  .heroIcon { display: none; }
+  .total { padding: 0 0 0 16px; }
+  .total strong { font-size: 32px; }
+  .sort { width: 100%; justify-content: space-between; }
+  .sort select { flex: 1; max-width: 240px; }
+  .review { padding: 16px; gap: 12px; }
+  .cover { width: 72px; height: 104px; }
+  .meta { gap: 8px; }
+}
