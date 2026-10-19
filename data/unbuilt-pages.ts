@@ -96,6 +96,13 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
     status: "ยังไม่ได้ทำ",
   },
   {
+    code: "MESSAGES-001",
+    name: "กล่องข้อความ",
+    url: "/messages",
+    trigger: "เลือกกล่องข้อความในเมนูโปรไฟล์",
+    status: "ยังไม่ได้ทำ",
+  },
+  {
     code: "HOME-CONTINUE-001",
     name: "หน้ารวมเรื่องอ่านต่อ",
     url: "/read?category=อ่านต่อ",

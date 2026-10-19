@@ -22,14 +22,6 @@ function ResetIcon() {
   return <svg aria-hidden="true" className="h-12 w-12 text-[#16e994]" fill="none" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" stroke="currentColor" strokeOpacity=".28" /><path d="M13 18v-4.5a7 7 0 0 1 14 0V18M10 17.5h20v14H10z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" /><circle cx="20" cy="24" fill="currentColor" r="1.6" /></svg>;
 }
 
-function DecorativeLeaves() {
-  return (
-    <svg aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-[250px] w-[220px] text-[#0b8c61]/[0.18]" fill="none" viewBox="0 0 220 250">
-      <path d="M214 0c-16 42-50 53-88 70-44 20-67 53-79 104M177 30c-5 29 5 46 30 60M143 47c-18 22-18 43-7 64M105 74c-23 11-32 32-25 56M69 111c-18 0-31 12-39 30M187 94c-6 20-1 38 15 52" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
-      <path d="M179 32c19 2 33 13 41 30-18 2-31-8-41-30ZM144 48c18 4 28 15 32 31-17 0-28-10-32-31ZM105 76c19 3 29 14 33 29-17 2-28-8-33-29ZM70 113c16 4 24 15 25 29-15-1-24-11-25-29ZM43 142c-16 0-29 9-37 23 16 4 29-5 37-23Z" fill="currentColor" />
-    </svg>
-  );
-}
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -63,7 +55,6 @@ export default function ForgotPasswordPage() {
 
         <div className="relative z-10 flex min-h-0 items-center justify-center overflow-hidden px-5 py-2 sm:px-10 sm:py-4 lg:px-12">
           <form className="ds-card relative h-[632px] w-full max-w-[440px] overflow-hidden px-7 py-4 sm:px-9 sm:py-4" onSubmit={handleSubmit}>
-            <DecorativeLeaves />
             <div className="relative z-10 flex h-full flex-col">
               <div className="text-center">
                 <div className="mb-4 flex justify-center"><ResetIcon /></div>

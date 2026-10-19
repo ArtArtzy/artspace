@@ -1,0 +1,13 @@
+.form { position: relative; z-index: 10; width: 100%; max-width: 400px; height: fit-content; max-height: 100%; overflow-y: auto; padding: 28px; border-radius: 12px; background: color-mix(in srgb, var(--arn-color-surface) 94%, transparent); border: 1px solid var(--arn-color-border-strong); box-shadow: var(--arn-shadow-card); }
+.title { font-size: 24px; line-height: 1.3; font-weight: 700; color: var(--arn-color-text-primary); }
+.intro { margin-top: 8px; font-size: 12px; line-height: 1.6; color: var(--arn-color-text-subtle); }
+.submit { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; height: 40px; margin-top: 16px; border-radius: 8px; font-size: 15px; font-weight: 600; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; font-size: 11px; color: var(--arn-color-text-subtle); }
+.divider span { height: 1px; flex: 1; background: var(--arn-color-border-strong); }
+.social { display: flex; align-items: center; justify-content: center; gap: 12px; height: 40px; border: 1px solid var(--arn-color-border-strong); border-radius: 8px; background: var(--arn-color-surface-soft); color: var(--arn-color-text-primary); font-size: 12px; font-weight: 500; transition: background 180ms, border-color 180ms; }
+.social:hover { background: var(--arn-color-surface-raised); border-color: var(--arn-color-accent-soft); }
+.social:focus-visible, .register a:focus-visible { outline: 2px solid var(--arn-color-accent); outline-offset: 3px; }
+.register { border-top: 1px solid var(--arn-color-border-strong); padding-top: 20px; margin-top: 24px; text-align: center; color: var(--arn-color-text-subtle); font-size: 11px; line-height: 1.6; }
+.register a { color: var(--arn-color-accent); font-weight: 600; margin-left: 4px; border-radius: 4px; }
+.register a:hover { color: var(--arn-color-accent-soft); }
+@media (max-width: 480px) { .form { padding: 24px; } }

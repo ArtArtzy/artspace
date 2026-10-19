@@ -49,6 +49,15 @@ function MenuBookIcon() {
   );
 }
 
+function EnvelopeIcon() {
+  return (
+    <svg aria-hidden="true" className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24">
+      <rect height="14" rx="2" stroke="currentColor" strokeWidth="1.8" width="18" x="3" y="5" />
+      <path d="m4 7 8 6 8-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 type NotificationItem = {
   title: string;
   description: string;
@@ -112,7 +121,7 @@ function NotificationMenu({ onOpenAll, onOpenNotification }: { onOpenAll: () => 
   );
 }
 
-function ProfileMenu({ onClose, onOpenBookshelf, onOpenFollowing, onOpenProfile, onRequestLogout }: { onClose: () => void; onOpenBookshelf: () => void; onOpenFollowing: () => void; onOpenProfile: () => void; onRequestLogout: () => void }) {
+function ProfileMenu({ onClose, onOpenBookshelf, onOpenMessages, onOpenFollowing, onOpenProfile, onRequestLogout }: { onClose: () => void; onOpenBookshelf: () => void; onOpenMessages: () => void; onOpenFollowing: () => void; onOpenProfile: () => void; onRequestLogout: () => void }) {
   return (
     <div aria-label="เมนูโปรไฟล์" className="ds-card absolute right-0 top-[calc(100%+18px)] z-50 w-[270px] overflow-hidden p-2 text-arn-text" role="menu">
       <button className="flex w-full items-center gap-3 border-b border-white/[0.09] px-3 pb-3 pt-2 text-left transition hover:bg-white/[0.04]" onClick={onOpenProfile} role="menuitem" type="button">
@@ -127,6 +136,10 @@ function ProfileMenu({ onClose, onOpenBookshelf, onOpenFollowing, onOpenProfile,
         <button className="flex w-full items-center gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onOpenBookshelf} role="menuitem" type="button">
           <span aria-hidden="true" className="text-[17px] text-[#41e993]">▤</span>
           <span className="text-[13px]">ชั้นหนังสือของฉัน</span>
+        </button>
+        <button className="flex w-full items-center gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onOpenMessages} role="menuitem" type="button">
+          <span aria-hidden="true" className="text-[#41e993]"><EnvelopeIcon /></span>
+          <span className="text-[13px]">กล่องข้อความ</span>
         </button>
         <button className="flex w-full items-center justify-between gap-3 rounded-[7px] px-3 py-2.5 text-left transition hover:bg-white/[0.06]" onClick={onOpenFollowing} role="menuitem" type="button">
           <span className="flex items-center gap-3 text-[#e96ba6]"><HeartIcon /><span className="text-[13px] text-white">กำลังติดตาม</span></span>
@@ -309,7 +322,7 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
                 <button aria-expanded={isProfileOpen} aria-haspopup="menu" aria-label="โปรไฟล์" className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-[#ccebbf] bg-[#967260] p-0 shadow-[0_0_0_3px_rgba(81,164,109,0.3)] transition hover:scale-105" onClick={() => { setIsProfileOpen((open) => !open); setIsNotificationsOpen(false); }} type="button">
                   <Image alt="โปรไฟล์" className="h-full w-full object-cover" height={44} src="/images/profile-arn.webp" width={44} />
                 </button>
-                {isProfileOpen && <ProfileMenu onClose={() => setIsProfileOpen(false)} onOpenBookshelf={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "READ-BOOKSHELF-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenFollowing={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "FOLLOWING-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenProfile={() => { setIsProfileOpen(false); router.push("/profile"); }} onRequestLogout={() => { setIsProfileOpen(false); setIsLogoutConfirmOpen(true); }} />}
+                {isProfileOpen && <ProfileMenu onClose={() => setIsProfileOpen(false)} onOpenBookshelf={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "READ-BOOKSHELF-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenMessages={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "MESSAGES-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenFollowing={() => { setIsProfileOpen(false); const page = unbuiltPages.find((item) => item.code === "FOLLOWING-001"); if (page) setPendingUnbuiltPage({ page, href: page.url }); }} onOpenProfile={() => { setIsProfileOpen(false); router.push("/profile"); }} onRequestLogout={() => { setIsProfileOpen(false); setIsLogoutConfirmOpen(true); }} />}
               </div>
             </>
           ) : (

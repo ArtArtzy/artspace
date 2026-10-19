@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import TopMenu from "@/components/TopMenu";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
+import styles from './Login.module.css';
 
 const authStorageKey = "arnspace-authenticated";
 
@@ -80,15 +81,6 @@ function LineIcon() {
   return <span aria-hidden="true" className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[9px] font-bold tracking-[-.1em] text-[#08ae36]">LINE</span>;
 }
 
-function DecorativeLeaves() {
-  return (
-    <svg aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-[250px] w-[220px] text-[#0b8c61]/[0.18]" fill="none" viewBox="0 0 220 250">
-      <path d="M214 0c-16 42-50 53-88 70-44 20-67 53-79 104M177 30c-5 29 5 46 30 60M143 47c-18 22-18 43-7 64M105 74c-23 11-32 32-25 56M69 111c-18 0-31 12-39 30M187 94c-6 20-1 38 15 52" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
-      <path d="M179 32c19 2 33 13 41 30-18 2-31-8-41-30ZM144 48c18 4 28 15 32 31-17 0-28-10-32-31ZM105 76c19 3 29 14 33 29-17 2-28-8-33-29ZM70 113c16 4 24 15 25 29-15-1-24-11-25-29ZM43 142c-16 0-29 9-37 23 16 4 29-5 37-23Z" fill="currentColor" />
-    </svg>
-  );
-}
-
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -142,18 +134,20 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 flex min-h-0 items-center justify-center overflow-hidden px-5 py-2 sm:px-10 sm:py-4 lg:px-12">
-          <DecorativeLeaves />
-          <form className="ds-card relative z-10 h-[632px] w-full max-w-[440px] overflow-hidden px-7 py-3 sm:px-9 sm:py-4" onSubmit={handleSubmit}>
+          <form className={`ds-card ${styles.form}`} onSubmit={handleSubmit}>
             <div className="text-center">
-              <h2 className="text-[27px] font-semibold leading-tight tracking-tight text-[#fffdf2]">&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a;</h2>
-              <p className="mt-1 text-[12px] leading-5 text-white/55">&#xe22;&#xe34;&#xe19;&#xe14;&#xe35;&#xe15;&#xe49;&#xe2d;&#xe19;&#xe23;&#xe31;&#xe1a;&#xe01;&#xe25;&#xe31;&#xe1a;&#xe2a;&#xe39;&#xe48; ArnSpace<br />&#xe43;&#xe0a;&#xe49;&#xe1a;&#xe31;&#xe0d;&#xe0a;&#xe35;&#xe02;&#xe2d;&#xe07;&#xe04;&#xe38;&#xe13;&#xe40;&#xe1e;&#xe37;&#xe48;&#xe2d;&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe42;&#xe25;&#xe01;&#xe41;&#xe2b;&#xe48;&#xe07;&#xe40;&#xe23;&#xe37;&#xe48;&#xe2d;&#xe07;&#xe23;&#xe32;&#xe27;</p>
+              <h2 className={styles.title}>เข้าสู่ระบบ</h2>
+              <p className={styles.intro}>ยินดีต้อนรับกลับสู่ ArnSpace<br />ใช้บัญชีของคุณเพื่อเข้าสู่โลกแห่งเรื่องราว</p>
             </div>
 
             <div className="mt-4 space-y-3">
-              <label className="ds-input flex h-9 items-center gap-3 px-3 text-white/75 focus-within:text-[#36e98a]">
-                <MailIcon />
-                <input aria-label="&#xe2d;&#xe35;&#xe40;&#xe21;&#xe25; &#xe2b;&#xe23;&#xe37;&#xe2d;&#xe0a;&#xe37;&#xe48;&#xe2d;&#xe1c;&#xe39;&#xe49;&#xe43;&#xe0a;&#xe49;" autoComplete="username" className="min-w-0 flex-1 bg-transparent text-[12px] text-white outline-none placeholder:text-white/40" placeholder="&#xe2d;&#xe35;&#xe40;&#xe21;&#xe25; / &#xe0a;&#xe37;&#xe48;&#xe2d;&#xe1c;&#xe39;&#xe49;&#xe43;&#xe0a;&#xe49;" required type="text" />
-              </label>
+              <div className="space-y-1">
+                <label className="ds-input flex h-9 items-center gap-3 px-3 text-white/75 focus-within:text-[#36e98a]">
+                  <MailIcon />
+                  <input aria-label="ชื่อผู้ใช้งาน" autoComplete="username" className="min-w-0 flex-1 bg-transparent text-[12px] text-white outline-none placeholder:text-white/40" placeholder="ชื่อผู้ใช้งาน" required type="text" />
+                </label>
+                <p className="px-1 text-[11px] leading-4 text-white/55">สามารถใช้บัญชี ArnSpace หรือ ArnBook เพื่อเข้าสู่ระบบได้</p>
+              </div>
               <label className="ds-input flex h-9 items-center gap-3 px-3 text-white/75 focus-within:text-[#36e98a]">
                 <LockIcon />
                 <input aria-label="&#xe23;&#xe2b;&#xe31;&#xe2a;&#xe1c;&#xe48;&#xe32;&#xe19;" autoComplete="current-password" className="min-w-0 flex-1 bg-transparent text-[12px] text-white outline-none placeholder:text-white/40" placeholder="&#xe23;&#xe2b;&#xe31;&#xe2a;&#xe1c;&#xe48;&#xe32;&#xe19;" required type={showPassword ? "text" : "password"} />
@@ -162,22 +156,17 @@ export default function LoginPage() {
             </div>
 
             <div className="mt-2 text-right"><a className="text-[11px] font-medium text-[#20e383] transition hover:text-white" href="/login/forgot-password">&#xe25;&#xe37;&#xe21;&#xe23;&#xe2b;&#xe31;&#xe2a;&#xe1c;&#xe48;&#xe32;&#xe19;?</a></div>
-            <button className="mt-4 flex h-9 w-full items-center justify-center gap-2 rounded-[8px] bg-[#08dc88] text-[13px] font-semibold text-[#03120b] transition hover:bg-[#35eba0]" type="submit">&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a; <ArrowIcon /></button>
+            <button className={`ds-button-primary ${styles.submit}`} type="submit">เข้าสู่ระบบ <ArrowIcon /></button>
 
-            <div className="my-4 flex items-center gap-3 text-[10px] text-white/40"><span className="h-px flex-1 bg-white/[0.14]" />&#xe2b;&#xe23;&#xe37;&#xe2d;&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a;&#xe14;&#xe49;&#xe27;&#xe22;<span className="h-px flex-1 bg-white/[0.14]" /></div>
+            <div className={styles.divider}><span />หรือเข้าสู่ระบบด้วย<span /></div>
             <div className="grid grid-cols-2 gap-2">
-              <button className="flex h-8 items-center justify-center gap-2 rounded-[7px] border border-[#6be987]/70 bg-[#08ae38] text-[11px] font-semibold text-white transition hover:bg-[#16c94a]" onClick={mockLogin} type="button"><LineIcon />LINE</button>
-              <button className="flex h-8 items-center justify-center gap-2 rounded-[7px] border border-[#d8d8d8] bg-white text-[11px] font-semibold text-[#242424] transition hover:bg-white/85" onClick={mockLogin} type="button"><GoogleIcon />Google</button>
-              <button className="flex h-8 items-center justify-center gap-2 rounded-[7px] border border-[#5da0ff]/70 bg-[#0867dd] text-[11px] font-semibold text-white transition hover:bg-[#1b79eb]" onClick={mockLogin} type="button"><FacebookIcon />Facebook</button>
-              <button className="flex h-8 items-center justify-center gap-2 rounded-[7px] border border-white/40 bg-[#050505] text-[11px] font-semibold text-white transition hover:bg-white/[0.08]" onClick={mockLogin} type="button"><AppleIcon />Apple</button>
+              <button className={styles.social} onClick={mockLogin} type="button"><LineIcon />LINE</button>
+              <button className={styles.social} onClick={mockLogin} type="button"><GoogleIcon />Google</button>
+              <button className={styles.social} onClick={mockLogin} type="button"><FacebookIcon />Facebook</button>
+              <button className={styles.social} onClick={mockLogin} type="button"><AppleIcon />Apple</button>
             </div>
 
-            <div className="my-4 flex items-center gap-3 text-[10px] text-white/40"><span className="h-px flex-1 bg-white/[0.14]" />&#xe2b;&#xe23;&#xe37;&#xe2d;&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a;&#xe14;&#xe49;&#xe27;&#xe22;&#xe1a;&#xe31;&#xe0d;&#xe0a;&#xe35; ARNBOOK<span className="h-px flex-1 bg-white/[0.14]" /></div>
-            <button className="flex h-9 w-full items-center justify-center gap-2 rounded-[8px] bg-[#f6f0e4] text-[12px] font-semibold text-[#172019] transition hover:bg-white" onClick={mockLogin} type="button"><span className="text-[22px] font-bold leading-none">A</span>&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a;&#xe14;&#xe49;&#xe27;&#xe22;&#xe1a;&#xe31;&#xe0d;&#xe0a;&#xe35; ARNBOOK <ArrowIcon /></button>
-
-            <div className="my-4 flex items-center gap-3 text-[10px] text-white/40"><span className="h-px flex-1 bg-white/[0.14]" />&#xe22;&#xe31;&#xe07;&#xe44;&#xe21;&#xe48;&#xe21;&#xe35;&#xe1a;&#xe31;&#xe0d;&#xe0a;&#xe35;&#xe43;&#xe0a;&#xe48;&#xe44;&#xe2b;&#xe21;?<span className="h-px flex-1 bg-white/[0.14]" /></div>
-            <a className="flex h-9 w-full items-center justify-center rounded-[8px] border border-[#08d982] text-[12px] font-semibold text-[#1ce98a] transition hover:bg-[#123722]" href="/register">&#xe2a;&#xe21;&#xe31;&#xe04;&#xe23;&#xe2a;&#xe21;&#xe32;&#xe0a;&#xe34;&#xe01;&#xe1f;&#xe23;&#xe35;</a>
-            <p className="mt-6 text-center text-[10px] text-white/45">&#xe2b;&#xe32;&#xe01;&#xe1e;&#xe1a;&#xe1b;&#xe31;&#xe0d;&#xe2b;&#xe32;&#xe43;&#xe19;&#xe01;&#xe32;&#xe23;&#xe40;&#xe02;&#xe49;&#xe32;&#xe2a;&#xe39;&#xe48;&#xe23;&#xe30;&#xe1a;&#xe1a; <a className="font-medium text-[#2ee77b] hover:text-white" href="/contact">&#xe15;&#xe34;&#xe14;&#xe15;&#xe48;&#xe2d;&#xe40;&#xe23;&#xe32;</a></p>
+            <p className={styles.register}>ยังไม่มีบัญชีใช่ไหม? <a href="/register">สมัครสมาชิก</a></p>
           </form>
         </div>
       </section>
