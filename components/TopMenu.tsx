@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { unbuiltPages, type UnbuiltPage } from "@/data/unbuilt-pages";
@@ -326,10 +327,7 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
               </div>
             </>
           ) : (
-            <div className="flex shrink-0 items-center gap-2">
-              <a className="flex h-10 min-w-[100px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#20d976] px-4 text-[13px] font-semibold text-[#41ee91] transition hover:bg-[#123722]" href="/login">เข้าสู่ระบบ</a>
-              <a className="flex h-10 min-w-[108px] shrink-0 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#20d976] bg-[#16c96b] px-4 text-[13px] font-semibold text-[#07100b] transition hover:bg-[#36ed88]" href="/register">สมัครสมาชิก</a>
-            </div>
+            <Link className="ds-button-primary flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-ds-md px-4 text-ds-body-sm font-semibold" href="/login">เข้าสู่ระบบ/สมัครสมาชิก</Link>
           )}
         </div>
       </div>
