@@ -1,0 +1,80 @@
+{
+  "tool": "Built-in image_gen",
+  "asset_format": "WebP",
+  "dimensions": {
+    "pc": [
+      1536,
+      512
+    ],
+    "tablet": [
+      1024,
+      512
+    ],
+    "mobile": [
+      768,
+      960
+    ]
+  },
+  "prompts": [
+    {
+      "file": "public/images/home-banners/fantasy-pc.webp",
+      "prompt": "Use case: illustration-story. Create a premium fantasy novel website hero banner, PC format 1536x512, very wide 3:1 horizontal composition. A young adult cloaked guardian carrying a glowing lantern stands beside a gigantic ancient stone portal within an enchanted emerald forest, luminous teal mist, distant ruined towers, tiny fireflies, richly detailed cinematic painterly fantasy book illustration. Main character and portal occupy the RIGHT 60 percent. The LEFT 40 percent contains atmospheric dark forest and low-detail mist for separately rendered HTML title. Elegant magical atmosphere, confident editorial composition, detailed landscape across full canvas. Entire artwork is continuous. No text, no lettering, no logo, no button, no watermark. This is artwork for the Thai fantasy novel ผู้พิทักษ์ประตูหมอก."
+    },
+    {
+      "file": "public/images/home-banners/fantasy-tablet.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for ผู้พิทักษ์ประตูหมอก. Create one continuous finished illustration in 1024x512, wide 2:1 horizontal format. Scene: A young adult cloaked guardian carrying a glowing lantern beside a gigantic ancient stone portal in an enchanted emerald forest, luminous teal mist, distant ruined towers, tiny fireflies. Cinematic painterly fantasy book illustration. Composition: Main subjects on the RIGHT 55 percent, closer framing with atmospheric low-detail space on the LEFT 45 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/fantasy-mobile.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for ผู้พิทักษ์ประตูหมอก. Create one continuous finished illustration in 768x960, portrait 4:5 format. Scene: A young adult cloaked guardian carrying a glowing lantern beside a gigantic ancient stone portal in an enchanted emerald forest, luminous teal mist, distant ruined towers, tiny fireflies. Cinematic painterly fantasy book illustration. Composition: Main subjects large and clearly visible in the UPPER 65 percent, leaving the LOWER 35 percent as a darker low-detail continuation of the scene for HTML title. Recompose specifically as a portrait banner, retain all important faces and objects. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/boylove-pc.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for แรงโน้มถ่วงของเรา. Create one continuous finished illustration in 1536x512, very wide 3:1 horizontal format. Scene: Two handsome adult Asian men in their mid twenties, one with short swept black hair wearing a navy coat and the other with soft dark brown hair wearing an ivory sweater, standing close together with a tender romantic gaze on a quiet riverside rooftop under stars. Reflected city lights, deep sapphire night and warm amber bokeh, subtle celestial motifs. Premium semi-realistic painterly romance novel cover art. Composition: Main subjects on the RIGHT 60 percent with atmospheric low-detail space on the LEFT 40 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/boylove-tablet.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for แรงโน้มถ่วงของเรา. Create one continuous finished illustration in 1024x512, wide 2:1 horizontal format. Scene: Two handsome adult Asian men in their mid twenties, one with short swept black hair wearing a navy coat and the other with soft dark brown hair wearing an ivory sweater, standing close together with a tender romantic gaze on a quiet riverside rooftop under stars. Reflected city lights, deep sapphire night and warm amber bokeh, subtle celestial motifs. Premium semi-realistic painterly romance novel cover art. Composition: Main subjects on the RIGHT 55 percent, closer framing with atmospheric low-detail space on the LEFT 45 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/boylove-mobile.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for แรงโน้มถ่วงของเรา. Create one continuous finished illustration in 768x960, portrait 4:5 format. Scene: Two handsome adult Asian men in their mid twenties, one with short swept black hair wearing a navy coat and the other with soft dark brown hair wearing an ivory sweater, standing close together with a tender romantic gaze on a quiet riverside rooftop under stars. Reflected city lights, deep sapphire night and warm amber bokeh, subtle celestial motifs. Premium semi-realistic painterly romance novel cover art. Composition: Main subjects large and clearly visible in the UPPER 65 percent, leaving the LOWER 35 percent as a darker low-detail continuation of the scene for HTML title. Recompose specifically as a portrait banner, retain all important faces and objects. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/girllove-pc.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for สวนดอกไม้ของเรา. Create one continuous finished illustration in 1536x512, very wide 3:1 horizontal format. Scene: Two beautiful adult Asian women in their mid twenties, one with long dark hair in an ivory linen dress and one with a dark bob in a sage green blouse, exchanging a small bouquet and a tender romantic gaze in a lush flower garden at golden hour. Lilac flowers, blush roses, delicate light through greenhouse glass. Premium semi-realistic painterly romance novel cover art. Composition: Main subjects on the RIGHT 60 percent with atmospheric low-detail space on the LEFT 40 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/girllove-tablet.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for สวนดอกไม้ของเรา. Create one continuous finished illustration in 1024x512, wide 2:1 horizontal format. Scene: Two beautiful adult Asian women in their mid twenties, one with long dark hair in an ivory linen dress and one with a dark bob in a sage green blouse, exchanging a small bouquet and a tender romantic gaze in a lush flower garden at golden hour. Lilac flowers, blush roses, delicate light through greenhouse glass. Premium semi-realistic painterly romance novel cover art. Composition: Main subjects on the RIGHT 55 percent, closer framing with atmospheric low-detail space on the LEFT 45 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/girllove-mobile.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for สวนดอกไม้ของเรา. Create one continuous finished illustration in 768x960, portrait 4:5 format. Scene: Two beautiful adult Asian women in their mid twenties, one with long dark hair in an ivory linen dress and one with a dark bob in a sage green blouse, exchanging a small bouquet and a tender romantic gaze in a lush flower garden at golden hour. Lilac flowers, blush roses, delicate light through greenhouse glass. Premium semi-realistic painterly romance novel cover art. Composition: Main subjects large and clearly visible in the UPPER 65 percent, leaving the LOWER 35 percent as a darker low-detail continuation of the scene for HTML title. Recompose specifically as a portrait banner, retain all important faces and objects. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/writing-pc.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for Writing Challenge. Create one continuous finished illustration in 1536x512, very wide 3:1 horizontal format. Scene: An imaginative magical writing desk with a fountain pen, open blank manuscript pages, ink bottle, and luminous paper birds rising into a swirling miniature fantasy city made of books. Warm amber lamplight and emerald night. Premium cinematic painterly editorial illustration celebrating a community writing challenge, inviting and creative. Composition: Main subjects on the RIGHT 60 percent with atmospheric low-detail space on the LEFT 40 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/writing-tablet.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for Writing Challenge. Create one continuous finished illustration in 1024x512, wide 2:1 horizontal format. Scene: An imaginative magical writing desk with a fountain pen, open blank manuscript pages, ink bottle, and luminous paper birds rising into a swirling miniature fantasy city made of books. Warm amber lamplight and emerald night. Premium cinematic painterly editorial illustration celebrating a community writing challenge, inviting and creative. Composition: Main subjects on the RIGHT 55 percent, closer framing with atmospheric low-detail space on the LEFT 45 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/writing-mobile.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for Writing Challenge. Create one continuous finished illustration in 768x960, portrait 4:5 format. Scene: An imaginative magical writing desk with a fountain pen, open blank manuscript pages, ink bottle, and luminous paper birds rising into a swirling miniature fantasy city made of books. Warm amber lamplight and emerald night. Premium cinematic painterly editorial illustration celebrating a community writing challenge, inviting and creative. Composition: Main subjects large and clearly visible in the UPPER 65 percent, leaving the LOWER 35 percent as a darker low-detail continuation of the scene for HTML title. Recompose specifically as a portrait banner, retain all important faces and objects. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/readathon-pc.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for Readathon. Create one continuous finished illustration in 1536x512, very wide 3:1 horizontal format. Scene: A magnificent ancient tree with a cozy fantastical library built into its trunk, open books and a welcoming reading nook glowing warmly among the roots, floating pages, a winding trail of lights leading through a deep blue forest. Premium cinematic painterly editorial illustration celebrating a shared reading marathon, magical and inviting. Composition: Main subjects on the RIGHT 60 percent with atmospheric low-detail space on the LEFT 40 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/readathon-tablet.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for Readathon. Create one continuous finished illustration in 1024x512, wide 2:1 horizontal format. Scene: A magnificent ancient tree with a cozy fantastical library built into its trunk, open books and a welcoming reading nook glowing warmly among the roots, floating pages, a winding trail of lights leading through a deep blue forest. Premium cinematic painterly editorial illustration celebrating a shared reading marathon, magical and inviting. Composition: Main subjects on the RIGHT 55 percent, closer framing with atmospheric low-detail space on the LEFT 45 percent for HTML copy. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    },
+    {
+      "file": "public/images/home-banners/readathon-mobile.webp",
+      "prompt": "Use case: illustration-story. Asset: premium Thai fiction website hero banner for Readathon. Create one continuous finished illustration in 768x960, portrait 4:5 format. Scene: A magnificent ancient tree with a cozy fantastical library built into its trunk, open books and a welcoming reading nook glowing warmly among the roots, floating pages, a winding trail of lights leading through a deep blue forest. Premium cinematic painterly editorial illustration celebrating a shared reading marathon, magical and inviting. Composition: Main subjects large and clearly visible in the UPPER 65 percent, leaving the LOWER 35 percent as a darker low-detail continuation of the scene for HTML title. Recompose specifically as a portrait banner, retain all important faces and objects. Polished detailed illustration with refined cinematic lighting, sophisticated color, legible silhouettes, high quality editorial storytelling. Full bleed artwork. No text, no lettering, no logo, no buttons, no UI, no watermark."
+    }
+  ]
+}

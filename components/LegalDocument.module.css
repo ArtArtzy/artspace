@@ -1,0 +1,8 @@
+.page a:focus-visible {
+  outline: 2px solid var(--arn-color-accent);
+  outline-offset: 4px;
+}
+
+.page {
+  overflow-wrap: anywhere;
+}

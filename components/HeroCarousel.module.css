@@ -1,0 +1,119 @@
+.carousel {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+  background: var(--arn-color-surface-raised);
+  color: var(--arn-color-text-primary);
+}
+
+.banner {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.arrow,
+.playback,
+.dot {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.arrow,
+.playback {
+  background: color-mix(in srgb, var(--arn-color-canvas) 72%, transparent);
+  color: var(--arn-color-text-primary);
+}
+
+.arrow {
+  position: absolute;
+  top: 32%;
+  transform: translateY(-50%);
+}
+
+.previous { left: 8px; }
+.next { right: 8px; }
+
+.controls,
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.controls {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  left: 16px;
+  /* Let clicks in the empty control area reach the arrows and banner. */
+  pointer-events: none;
+}
+
+.controls button {
+  pointer-events: auto;
+}
+
+.pagination {
+  gap: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--arn-color-canvas) 60%, transparent);
+}
+
+.dot::after {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--arn-color-text-subtle);
+  content: "";
+  transition: width 180ms, background 180ms;
+}
+
+.dot[aria-current="true"]::after {
+  width: 24px;
+  background: var(--arn-color-accent);
+}
+
+.arrow:hover,
+.playback:hover {
+  background: var(--arn-color-accent);
+  color: var(--arn-color-accent-ink);
+}
+
+.carousel button:focus-visible,
+.banner:focus-visible {
+  outline: 2px solid var(--arn-color-accent);
+  outline-offset: -4px;
+}
+
+@media (min-width: 768px) {
+  .image { aspect-ratio: 2 / 1; }
+  .arrow {
+    top: auto;
+    bottom: 12px;
+    transform: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .image { aspect-ratio: 3 / 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot::after { transition: none; }
+}

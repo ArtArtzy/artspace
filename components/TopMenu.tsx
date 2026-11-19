@@ -198,9 +198,10 @@ type TopMenuProps = {
   sticky?: boolean;
   initialLoggedIn?: boolean;
   activeReadMode?: ReadModeId;
+  showGuestMobileMenu?: boolean;
 };
 
-export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn = true, activeReadMode }: TopMenuProps) {
+export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn = true, activeReadMode, showGuestMobileMenu = false }: TopMenuProps) {
   const pathname = usePathname();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -265,17 +266,17 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
   return (
     <UnbuiltPageGuard>
       <header className={`${fixed ? "fixed inset-x-0 top-0 z-50" : sticky ? "sticky top-0 z-50" : ""} border-b border-arn-border bg-arn-canvas text-arn-text`}>
-      <div className="mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-8">
-        <a aria-label="ARN SPACE หน้าหลัก" className="-ml-4 flex shrink-0 items-center" href="/">
+      <div data-home-header className="mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-8">
+        <a data-home-logo aria-label="ARN SPACE หน้าหลัก" className="-ml-4 flex shrink-0 items-center" href="/">
           <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[238px]" height={80} priority src="/images/arnspace-logo.webp" width={238} />
         </a>
 
-        <nav aria-label="เมนูหลัก" className="flex h-full items-center gap-2">
+        <nav data-home-desktop-nav aria-label="เมนูหลัก" className="flex h-full items-center gap-2">
           {links.map((link) => {
             const isActive = isLinkActive(link.href);
 
             return (
-              <a aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-[15px] font-semibold transition-colors ${isActive ? "border-arn-border-strong bg-arn-raised text-arn-accent shadow-ds-glow" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
+              <a aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-ds-body font-semibold transition-colors xl:whitespace-nowrap 2xl:text-ds-h3 ${isActive ? "border-arn-border-strong bg-arn-raised text-arn-accent shadow-ds-glow" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
                 {isActive && <MenuBookIcon />}
                 <span>{link.label}</span>
                 <span className={`absolute bottom-0.5 left-2 right-2 block h-0.5 rounded-full ${isActive ? "bg-arn-accent" : "opacity-0"}`} />
@@ -284,7 +285,7 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
           })}
         </nav>
 
-        <div className="ml-auto flex min-w-0 items-center gap-4">
+        <div data-home-desktop-actions className="ml-auto flex min-w-0 items-center gap-4">
           <form className="w-[270px]" onSubmit={handleSearchSubmit}>
             <label className="ds-input flex h-10 w-full items-center gap-2 px-3 text-white/55">
             <span className="shrink-0"><SearchIcon /></span>
@@ -330,6 +331,38 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
             <Link className="ds-button-primary flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-ds-md px-4 text-ds-body-sm font-semibold" href="/login">เข้าสู่ระบบ/สมัครสมาชิก</Link>
           )}
         </div>
+        {(pathname === "/" || showGuestMobileMenu) && !isLoggedIn && (
+          <div data-home-mobile-controls className="hidden">
+            <Link className="ds-button-primary inline-flex min-h-11 items-center justify-center px-ds-3 text-ds-body-sm font-medium" href="/login">เข้าสู่ระบบ</Link>
+            <details
+              data-home-mobile-menu
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  event.currentTarget.open = false;
+                  event.currentTarget.querySelector("summary")?.focus();
+                }
+              }}
+            >
+              <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-ds-md border border-arn-border text-arn-text" aria-label="เปิดหรือปิดเมนูหลัก">
+                <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+              </summary>
+              <div data-home-mobile-panel className="ds-card p-ds-4">
+                <form onSubmit={handleSearchSubmit}>
+                  <label className="ds-input flex min-h-11 items-center gap-ds-2 px-ds-3 text-arn-muted">
+                    <SearchIcon />
+                    <input aria-label="ค้นหาเรื่องหรือนามปากกา" className="min-w-0 flex-1 bg-transparent text-base text-arn-text outline-none" onChange={(event) => setSearchQuery(event.target.value)} placeholder="ค้นหาเรื่อง นามปากกา" type="search" value={searchQuery} />
+                    <button type="submit" className="min-h-11 px-ds-2 text-ds-body-sm text-arn-accent">ค้นหา</button>
+                  </label>
+                </form>
+                <nav aria-label="เมนูหลักสำหรับจอเล็ก" className="mt-ds-3 grid grid-cols-2 gap-ds-2">
+                  {links.map(link => <Link key={link.href} aria-current={isLinkActive(link.href) ? "page" : undefined} className="flex min-h-11 items-center rounded-ds-sm px-ds-3 text-ds-body text-arn-muted hover:bg-arn-soft hover:text-arn-accent" href={link.href}>{link.label}</Link>)}
+                  <Link className="flex min-h-11 items-center px-ds-3 text-ds-body text-arn-muted" href="/write">เขียนเรื่อง</Link>
+                </nav>
+                <Link className="ds-button-secondary mt-ds-3 flex min-h-11 items-center justify-center text-ds-body-sm" href="/register">สมัครสมาชิก</Link>
+              </div>
+            </details>
+          </div>
+        )}
       </div>
       {isLogoutConfirmOpen && <LogoutConfirmModal onCancel={() => setIsLogoutConfirmOpen(false)} onConfirm={() => { setIsLogoutConfirmOpen(false); setIsNotificationsOpen(false); setIsProfileOpen(false); setIsLoggedIn(false); window.localStorage.setItem(authStorageKey, "false"); window.dispatchEvent(new Event(authStateChangedEvent)); }} />}
       {pendingUnbuiltPage && <UnbuiltPageModal href={pendingUnbuiltPage.href} onClose={() => setPendingUnbuiltPage(null)} page={pendingUnbuiltPage.page} />}

@@ -79,12 +79,16 @@ const socials: { label: string; slug: string; image: string }[] = [
   { label: "TikTok", slug: "tiktok", image: "/images/sc6.svg" },
 ];
 
-export default function Footer() {
+export default function Footer({ responsive = false }: { responsive?: boolean } = {}) {
+  const columns = responsive
+    ? "grid-cols-2 px-ds-4 md:grid-cols-3 min-[1101px]:grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] min-[1101px]:px-2"
+    : "grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] px-2";
+
   return (
     <UnbuiltPageGuard>
       <footer className="border-t border-arn-border-strong bg-arn-surface text-arn-text">
-      <div className="mx-auto grid max-w-[1400px] grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] gap-6 px-2 py-6">
-        <div className="flex items-start">
+      <div data-home-footer-grid className={`mx-auto grid max-w-[1400px] gap-6 py-6 ${columns}`}>
+        <div className={`flex items-start ${responsive ? "col-span-full min-[1101px]:col-span-1" : ""}`}>
           <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[166px]" height={80} src="/images/arnspace-logo.webp" width={238} />
         </div>
 
@@ -93,7 +97,7 @@ export default function Footer() {
             <h2 className="mb-2 text-[12px] font-semibold text-white/90">{group.title}</h2>
             <nav aria-label={group.title} className="space-y-1">
               {group.links.map((link) => (
-                <a className="block truncate text-[11px] leading-4 text-white/55 transition hover:text-[#2ee77b]" href={footerHrefs[link] ?? "/about"} key={link}>
+                  <a className={`text-[11px] leading-4 text-white/55 transition hover:text-[#2ee77b] ${responsive ? "flex min-h-11 items-center min-[1101px]:min-h-0" : "block truncate"}`} href={footerHrefs[link] ?? "/about"} key={link}>
                   {link}
                 </a>
               ))}
@@ -101,10 +105,10 @@ export default function Footer() {
           </div>
         ))}
 
-        <div className="flex min-w-0 flex-col items-end">
-          <div className="flex items-center gap-4 text-white/80">
+        <div data-home-footer-social className={`flex min-w-0 flex-col ${responsive ? "col-span-full items-start min-[1101px]:col-span-1 min-[1101px]:items-end" : "items-end"}`}>
+          <div className={`flex items-center text-white/80 ${responsive ? "flex-wrap gap-ds-1 min-[1101px]:gap-4" : "gap-4"}`}>
             {socials.map((social) => (
-              <a aria-label={social.label} className="transition hover:text-[#2ee77b]" href={`/social/${social.slug}`} key={social.label}>
+              <a aria-label={social.label} className={`transition hover:text-[#2ee77b] ${responsive ? "grid h-11 w-11 place-items-center min-[1101px]:h-auto min-[1101px]:w-auto" : ""}`} href={`/social/${social.slug}`} key={social.label}>
                 <Image alt="" className="h-[18px] w-[18px] object-contain transition-transform hover:scale-110" height={18} src={social.image} unoptimized width={18} />
               </a>
             ))}

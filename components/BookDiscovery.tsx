@@ -3,22 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { getCategorySections } from "@/data/categoryBooks";
+import { categoryBooks, fanficFandomByCategory, getCategorySections, type CategoryBook } from "@/data/categoryBooks";
 import { discoverySections } from "@/data/discoverySections";
+import { homeBanners } from "@/data/homeBanners";
 import StoryMetadata from "@/components/StoryMetadata";
-import type { StoryStatus } from "@/data/storyStatus";
-import { recommendedWriters, type RecommendedWriter } from "@/components/writerData";
+import { resolveStoryStatus } from "@/data/storyStatus";
+import { followedContentWriters, recommendedWriters, type RecommendedWriter } from "@/components/writerData";
 
-type Book = {
-  title: string;
-  author: string;
-  category: string;
-  episodes: string;
-  views: string;
-  likes: string;
-  image: string;
-  status?: StoryStatus;
-};
+type Book = CategoryBook;
 
 type DiscoverySection = {
   title: string;
@@ -26,12 +18,6 @@ type DiscoverySection = {
   books?: Book[];
   writers?: RecommendedWriter[];
 };
-
-const followedContentWriters: RecommendedWriter[] = [
-  ...recommendedWriters,
-  { slug: "rainymew", name: "rainymew", type: "นิยาย", image: "/images/writers/rainymew.webp", bio: "เรื่องราวอบอุ่นที่อยากชวนคุณมาอ่านด้วยกัน", followers: "4.8K", works: "12" },
-  { slug: "sorayoru", name: "sorayoru", type: "แฟนฟิค", image: "/images/writers/sorayoru.webp", bio: "เรื่องราวแฟนตาซีจากมุมมองที่ไม่เหมือนใคร", followers: "4.2K", works: "10" },
-];
 
 const sections: DiscoverySection[] = discoverySections;
 
@@ -58,6 +44,9 @@ const continueSectionIcons: Record<string, SimpleTitleIconName> = {
 
 const trendingSectionIcons: Record<string, SimpleTitleIconName> = {
   "กำลังมาแรง": "flame",
+  "Top 20 ยอดนิยม": "chart",
+  "เรื่องใหม่ น่าจับตา": "note",
+  "เรื่องจบแล้ว อ่านยาวได้เลย": "check",
   "มาแรงในหมวดที่คุณชอบ": "star",
   "มาแรงประจำสัปดาห์": "chart",
 };
@@ -127,6 +116,66 @@ const trendingSections: DiscoverySection[] = [
   },
 ];
 
+function getBookMode(book: Book) {
+  if (book.title.startsWith("แฟนฟิค")) return "fanfic";
+  if (book.title.startsWith("การ์ตูน")) return "cartoon";
+  return "novel";
+}
+
+const guestBookMix = ["novel", "fanfic", "novel", "cartoon"] as const;
+const guestMetricValue = (value: string) => Number.parseFloat(value) * (value.endsWith("M") ? 1_000_000 : value.endsWith("K") ? 1_000 : 1);
+function buildGuestTrendingSections(): DiscoverySection[] {
+  const usedTitles = new Set(homeBanners.map(banner => banner.title));
+  const usedCovers = new Set<string>();
+  const isAvailable = (book: Book) => !usedTitles.has(book.title) && !usedCovers.has(book.image);
+  const takeBooks = (candidates: Book[], limit = 8) => {
+    const books: Book[] = [];
+
+    for (let index = 0; index < limit; index++) {
+      const mode = guestBookMix[index % guestBookMix.length];
+      const book = candidates.find(candidate => getBookMode(candidate) === mode && isAvailable(candidate))
+        ?? candidates.find(isAvailable);
+      if (!book) break;
+
+      books.push(book);
+      usedTitles.add(book.title);
+      usedCovers.add(book.image);
+    }
+
+    return books;
+  };
+
+  const popularBooks = Object.values(categoryBooks).flat()
+    .sort((a, b) => guestMetricValue(b.views) - guestMetricValue(a.views));
+  const rankedBooks = new Set(takeBooks(popularBooks, 20));
+  const newBooks = popularBooks.filter(book => resolveStoryStatus({ ...book, title: getDisplayBookTitle(book) }) === "ongoing")
+    .sort((a, b) => Number(a.episodes) - Number(b.episodes));
+  const completedBooks = popularBooks.filter(book => resolveStoryStatus({ ...book, title: getDisplayBookTitle(book) }) === "completed");
+  const completedCandidates = [...completedBooks.filter(book => book.format === "chat"), ...completedBooks];
+  const featuredNewBooks = takeBooks(newBooks);
+  const featuredCompletedBooks = takeBooks(completedCandidates);
+
+  return [
+    {
+      title: "Top 20 ยอดนิยม",
+      subtitle: "นิยาย แฟนฟิค และการ์ตูนยอดนิยม เรียงตามยอดอ่าน",
+      books: popularBooks.filter(book => rankedBooks.has(book)),
+    },
+    {
+      title: "เรื่องใหม่ น่าจับตา",
+      subtitle: "เริ่มติดตามเรื่องน่าอ่านที่ยังมีตอนไม่มาก",
+      books: [...featuredNewBooks, ...takeBooks(newBooks)],
+    },
+    {
+      title: "เรื่องจบแล้ว อ่านยาวได้เลย",
+      subtitle: "เรื่องจบครบแล้ว พร้อมให้อ่านต่อเนื่องจนถึงบทสุดท้าย",
+      books: [...featuredCompletedBooks, ...takeBooks(completedCandidates)],
+    },
+  ].filter(section => section.books.length > 0);
+}
+
+const guestTrendingSections = buildGuestTrendingSections();
+
 const followingSections: DiscoverySection[] = [
   {
     title: "อัปเดตใหม่จากที่ติดตาม",
@@ -172,16 +221,6 @@ const completedSections: DiscoverySection[] = [
     books: mixCategoryBooks(["แฟนตาซี", "โรแมนติก", "วาย", "สยองขวัญ", "ลึกลับ", "คอมเมดี้"], 2),
   },
 ];
-
-const badgeColors: Record<string, string> = {
-  โรแมนติก: "bg-[#e84b9b]",
-  วาย: "bg-[#478fff]",
-  แฟนตาซี: "bg-[#9b5cff]",
-  ลึกลับ: "bg-[#64748b]",
-  สยองขวัญ: "bg-[#bc79ff]",
-  แอ๊กชั่น: "bg-[#ff6d55]",
-  คอมเมดี้: "bg-[#f4cf4e]",
-};
 
 const hoverDescriptions: Record<string, string> = {
   โรแมนติก: "เมื่อโชคชะตาพาคนสองคนกลับมาเจอกัน ความลับในอดีตและความรู้สึกที่ยังไม่จางจะเปลี่ยนเรื่องราวครั้งนี้ไปอย่างไร",
@@ -241,7 +280,7 @@ function getSectionHref(title: string, selectedCategory: string) {
   return `/read${categoryQuery}`;
 }
 
-function getDisplayBookTitle(book: Book) {
+function getDisplayBookTitle(book: Book, fanficLabel = "แฟนฟิค") {
   const prefixes = [
     `${book.category} · `,
     `แฟนฟิค${book.category}: `,
@@ -253,7 +292,7 @@ function getDisplayBookTitle(book: Book) {
   const displayTitle = title.replace(/\s[·—]\s.*$/, "");
   const isFanfic = book.title.startsWith("แฟนฟิค") || /\([^()]+\)\s*$/.test(book.title);
 
-  return isFanfic && !/\([^()]+\)\s*$/.test(displayTitle) ? `${displayTitle} (แฟนฟิค)` : displayTitle;
+  return isFanfic && !/\([^()]+\)\s*$/.test(displayTitle) ? `${displayTitle} (${fanficLabel})` : displayTitle;
 }
 
 function SimpleTitleIcon({ name, className = "h-5 w-5" }: { name: SimpleTitleIconName; className?: string }) {
@@ -1211,8 +1250,22 @@ function WriterCard({ writer, showFollowButton = false, compact = false }: { wri
   );
 }
 
-function BookCard({ book, showReadingProgress = false, progressIndex = 0 }: { book: Book; showReadingProgress?: boolean; progressIndex?: number }) {
-  const displayTitle = getDisplayBookTitle(book);
+const bookModes = {
+  novel: { label: "นิยาย", href: "/read" },
+  fanfic: { label: "แฟนฟิค", href: "/read/fanfic" },
+  cartoon: { label: "การ์ตูน", href: "/read/cartoon" },
+};
+
+function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGuest = false, rank }: { book: Book; showReadingProgress?: boolean; progressIndex?: number; isGuest?: boolean; rank?: number }) {
+  const statusTitle = getDisplayBookTitle(book);
+  const displayTitle = isGuest
+    ? getDisplayBookTitle(book, fanficFandomByCategory[book.category] ?? "Original Universe")
+    : statusTitle;
+  const mode = getBookMode(book);
+  const bookMode = bookModes[mode];
+  const isCartoon = mode === "cartoon";
+  const isChat = book.format === "chat";
+  const rankLabel = rank === undefined ? "" : `อันดับ ${rank}, `;
   const progressValues = [60, 42, 74, 55, 88, 35];
   const progress = progressValues[progressIndex % progressValues.length];
   const totalEpisodes = Number.parseInt(book.episodes, 10) || 1;
@@ -1220,19 +1273,36 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0 }: { bo
 
   return (
     <Link
-      aria-label={`เปิดเรื่อง ${book.title}`}
+      aria-label={isGuest ? `${rankLabel}เปิดเรื่อง ${displayTitle}, ${bookMode.label}${isChat ? ", แบบแชท" : ""}` : `เปิดเรื่อง ${book.title}`}
       className="group relative block min-w-0 cursor-pointer rounded-[9px] border border-transparent p-1 transition duration-300 hover:-translate-y-1 hover:border-white/[0.12] hover:bg-white/[0.025] hover:shadow-[0_12px_26px_rgba(19,230,104,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]"
-      href={`/read?title=${encodeURIComponent(book.title)}`}
+      href={`${isGuest ? bookMode.href : "/read"}?title=${encodeURIComponent(book.title)}`}
     >
       <div className="relative aspect-[2/3] overflow-hidden rounded-[7px] bg-[#18201c]">
-        <Image src={book.image} alt={`ปกหนังสือ ${book.title}`} fill sizes="(max-width: 1400px) 14vw, 190px" className="object-cover transition duration-500 group-hover:scale-105" />
+        <Image src={book.image} alt={`ปกหนังสือ ${isGuest ? displayTitle : book.title}`} fill sizes="(max-width: 767px) 50vw, (max-width: 1279px) 33vw, (max-width: 1400px) 17vw, 220px" className="object-cover transition duration-500 group-hover:scale-105" />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#07100c]/90 to-transparent" />
-        <span className={`absolute right-1.5 top-1.5 z-30 rounded-md px-2 py-1 text-[10px] font-medium leading-none text-white shadow-lg ${badgeColors[book.category] ?? "bg-[#1cae68]"}`}>
-          {book.category}
-        </span>
+        {rank !== undefined && (
+          <span aria-hidden="true" data-book-rank={rank} className="absolute left-ds-2 top-ds-2 z-30 inline-grid min-w-6 place-items-center rounded-ds-sm border border-arn-border-strong bg-arn-canvas px-ds-1 py-ds-1 text-ds-meta font-semibold tabular-nums text-arn-text">{rank}</span>
+        )}
+        {isGuest && resolveStoryStatus({ title: statusTitle, episodes: book.episodes, status: book.status }) === "completed" && (
+          <span className="absolute right-ds-2 top-ds-2 z-30 rounded-ds-sm bg-arn-accent px-ds-2 py-ds-1 text-ds-meta font-medium text-arn-accent-ink">จบ</span>
+        )}
       </div>
-      <h3 className="mt-2 truncate text-[13px] font-medium leading-5 text-white" title={displayTitle}>{displayTitle}</h3>
-      <p className="truncate text-[11px] text-white/45">{book.author}</p>
+      <h3 data-book-title className="mt-2 truncate text-[13px] font-medium leading-5 text-white" title={displayTitle}>
+        {isGuest && mode !== "novel" && (
+          <svg aria-hidden="true" data-book-mode={mode} className={`mr-ds-1 inline-block h-4 w-4 align-middle ${isCartoon ? "text-section-cartoon" : "text-section-fanfic"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <circle cx="12" cy="12" r="9" />
+            <path d={isCartoon ? "M15 8.7a4.4 4.4 0 1 0 0 6.6" : "M15 7.8h-5.5v8.4m0-4.2H14"} strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+        {isGuest && isChat && (
+          <svg aria-hidden="true" data-book-format="chat" className="mr-ds-1 inline-block h-4 w-4 align-middle text-arn-accent-soft" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
+            <path d="M11 18.5h2" strokeLinecap="round" />
+          </svg>
+        )}
+        {displayTitle}
+      </h3>
+      <p data-book-author className="truncate text-[11px] text-white/45">{book.author}</p>
       {showReadingProgress ? (
         <div className="mt-2.5 space-y-1.5">
           <p className="text-[12px] font-medium text-white/80">ตอนที่ {currentEpisode} / {totalEpisodes}</p>
@@ -1244,9 +1314,9 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0 }: { bo
           </div>
         </div>
       ) : (
-        <StoryMetadata title={displayTitle} episodes={book.episodes} views={book.views} likes={book.likes} status={book.status} />
+        <StoryMetadata title={displayTitle} episodes={book.episodes} views={book.views} likes={book.likes} status={book.status} showStatus={!isGuest} />
       )}
-      <div className="pointer-events-none absolute inset-1 z-20 flex flex-col justify-end rounded-[7px] bg-gradient-to-t from-[#07100c] via-[#07100c]/90 to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
+      <div data-book-overlay className="pointer-events-none absolute inset-1 z-20 flex flex-col justify-end rounded-[7px] bg-gradient-to-t from-[#07100c] via-[#07100c]/90 to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
         <h3 className="break-words text-[14px] font-semibold leading-5 text-white">{displayTitle}</h3>
         <p className="mt-0.5 line-clamp-6 text-[11px] leading-[1.45] text-white/70">{hoverDescriptions[book.category] ?? "เรื่องราวที่คัดสรรมาให้คุณได้ออกเดินทาง พร้อมความลับและตัวละครมากมายที่รอให้คุณทำความรู้จัก"}</p>
         <span className="mt-2 inline-flex h-8 items-center justify-center rounded-[7px] bg-[#1be27e] text-[11px] font-semibold text-[#07100b] shadow-[0_5px_16px_rgba(0,0,0,.25)]">อ่านเลย <span aria-hidden="true" className="ml-2 text-sm">→</span></span>
@@ -1255,12 +1325,12 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0 }: { bo
   );
 }
 
-export default function BookDiscovery({ selectedCategory }: { selectedCategory: string }) {
+export default function BookDiscovery({ selectedCategory, showSidebar = true, isGuest = false }: { selectedCategory: string; showSidebar?: boolean; isGuest?: boolean }) {
   const homeFilterLabels = ["สำหรับคุณ", "อ่านต่อ", "กำลังมาแรง", "จากที่ติดตาม", "เรื่องจบแล้ว"];
   const homeSections: Record<string, DiscoverySection[]> = {
     "สำหรับคุณ": forYouSections,
     "อ่านต่อ": continueSections,
-    "กำลังมาแรง": trendingSections,
+    "กำลังมาแรง": isGuest ? guestTrendingSections : trendingSections,
     "จากที่ติดตาม": followingSections,
     "เรื่องจบแล้ว": completedSections,
   };
@@ -1272,9 +1342,10 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
 
   return (
     <section className="mx-auto max-w-[1400px] bg-arn-canvas px-2 pb-12 pt-7 text-arn-text" id="discover">
-      <div className="grid grid-cols-[minmax(0,1fr)_290px] gap-6">
+      <div className={`grid gap-6 ${showSidebar ? "grid-cols-[minmax(0,1fr)_290px]" : "grid-cols-1"}`}>
         <div className="space-y-8">
           {visibleSections.map((section, sectionIndex) => {
+            const isRanking = isGuest && section.title === "Top 20 ยอดนิยม";
             const sectionIcon = selectedCategory === "สำหรับคุณ"
               ? forYouSectionIcons[section.title]
               : selectedCategory === "อ่านต่อ"
@@ -1303,7 +1374,7 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
                 </div>
                 {!hideViewAll && <Link href={section.writers ? "/writers" : getSectionHref(section.title, selectedCategory)} className="mb-1 inline-flex items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">ดูทั้งหมด <span aria-hidden="true">→</span></Link>}
               </div>
-              <div className={section.writers ? "grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8" : "grid grid-cols-6 gap-3"}>
+              <div data-home-book-grid={section.writers ? undefined : "true"} data-home-ranking={isRanking ? "true" : undefined} className={section.writers ? "grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8" : "grid grid-cols-6 gap-3"}>
                 {section.writers ? (
                   section.writers.map((writer) => <WriterCard compact={section.title === "นักเขียนที่ติดตาม"} key={writer.slug} writer={writer} showFollowButton={selectedCategory !== "กำลังมาแรง" && section.title === "นักเขียนมาแรง"} />)
                 ) : (
@@ -1312,6 +1383,8 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
                       key={book.title}
                       book={book}
                       progressIndex={bookIndex}
+                      isGuest={isGuest}
+                      rank={isRanking ? bookIndex + 1 : undefined}
                       showReadingProgress={selectedCategory === "อ่านต่อ" ? sectionIndex === 0 : selectedCategory === "สำหรับคุณ" && section.title === "อ่านต่อ"}
                     />
                   ))
@@ -1321,7 +1394,7 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
             );
           })}
         </div>
-        <aside className="flex h-full flex-col gap-3 pt-1">
+        {showSidebar && <aside className="flex h-full flex-col gap-3 pt-1">
           {selectedCategory === "อ่านต่อ" ? (
             <>
               <ReadingStatusCard />
@@ -1362,7 +1435,7 @@ export default function BookDiscovery({ selectedCategory }: { selectedCategory: 
               )}
             </>
           )}
-        </aside>
+        </aside>}
       </div>
     </section>
   );

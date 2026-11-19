@@ -61,6 +61,29 @@ function Icon({ name }: { name: "back" | "bookmark" | "comment" | "more" | "clos
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
 
+function ChatTranscript({ chat }: { chat: NonNullable<Chapter["chat"]> }) {
+  return (
+    <section className={styles.chat} aria-labelledby="chapter-chat-title">
+      <header className={styles.chatHeader}>
+        <span className={styles.chatIcon}><Icon name="comment" /></span>
+        <div>
+          <h2 id="chapter-chat-title">{chat.participants.join(" · ")}</h2>
+          <p>บทสนทนา</p>
+        </div>
+      </header>
+      <div className={styles.chatTime}><time dateTime={chat.time}>{chat.time}</time></div>
+      <ol className={styles.chatMessages} role="list">
+        {chat.messages.map(([speaker, text], index) => (
+          <li key={index} className={`${styles.chatMessage} ${speaker === 1 ? styles.chatOutgoing : ""}`}>
+            <span>{chat.participants[speaker]}</span>
+            <p>{text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 export default function StoryReaderPage({ novel, episode }: { novel: NovelDetails; episode: Chapter }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
@@ -75,7 +98,7 @@ export default function StoryReaderPage({ novel, episode }: { novel: NovelDetail
   const previous = novel.episodes.find((item) => item.number === episode.number - 1 && !item.locked);
   const next = novel.episodes.find((item) => item.number === episode.number + 1 && !item.locked);
   const paragraphs = useMemo(() => novel.title === "Sky of Tomorrow" ? skyChapter : generalChapter, [novel.title]);
-  const modeLabel: Record<ReadModeId, string> = { novel: "นิยาย", fanfic: "แฟนฟิก", cartoon: "การ์ตูน" };
+  const modeLabel: Record<ReadModeId, string> = { novel: "นิยาย", fanfic: "แฟนฟิค", cartoon: "การ์ตูน" };
 
   useEffect(() => {
     try {
@@ -103,7 +126,7 @@ export default function StoryReaderPage({ novel, episode }: { novel: NovelDetail
   };
 
   return (
-    <main className={styles.reader} data-theme={preferences.theme} style={{ "--reader-size": `${preferences.size}px` } as CSSProperties}>
+    <main className={styles.reader} data-theme={preferences.theme} data-mobile-chat={episode.chat ? "true" : undefined} style={{ "--reader-size": `${preferences.size}px` } as CSSProperties}>
       <div className={styles.backdrop} style={{ backgroundImage: `linear-gradient(90deg, var(--reader-paper) 0%, color-mix(in srgb, var(--reader-paper) 88%, transparent) 22%, color-mix(in srgb, var(--reader-paper) 90%, transparent) 78%, var(--reader-paper) 100%), linear-gradient(0deg, var(--reader-paper), transparent 55%, var(--reader-paper)), url("${novel.image}")` }} />
       <header className={styles.topbar}>
         <Link href={backHref} className={styles.back} aria-label="กลับไปหน้ารายละเอียด"><Icon name="back" /></Link>
@@ -130,13 +153,15 @@ export default function StoryReaderPage({ novel, episode }: { novel: NovelDetail
 
       <article className={`${styles.article} ${preferences.width === "wide" ? styles.wide : ""}`}>
         <header className={styles.chapterHeader}>
-          <p className={styles.eyebrow}>ตอนที่ {episode.number}</p>
+          <p className={styles.eyebrow}>ตอนที่ {episode.number}{episode.chat ? " · แบบแชท" : ""}</p>
           <h1>{episode.title}</h1>
           <p className={styles.bookTitle}>{novel.title}</p>
           <Link className={styles.author} href={`/writers/${novel.authorSlug}`}><Image src={novel.authorAvatar} alt="" width={34} height={34} /> <span>{novel.author}</span><span className={styles.verified}>✓</span></Link>
           <div className={styles.meta}><span>◷ &nbsp;{new Intl.DateTimeFormat("th-TH-u-ca-gregory", { dateStyle: "medium" }).format(new Date(`${episode.date}T00:00:00Z`))}</span><span>◉ &nbsp;32.6K อ่าน</span><span>▢ &nbsp;428 ความคิดเห็น</span></div>
         </header>
-        <div className={styles.prose}>{paragraphs.map((text, index) => <p key={index}>{text}</p>)}</div>
+        {episode.chat
+          ? <ChatTranscript chat={episode.chat} />
+          : <div className={styles.prose}>{paragraphs.map((text, index) => <p key={index}>{text}</p>)}</div>}
         <div className={styles.endMark}><span /> จบตอนที่ {episode.number} <span /></div>
         <div className={styles.reactions}>
           <button type="button" aria-pressed={liked} onClick={() => setLiked((value) => !value)} className={liked ? styles.selectedReaction : ""}><Icon name="heart" /> ถูกใจ <small>{liked ? "1.3K" : "1.2K"}</small></button>

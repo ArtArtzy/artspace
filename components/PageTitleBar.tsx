@@ -12,7 +12,7 @@ type PageTitleBarContent = {
 
 const pageTitleBarContent: Record<PageTitleBarVariant, PageTitleBarContent> = {
   home: {
-    title: "สำหรับคุณ",
+    title: "หน้าหลัก",
     description: "เรื่องราวและคอนเทนต์ที่คัดมาให้คุณ",
     icon: "home",
   },

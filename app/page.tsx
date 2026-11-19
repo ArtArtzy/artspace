@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import PageTitleBar from "@/components/PageTitleBar";
 import TopMenu, { authStateChangedEvent } from "@/components/TopMenu";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
+import styles from "./GuestHome.module.css";
 
 const authStorageKey = "arnspace-authenticated";
 const guestHomeCategory = "กำลังมาแรง";
@@ -37,16 +38,16 @@ export default function Home() {
   const visibleCategory = isLoggedIn === false ? guestHomeCategory : selectedCategory;
 
   return (
-    <main className="ds-page-shell min-h-screen pt-[82px]">
+    <main className={`ds-page-shell min-h-screen pt-[82px] ${isLoggedIn === false ? styles.page : ""}`} data-guest-home={isLoggedIn === false ? "true" : undefined}>
       <TopMenu fixed />
       <UnbuiltPageGuard>
-        <HeroCarousel />
+        <HeroCarousel includeDesktopAction={isLoggedIn === false} />
         <PageTitleBar variant="home" />
         <div className={isLoggedIn === null ? "invisible" : undefined}>
           {isLoggedIn !== false && <CategoryFilter selected={selectedCategory} onSelect={setSelectedCategory} stickyOffset="page-banner" variant="home" />}
-          <BookDiscovery selectedCategory={visibleCategory} />
+          <BookDiscovery selectedCategory={visibleCategory} showSidebar={false} isGuest={isLoggedIn === false} />
         </div>
-        <CommunitySection />
+        <CommunitySection isGuest={isLoggedIn === false} />
         <Footer />
       </UnbuiltPageGuard>
     </main>

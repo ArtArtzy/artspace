@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import TopMenu from "@/components/TopMenu";
-import { recommendedWriters } from "@/components/writerData";
+import { getWriterProfile } from "@/components/writerData";
 
 type WriterProfilePageProps = {
   params: Promise<{ slug: string }>;
@@ -10,7 +10,7 @@ type WriterProfilePageProps = {
 
 export default async function WriterProfilePage({ params }: WriterProfilePageProps) {
   const { slug } = await params;
-  const writer = recommendedWriters.find((item) => item.slug === slug);
+  const writer = getWriterProfile(slug);
 
   if (!writer) notFound();
 
@@ -26,7 +26,7 @@ export default async function WriterProfilePage({ params }: WriterProfilePagePro
           <div className="px-5 pb-8 sm:px-10 sm:pb-10">
             <div className="-mt-14 flex flex-col gap-5 sm:-mt-16 sm:flex-row sm:items-end sm:justify-between">
               <div className="flex items-end gap-4">
-                <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border-4 border-[#101513] bg-[#18211d] shadow-[0_0_0_1px_rgba(46,231,123,.6)] sm:h-32 sm:w-32">
+                <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border-4 border-[#101513] bg-arn-raised shadow-[0_0_0_1px_rgba(46,231,123,.6)] sm:h-32 sm:w-32">
                   <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="object-cover" fill sizes="128px" src={writer.image} />
                 </div>
                 <div className="pb-1">
@@ -39,10 +39,12 @@ export default async function WriterProfilePage({ params }: WriterProfilePagePro
               </Link>
             </div>
             <p className="mt-7 max-w-2xl text-sm leading-7 text-white/65">{writer.bio}</p>
-            <div className="mt-7 flex gap-8 border-t border-white/[0.08] pt-5 text-sm">
-              <div><strong className="block text-lg text-white">{writer.followers}</strong><span className="text-white/45">ผู้ติดตาม</span></div>
-              <div><strong className="block text-lg text-white">{writer.works}</strong><span className="text-white/45">ผลงาน</span></div>
-            </div>
+            {(writer.followers || writer.works) && (
+              <div className="mt-7 flex gap-8 border-t border-white/[0.08] pt-5 text-sm">
+                {writer.followers && <div><strong className="block text-lg text-white">{writer.followers}</strong><span className="text-white/45">ผู้ติดตาม</span></div>}
+                {writer.works && <div><strong className="block text-lg text-white">{writer.works}</strong><span className="text-white/45">ผลงาน</span></div>}
+              </div>
+            )}
           </div>
         </div>
       </section>

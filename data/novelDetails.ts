@@ -4,6 +4,7 @@ import {
   type CategoryBook,
 } from "@/data/categoryBooks";
 import { discoverySections } from "@/data/discoverySections";
+import { getStoryChatSample } from "@/data/storyChatSamples";
 import { resolveStoryStatus } from "@/data/storyStatus";
 import { recommendedWriters } from "@/components/writerData";
 import type { ReadModeId } from "@/components/ReadSubMenu";
@@ -117,6 +118,7 @@ export function getNovelDetails(
   );
   const count = Math.max(1, Number.parseInt(book.episodes, 10) || 26);
   const status = resolveStoryStatus(book);
+  const chatSample = book.format === "chat" ? getStoryChatSample(book.title) : undefined;
   const sameGenre = catalog.filter(
     (item) =>
       item.category === book.category &&
@@ -134,9 +136,11 @@ export function getNovelDetails(
   const date = new Date(Date.UTC(2026, 9, 2));
   const episodes = Array.from({ length: count }, (_, index) => {
     const number = count - index;
+    const chatChapter = chatSample?.chapters[number - 1];
     const episode = {
       number,
-      title: chapterNames[(number - 1) % chapterNames.length],
+      title: chatChapter?.title ?? chapterNames[(number - 1) % chapterNames.length],
+      chat: chatSample && chatChapter ? { ...chatChapter, participants: chatSample.participants } : undefined,
       date: date.toISOString().slice(0, 10),
       locked: status === "ongoing" && number === count,
       isNew: index === 0,
@@ -180,7 +184,7 @@ export function getNovelDetails(
           ]),
       ).values(),
     ).slice(0, 8),
-    continueEpisode: Math.min(12, count),
+    continueEpisode: chatSample ? 1 : Math.min(12, count),
   };
 }
 

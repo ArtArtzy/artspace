@@ -20,7 +20,7 @@
 - ห้ามทำ active, hover และ disabled ให้ใช้สี/ความสว่างเหมือนกัน
 - ห้ามใช้ emoji เป็น icon หลักของระบบ หากมี SVG icon ที่เหมาะสมอยู่แล้ว
 - ห้ามเพิ่ม inline style ถ้าใช้ Tailwind token หรือ class กลางได้
-- ห้ามทำให้ Hero กว้างเกิน `1400px`
+- Hero ใช้ความกว้างสูงสุดตาม page shell ใน Design System โดยหน้าทั่วไปเป็น `1400px` และหน้าแรกสำหรับผู้เยี่ยมชมเป็น `1536px`
 
 ## กฎการเลือก Token
 
@@ -53,7 +53,7 @@
 ### Page shell
 
 - ใช้พื้นหลัง `var(--arn-color-canvas)` หรือ `bg-arn-canvas`
-- เนื้อหาหลัก desktop จำกัดไม่เกิน `1400px`
+- เนื้อหาหลัก desktop จำกัดตาม page shell โดยหน้าทั่วไปใช้ `1400px` และหน้าแรกสำหรับผู้เยี่ยมชมใช้ `1536px`
 - Header/Top menu ต้องไม่เปลี่ยนความสูงและ z-index โดยไม่มีเหตุผล
 - ทุกหน้า content-heavy ต้องมี loading/empty state ที่อ่านได้
 
@@ -86,10 +86,16 @@
 
 ## กฎ responsive
 
-- Desktop เป็น baseline ของโปรเจกต์ แต่ต้องรักษา hierarchy บนจอแคบ
+- ยึดหัวข้อ Responsive layout และ breakpoints ใน `docs/design-system.md` เป็นมาตรฐานร่วมกันทุกหน้า
+- ใช้ breakpoint หลัก `md: 768px`, `xl: 1280px`, `2xl: 1536px` โดย class พื้นฐานรองรับช่วงต่ำกว่า `768px`
+- Desktop เป็น baseline ด้านการออกแบบ และเขียน CSS แบบ mobile-first เพื่อรักษา hierarchy บนจอแคบ
+- ใช้ `sm: 640px` และ `lg: 1024px` ปรับรายละเอียดของ component ตามพื้นที่เมื่อจำเป็น
+- Sidebar ข้างเนื้อหาและเมนูเต็มเริ่มที่ `xl` ส่วน `2xl` จัดเนื้อหากึ่งกลางและจำกัดความกว้างตาม page shell ใน Design System
 - ลด spacing และจำนวนคอลัมน์ก่อนลด font
 - ตาราง/รายการยาวต้องมีวิธีจัดการ overflow ที่อ่านได้
 - อย่าให้ปุ่มหรือ filter ที่สำคัญถูกตัดจนกดไม่ได้
+- ตรวจว่า CSS กลางของแถบ `desktop only` เปิดให้หน้าที่ทำ responsive แล้วใช้งานได้บนมือถือ
+- ตรวจจอ `320`, `360`, `390`, `768`, `1280`, `1536`, `1920px` และรอยต่อของ breakpoint ตาม checklist ใน Design System
 
 ## ก่อนส่งงาน
 

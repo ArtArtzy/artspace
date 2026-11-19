@@ -122,7 +122,7 @@ function BookCard({ book, mode }: { book: CategoryBook; mode: ReadModeId }) {
       href={`${modePaths[mode]}?title=${encodeURIComponent(book.title)}`}
     >
       <div className="relative aspect-[2/3] overflow-hidden rounded-[7px] bg-[#18201c]">
-        <Image alt={`ปกหนังสือ ${displayTitle}`} className="object-cover transition duration-500 group-hover:scale-105" fill sizes="(max-width: 1400px) 14vw, 190px" src={book.image} />
+        <Image alt={`ปกหนังสือ ${displayTitle}`} className="object-cover transition duration-500 group-hover:scale-105" fill sizes="(max-width: 767px) 50vw, (max-width: 1279px) 25vw, (max-width: 1400px) 14vw, 190px" src={book.image} />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#07100c]/90 to-transparent" />
         <span className={`absolute right-1.5 top-1.5 z-30 rounded-md px-2 py-1 text-[10px] font-medium leading-none text-white shadow-lg ${badgeColors[book.category] ?? "bg-[#1cae68]"}`}>
           {book.category}
@@ -382,7 +382,7 @@ const sortOptions: Array<{ value: SortOption; label: string }> = [
 
 function BooksHeading({ title, subtitle, value, onChange }: { title: string; subtitle: string; value: SortOption; onChange: (value: SortOption) => void }) {
   return (
-    <div className="mb-3 flex items-end justify-between gap-4">
+    <div data-read-catalog-heading className="mb-3 flex items-end justify-between gap-4">
       <div>
         <h2 className="text-[21px] font-medium leading-tight text-white">{title}</h2>
         <p className="mt-1 text-[12px] text-white/50">{subtitle}</p>
@@ -758,7 +758,7 @@ export default function ReadDiscovery({ followedCategories, mode, onToggleCatego
 
   return (
     <section className="mx-auto max-w-[1400px] bg-arn-canvas px-2 pb-12 pt-7 text-arn-text" id="read-discovery">
-      <div className="grid grid-cols-[minmax(0,1fr)_290px] gap-6">
+      <div data-read-layout className="grid grid-cols-[minmax(0,1fr)_290px] gap-6">
         <div className="min-w-0 space-y-8">
           {isCategoryCatalog ? (
             <>
@@ -772,7 +772,7 @@ export default function ReadDiscovery({ followedCategories, mode, onToggleCatego
                   title={isAllBooks ? `${contentLabel}ทั้งหมด` : isMultiCategory ? `${contentLabel}จากหมวดที่เลือก` : `${contentLabel}${selectedCategory}`}
                   value={sortOption}
                 />
-                <div className="grid grid-cols-6 gap-x-3 gap-y-6">
+                <div data-read-book-grid className="grid grid-cols-6 gap-x-3 gap-y-6">
                   {visibleCatalogBooks.map((book) => <BookCard book={book} mode={mode} key={book.title} />)}
                 </div>
               </div>
@@ -789,7 +789,7 @@ export default function ReadDiscovery({ followedCategories, mode, onToggleCatego
                   title={section.category === "__trending__" ? `${contentLabel}แนะนำ` : section.title}
                   subtitle={section.subtitle}
                 />
-                <div className="grid grid-cols-6 gap-3">
+                <div data-read-book-grid className="grid grid-cols-6 gap-3">
                   {sectionBooks.map((book) => <BookCard book={book} mode={mode} key={book.title} />)}
                 </div>
               </div>

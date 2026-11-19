@@ -277,6 +277,11 @@ body {
   color: var(--arn-color-text-primary);
 }
 
+.event-detail-page a:focus-visible {
+  outline: 2px solid var(--arn-color-accent);
+  outline-offset: 4px;
+}
+
 @media (max-width: 1100px) {
   body::before {
     align-items: center;
@@ -294,7 +299,12 @@ body {
     z-index: 100;
   }
 
-  body:has(.login-page)::before {
+  body:has(.login-page)::before,
+  body:has(.event-detail-page)::before,
+  body:has([data-guest-home="true"])::before,
+  body:has([data-guest-read="true"])::before,
+  body:has([data-mobile-chat])::before,
+  body:has(.legal-page)::before {
     display: none;
   }
 

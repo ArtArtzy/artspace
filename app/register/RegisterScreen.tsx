@@ -76,8 +76,8 @@ export default function RegisterScreen({ source, home }: { source: "arnspace" | 
         <input id="register-accept" name="acceptedTerms" type="checkbox" required />
         <div>
           <label htmlFor="register-accept">ฉันยอมรับ</label>{" "}
-          <Link href="/terms">ข้อกำหนดการใช้งาน</Link>{" "}และ{" "}
-          <Link href="/privacy">นโยบายความเป็นส่วนตัว</Link>
+          <Link href={`/terms?${context}`} target="_blank" rel="noopener" aria-label="ข้อกำหนดการใช้งาน (เปิดในแท็บใหม่)">ข้อกำหนดการใช้งาน</Link>{" "}และ{" "}
+          <Link href={`/privacy?${context}`} target="_blank" rel="noopener" aria-label="นโยบายความเป็นส่วนตัว (เปิดในแท็บใหม่)">นโยบายความเป็นส่วนตัว</Link>
         </div>
       </div>
 

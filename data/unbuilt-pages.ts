@@ -1,3 +1,6 @@
+import { homeEvents } from "@/data/homeBanners";
+import { getWriterProfile } from "@/components/writerData";
+
 export type UnbuiltPage = {
   code: string;
   name: string;
@@ -201,20 +204,6 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
     status: "ยังไม่ได้ทำ",
   },
   {
-    code: "FOOTER-PRIVACY-001",
-    name: "หน้านโยบายความเป็นส่วนตัว",
-    url: "/privacy",
-    trigger: "Footer: นโยบายความเป็นส่วนตัว",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
-    code: "FOOTER-TERMS-001",
-    name: "หน้าเงื่อนไขการใช้งาน",
-    url: "/terms",
-    trigger: "Footer: เงื่อนไขการใช้งาน",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
     code: "SOCIAL-LINK-001",
     name: "หน้าลิงก์โซเชียลของ ARN SPACE",
     url: "/social/:network",
@@ -329,6 +318,10 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
 ];
 
 export function findUnbuiltPage(pathname: string, searchParams: URLSearchParams) {
+  if (homeEvents.some(event => pathname === `/community/events/${event.slug}`)) return undefined;
+  const writerSlug = pathname.match(/^\/writers\/([^/]+)\/?$/)?.[1];
+  if (writerSlug && getWriterProfile(writerSlug)) return undefined;
+
   return unbuiltPages.find((page) => {
     const [pagePathname, pageQuery = ""] = page.url.split("?");
     const expectedPathParts = pagePathname.split("/").filter(Boolean);

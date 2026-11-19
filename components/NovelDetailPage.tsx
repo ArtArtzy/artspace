@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { faCommentDots } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   useCallback,
   useEffect,
@@ -366,6 +368,7 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
   const continueEpisode = novel.episodes.find(
     (item) => item.number === novel.continueEpisode,
   )!;
+  const isChat = novel.format === "chat";
   const openEpisode = (item: NovelDetails["episodes"][number]) => {
     if (item.locked) {
       setEpisode(item);
@@ -429,8 +432,17 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
   };
 
   return (
-    <main className={`ds-page-shell min-h-screen pt-[82px] ${styles.page}`}>
-      <TopMenu fixed activeReadMode={novel.mode} />
+    <main className={`ds-page-shell min-h-screen pt-[82px] ${styles.page}`} data-mobile-chat={isChat ? "true" : undefined}>
+      {isChat ? (
+        <>
+          <div className="hidden min-[1101px]:block"><TopMenu fixed activeReadMode={novel.mode} /></div>
+          <header className="fixed inset-x-0 top-0 z-50 flex h-[82px] items-center border-b border-arn-border bg-arn-canvas px-ds-4 min-[1101px]:hidden">
+            <Link href="/" className="flex min-h-11 items-center gap-ds-2 text-ds-body-sm text-arn-text">
+              <span aria-hidden="true">←</span> หน้าแรก
+            </Link>
+          </header>
+        </>
+      ) : <TopMenu fixed activeReadMode={novel.mode} />}
       <div className={styles.backdrop} aria-hidden="true">
         <Image
           src={novel.image}
@@ -495,6 +507,12 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
                     />
                   </Link>
                   <div className="mt-4 flex flex-wrap gap-2">
+                    {isChat && (
+                      <span className="ds-chip inline-flex items-center gap-ds-1 px-ds-3 text-ds-meta text-arn-accent-soft">
+                        <FontAwesomeIcon aria-hidden="true" icon={faCommentDots} className="h-3.5 w-3.5" />
+                        แบบแชท
+                      </span>
+                    )}
                     {[
                       novel.category,
                       novel.category === "แฟนตาซี" ? "ผจญภัย" : "ดราม่า",
@@ -550,7 +568,7 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
                       onClick={() => openEpisode(continueEpisode)}
                     >
                       <Icon name="book" />
-                      อ่านต่อ ตอนที่ {novel.continueEpisode}
+                      {isChat ? "เริ่มอ่านแชท" : `อ่านต่อ ตอนที่ ${novel.continueEpisode}`}
                     </button>
                     <BookshelfToggleButton
                       title={novel.storageTitle}
@@ -714,7 +732,7 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
                 >
                   {tab === "episodes" && (
                     <>
-                      <section
+                      {!isChat && <section
                         className={`ds-card ${styles.card} flex flex-wrap items-center gap-5 p-5`}
                       >
                         <Image
@@ -757,7 +775,7 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
                         >
                           อ่านต่อ ตอนที่ {novel.continueEpisode}
                         </button>
-                      </section>
+                      </section>}
                       <section
                         className={`ds-card ${styles.card} overflow-hidden`}
                       >
@@ -1147,7 +1165,7 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
             </aside>
           </div>
         </div>
-        <Footer />
+        <Footer responsive={isChat} />
       </UnbuiltPageGuard>
       <div
         aria-live="polite"

@@ -1,4 +1,5 @@
 import type { StoryStatus } from "@/data/storyStatus";
+import { getStoryChatSample } from "@/data/storyChatSamples";
 
 export type CategoryBook = {
   title: string;
@@ -9,6 +10,7 @@ export type CategoryBook = {
   likes: string;
   image: string;
   status?: StoryStatus;
+  format?: "prose" | "chat";
 };
 
 export type CategorySection = {
@@ -536,6 +538,17 @@ for (const books of Object.values(categoryBooks)) {
     if (!book.title.startsWith("การ์ตูน")) continue;
     if (seenCartoonCoverPaths.has(book.image)) book.image = takeCartoonNewCover();
     seenCartoonCoverPaths.add(book.image);
+  }
+}
+
+for (const books of Object.values(categoryBooks)) {
+  for (const book of books) {
+    const sample = getStoryChatSample(book.title);
+    if (!sample) continue;
+
+    book.format = "chat";
+    book.episodes = String(sample.chapters.length);
+    book.status = "completed";
   }
 }
 

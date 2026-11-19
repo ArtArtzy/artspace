@@ -9,6 +9,7 @@ import type { ReadModeId } from "@/components/ReadSubMenu";
 import TopMenu, { authStateChangedEvent } from "@/components/TopMenu";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 import { categoryBooks } from "@/data/categoryBooks";
+import styles from "@/app/GuestHome.module.css";
 
 type ReadModePageProps = {
   mode: ReadModeId;
@@ -90,9 +91,11 @@ export default function ReadModePage({ mode }: ReadModePageProps) {
     window.localStorage.setItem(selectedGenresStorageKey, JSON.stringify(nextGenres));
   };
 
+  const isGuest = isLoggedIn === false;
+
   return (
-    <main className="ds-page-shell min-h-screen pt-[82px]">
-      <TopMenu fixed />
+    <main className={`ds-page-shell min-h-screen pt-[82px] ${isGuest ? styles.page : ""}`} data-guest-read={isGuest ? "true" : undefined}>
+      <TopMenu fixed showGuestMobileMenu={isGuest} />
       <UnbuiltPageGuard>
         <ReadHero activeMode={mode} />
         <div className={isLoggedIn === null ? "invisible" : undefined}>
