@@ -18,7 +18,6 @@ HOME-COMPLETED-REVIEWS-001,หน้ารวมเรื่องที่ร�
 HOME-COMPLETED-FOLLOWING-001,หน้ารวมเรื่องจบที่คุณติดตาม,/read?section=completed-following,ดูทั้งหมดใน Sidebar เรื่องจบที่คุณติดตาม หน้าแรก,ยังไม่ได้ทำ
 HOME-NEW-EPISODES-001,หน้ารวมตอนใหม่,/read?section=new-episodes,ดูทั้งหมดใน Sidebar มีตอนใหม่ หน้าแรก,ยังไม่ได้ทำ
 WRITER-PROFILE-001,หน้าโปรไฟล์นักเขียน,/writers/:slug,กดการ์ดนักเขียนใน Section นักเขียนแนะนำ,ยังไม่ได้ทำ
-WRITERS-LIST-001,หน้ารวมนักเขียน,/writers,เมนูนักเขียน หรือดูทั้งหมดใน Section นักเขียนแนะนำ,ยังไม่ได้ทำ
 FOOTER-ABOUT-001,หน้าเกี่ยวกับ ARN SPACE,/about,Footer: ARN SPACE,ยังไม่ได้ทำ
 FOOTER-VISION-001,หน้าวิสัยทัศน์,/vision,Footer: วิสัยทัศน์,ยังไม่ได้ทำ
 FOOTER-CAREERS-001,หน้าร่วมงานกับเรา,/careers,Footer: ร่วมงานกับเรา,ยังไม่ได้ทำ

@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { categoryBooks, fanficFandomByCategory, type CategoryBook } from "@/data/categoryBooks";
 import type { ReadModeId } from "@/components/ReadSubMenu";
-import StoryMetadata from "@/components/StoryMetadata";
+import BookCardInfo, { BookCompletedBadge } from "@/components/BookCardInfo";
+import { findCatalogBook } from "@/data/novelDetails";
 
 const modeLabels: Record<ReadModeId, string> = {
   novel: "นิยาย",
@@ -127,10 +128,9 @@ function BookCard({ book, mode }: { book: CategoryBook; mode: ReadModeId }) {
         <span className={`absolute right-1.5 top-1.5 z-30 rounded-md px-2 py-1 text-[10px] font-medium leading-none text-white shadow-lg ${badgeColors[book.category] ?? "bg-[#1cae68]"}`}>
           {book.category}
         </span>
+        <BookCompletedBadge book={book} position="bottom-ds-2 right-ds-2" />
       </div>
-      <h3 className="mt-2 truncate text-[13px] font-medium leading-5 text-white" title={displayTitle}>{displayTitle}</h3>
-      <p className="truncate text-[11px] text-white/45">{book.author}</p>
-      <StoryMetadata title={book.title} episodes={book.episodes} views={book.views} likes={book.likes} status={book.status} />
+      <BookCardInfo title={displayTitle} author={book.author} mode={mode} format={book.format} stats={book} />
       <div className="pointer-events-none absolute inset-1 z-20 flex flex-col justify-end rounded-[7px] bg-gradient-to-t from-[#07100c] via-[#07100c]/90 to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
         <h3 className="break-words text-[14px] font-semibold leading-5 text-white">{displayTitle}</h3>
         <p className="mt-0.5 line-clamp-6 text-[11px] leading-[1.45] text-white/70">{hoverDescriptions[book.category] ?? "เรื่องราวที่คัดสรรมาให้คุณได้ออกเดินทาง พร้อมความลับและตัวละครมากมายที่รอให้คุณทำความรู้จัก"}</p>
@@ -227,11 +227,12 @@ function MyBookshelfCard({ mode }: { mode: ReadModeId }) {
     ? getMixedBooks(3, mode).map((book, index) => ({
         title: book.title,
         author: book.author,
+        image: book.image,
+        catalogBook: book,
         episode: `อ่านไป ${[8, 12, 5][index]}/${[24, 30, 20][index]} ตอน`,
         progress: [34, 48, 22][index],
-        image: book.image,
       }))
-    : myShelfBooks;
+    : myShelfBooks.map((book) => ({ ...book, catalogBook: findCatalogBook(book.title, mode) }));
 
   return (
     <section aria-labelledby="my-bookshelf-title" className="ds-section p-3">
@@ -252,8 +253,7 @@ function MyBookshelfCard({ mode }: { mode: ReadModeId }) {
               <Image alt={`ปกหนังสือ ${book.title}`} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" height={58} src={book.image} width={43} />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="sidebar-item-title block truncate transition group-hover:text-white" title={book.title}>{book.title}</span>
-              <p className="sidebar-meta mt-1 truncate text-white/50">{book.author}</p>
+              <BookCardInfo title={book.title} author={book.author} mode={mode} format={book.catalogBook?.format} stats={book.catalogBook} compact />
               <div className="mt-1.5 flex items-center gap-2">
                 <span className="sidebar-caption min-w-0 truncate text-white/55">{book.episode}</span>
                 <span className="sidebar-caption shrink-0 text-white/55">{book.progress}%</span>
@@ -545,10 +545,7 @@ function PopularRankingCard({ mode }: { mode: ReadModeId }) {
             <Link className="group flex min-w-0 items-center gap-1.5 border-b border-white/[0.05] py-1.5 last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`${modePaths[mode]}?title=${encodeURIComponent(book.title)}`} key={book.title}>
               <span className={`sidebar-meta w-4 shrink-0 text-center font-semibold ${index === 0 ? "text-[#f6d86e]" : index === 1 ? "text-white" : index === 2 ? "text-[#f0a65c]" : "text-white/70"}`}>{index + 1}</span>
               <Image alt={`ปกหนังสือ ${displayTitle}`} className="h-8 w-6 shrink-0 rounded-[3px] object-cover" height={32} src={book.image} width={24} />
-              <div className="min-w-0 flex-1">
-                <h3 className="sidebar-item-title truncate transition group-hover:text-white" title={displayTitle}>{displayTitle}</h3>
-                <p className="sidebar-meta mt-0.5 truncate text-white/45">{book.author}</p>
-              </div>
+              <BookCardInfo title={displayTitle} author={book.author} mode={mode} format={book.format} stats={book} compact />
             </Link>
           );
         })}
@@ -595,11 +592,7 @@ function TrendingStories({ mode, selectedCategory, selectedCategories }: { mode:
               <div className="relative aspect-[2/3] overflow-hidden rounded-[5px] bg-[#18201c]">
                 <Image alt={`ปกหนังสือ ${displayTitle}`} className="object-cover" fill sizes="42px" src={book.image} />
               </div>
-              <div className="min-w-0">
-                <p className="sidebar-item-title truncate text-white transition group-hover:text-[#42ed88]" title={displayTitle}>{displayTitle}</p>
-                <p className="sidebar-meta truncate text-white/45">{book.author}</p>
-                <p className="sidebar-caption mt-0.5 truncate text-white/35">เข้าชม {book.views}</p>
-              </div>
+              <BookCardInfo title={displayTitle} author={book.author} mode={mode} format={book.format} stats={book} compact />
             </Link>
               );
             })()}
@@ -757,7 +750,7 @@ export default function ReadDiscovery({ followedCategories, mode, onToggleCatego
     : bookSections;
 
   return (
-    <section className="mx-auto max-w-[1400px] bg-arn-canvas px-2 pb-12 pt-7 text-arn-text" id="read-discovery">
+    <section className="mx-auto max-w-[1400px] scroll-mt-[230px] bg-arn-canvas px-2 pb-12 pt-7 text-arn-text" id="read-discovery">
       <div data-read-layout className="grid grid-cols-[minmax(0,1fr)_290px] gap-6">
         <div className="min-w-0 space-y-8">
           {isCategoryCatalog ? (

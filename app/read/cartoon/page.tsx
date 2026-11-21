@@ -5,7 +5,7 @@ import { getNovelDetails } from "@/data/novelDetails";
 export default async function CartoonPage({
   searchParams,
 }: {
-  searchParams: Promise<{ title?: string | string[] }>;
+  searchParams: Promise<{ title?: string | string[]; category?: string | string[] }>;
 }) {
   const query = await searchParams;
   const title = Array.isArray(query.title) ? query.title[0] : query.title;
@@ -13,5 +13,5 @@ export default async function CartoonPage({
     return (
       <NovelDetailPage key={title} novel={getNovelDetails(title, "cartoon")} />
     );
-  return <ReadModePage mode="cartoon" />;
+  return <ReadModePage mode="cartoon" category={typeof query.category === "string" ? query.category : undefined} />;
 }

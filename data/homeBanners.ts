@@ -7,6 +7,15 @@ export type HomeBanner = {
   actionLabel: string;
 };
 
+export const readathonBanner: HomeBanner = {
+  id: "readathon",
+  title: "อ่านไปด้วยกัน",
+  category: "Readathon",
+  description: "เปิดหนังสือเล่มใหม่ แล้วแบ่งปันการเดินทางกับเพื่อนนักอ่าน",
+  href: "/community/events/readathon-september",
+  actionLabel: "ดูกิจกรรม",
+};
+
 export const homeBanners: HomeBanner[] = [
   {
     id: "fantasy",
@@ -40,14 +49,7 @@ export const homeBanners: HomeBanner[] = [
     href: "/community/events/september-writing-challenge",
     actionLabel: "ดูกิจกรรม",
   },
-  {
-    id: "readathon",
-    title: "อ่านไปด้วยกัน",
-    category: "Readathon",
-    description: "เปิดหนังสือเล่มใหม่ แล้วแบ่งปันการเดินทางกับเพื่อนนักอ่าน",
-    href: "/community/events/readathon-september",
-    actionLabel: "ดูกิจกรรม",
-  },
+  readathonBanner,
 ];
 
 export const homeEvents = [

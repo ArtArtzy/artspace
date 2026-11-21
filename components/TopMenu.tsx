@@ -94,7 +94,7 @@ function NotificationIcon({ icon }: { icon: NonNullable<NotificationItem["icon"]
 
 function NotificationMenu({ onOpenAll, onOpenNotification }: { onOpenAll: () => void; onOpenNotification: (index: number) => void }) {
   return (
-    <div aria-label="รายการแจ้งเตือน" className="ds-card absolute right-0 top-[calc(100%+28px)] z-50 w-[410px] overflow-hidden text-arn-text" role="dialog">
+    <div data-home-notification-menu aria-label="รายการแจ้งเตือน" className="ds-card absolute right-0 top-[calc(100%+28px)] z-50 w-[410px] overflow-hidden text-arn-text" role="dialog">
       <div className="flex items-center justify-between border-b border-white/[0.09] px-5 py-4">
         <h2 className="text-[17px] font-semibold">การแจ้งเตือน</h2>
         <button className="text-[11px] text-[#31e985] transition hover:text-white" onClick={onOpenAll} type="button">อ่านทั้งหมด</button>
@@ -124,7 +124,7 @@ function NotificationMenu({ onOpenAll, onOpenNotification }: { onOpenAll: () => 
 
 function ProfileMenu({ onClose, onOpenBookshelf, onOpenMessages, onOpenFollowing, onOpenProfile, onRequestLogout }: { onClose: () => void; onOpenBookshelf: () => void; onOpenMessages: () => void; onOpenFollowing: () => void; onOpenProfile: () => void; onRequestLogout: () => void }) {
   return (
-    <div aria-label="เมนูโปรไฟล์" className="ds-card absolute right-0 top-[calc(100%+18px)] z-50 w-[270px] overflow-hidden p-2 text-arn-text" role="menu">
+    <div data-home-profile-menu aria-label="เมนูโปรไฟล์" className="ds-card absolute right-0 top-[calc(100%+18px)] z-50 w-[270px] overflow-hidden p-2 text-arn-text" role="menu">
       <button className="flex w-full items-center gap-3 border-b border-white/[0.09] px-3 pb-3 pt-2 text-left transition hover:bg-white/[0.04]" onClick={onOpenProfile} role="menuitem" type="button">
         <Image alt="โปรไฟล์" className="h-10 w-10 rounded-full object-cover ring-1 ring-[#27e982]" height={40} src="/images/profile-arn.webp" width={40} />
         <div className="min-w-0">
@@ -198,10 +198,10 @@ type TopMenuProps = {
   sticky?: boolean;
   initialLoggedIn?: boolean;
   activeReadMode?: ReadModeId;
-  showGuestMobileMenu?: boolean;
+  showMobileMenu?: boolean;
 };
 
-export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn = true, activeReadMode, showGuestMobileMenu = false }: TopMenuProps) {
+export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn = true, activeReadMode, showMobileMenu = false }: TopMenuProps) {
   const pathname = usePathname();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -231,12 +231,27 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
   };
 
   useEffect(() => {
-    const storedAuthState = window.localStorage.getItem(authStorageKey);
-    if (storedAuthState !== null) {
-      setIsLoggedIn(storedAuthState === "true");
-    } else {
-      window.localStorage.setItem(authStorageKey, String(initialLoggedIn));
-    }
+    const syncAuthState = () => {
+      try {
+        const storedAuthState = window.localStorage.getItem(authStorageKey);
+        if (storedAuthState !== null) {
+          setIsLoggedIn(storedAuthState === "true");
+        } else {
+          setIsLoggedIn(initialLoggedIn);
+          window.localStorage.setItem(authStorageKey, String(initialLoggedIn));
+        }
+      } catch {
+        setIsLoggedIn(initialLoggedIn);
+      }
+    };
+
+    syncAuthState();
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener(authStateChangedEvent, syncAuthState);
+    return () => {
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener(authStateChangedEvent, syncAuthState);
+    };
   }, [initialLoggedIn]);
 
   useEffect(() => {
@@ -266,17 +281,17 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
   return (
     <UnbuiltPageGuard>
       <header className={`${fixed ? "fixed inset-x-0 top-0 z-50" : sticky ? "sticky top-0 z-50" : ""} border-b border-arn-border bg-arn-canvas text-arn-text`}>
-      <div data-home-header className="mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-8">
+      <div data-home-header className="mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-8 xl:gap-ds-4">
         <a data-home-logo aria-label="ARN SPACE หน้าหลัก" className="-ml-4 flex shrink-0 items-center" href="/">
-          <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[238px]" height={80} priority src="/images/arnspace-logo.webp" width={238} />
+          <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[238px] xl:w-44 2xl:w-[238px]" height={80} priority src="/images/arnspace-logo.webp" width={238} />
         </a>
 
-        <nav data-home-desktop-nav aria-label="เมนูหลัก" className="flex h-full items-center gap-2">
+        <nav data-home-desktop-nav aria-label="เมนูหลัก" className="flex h-full items-center gap-2 xl:gap-ds-1">
           {links.map((link) => {
             const isActive = isLinkActive(link.href);
 
             return (
-              <a aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-ds-body font-semibold transition-colors xl:whitespace-nowrap 2xl:text-ds-h3 ${isActive ? "border-arn-border-strong bg-arn-raised text-arn-accent shadow-ds-glow" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
+              <a aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-ds-body font-semibold transition-colors xl:min-w-16 xl:whitespace-nowrap xl:px-ds-2 2xl:text-ds-h3 ${isActive ? "border-arn-border-strong bg-arn-raised text-arn-accent shadow-ds-glow" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
                 {isActive && <MenuBookIcon />}
                 <span>{link.label}</span>
                 <span className={`absolute bottom-0.5 left-2 right-2 block h-0.5 rounded-full ${isActive ? "bg-arn-accent" : "opacity-0"}`} />
@@ -285,8 +300,8 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
           })}
         </nav>
 
-        <div data-home-desktop-actions className="ml-auto flex min-w-0 items-center gap-4">
-          <form className="w-[270px]" onSubmit={handleSearchSubmit}>
+        <div data-home-desktop-actions className="ml-auto flex min-w-0 items-center gap-4 xl:gap-ds-3">
+          <form className="w-[270px] xl:w-[405px]" onSubmit={handleSearchSubmit}>
             <label className="ds-input flex h-10 w-full items-center gap-2 px-3 text-white/55">
             <span className="shrink-0"><SearchIcon /></span>
             <input aria-label="ค้นหา" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/35" onChange={(event) => setSearchQuery(event.target.value)} placeholder="ค้นหาเรื่อง นามปากกา" type="search" value={searchQuery} />
@@ -331,9 +346,9 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
             <Link className="ds-button-primary flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-ds-md px-4 text-ds-body-sm font-semibold" href="/login">เข้าสู่ระบบ/สมัครสมาชิก</Link>
           )}
         </div>
-        {(pathname === "/" || showGuestMobileMenu) && !isLoggedIn && (
+        {(pathname === "/" || showMobileMenu) && (
           <div data-home-mobile-controls className="hidden">
-            <Link className="ds-button-primary inline-flex min-h-11 items-center justify-center px-ds-3 text-ds-body-sm font-medium" href="/login">เข้าสู่ระบบ</Link>
+            {!isLoggedIn && <Link className="ds-button-primary inline-flex min-h-11 items-center justify-center px-ds-3 text-ds-body-sm font-medium" href="/login">เข้าสู่ระบบ</Link>}
             <details
               data-home-mobile-menu
               onKeyDown={(event) => {
@@ -358,7 +373,7 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
                   {links.map(link => <Link key={link.href} aria-current={isLinkActive(link.href) ? "page" : undefined} className="flex min-h-11 items-center rounded-ds-sm px-ds-3 text-ds-body text-arn-muted hover:bg-arn-soft hover:text-arn-accent" href={link.href}>{link.label}</Link>)}
                   <Link className="flex min-h-11 items-center px-ds-3 text-ds-body text-arn-muted" href="/write">เขียนเรื่อง</Link>
                 </nav>
-                <Link className="ds-button-secondary mt-ds-3 flex min-h-11 items-center justify-center text-ds-body-sm" href="/register">สมัครสมาชิก</Link>
+                {!isLoggedIn && <Link className="ds-button-secondary mt-ds-3 flex min-h-11 items-center justify-center text-ds-body-sm" href="/register">สมัครสมาชิก</Link>}
               </div>
             </details>
           </div>

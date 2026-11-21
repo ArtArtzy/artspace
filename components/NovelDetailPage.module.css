@@ -103,6 +103,7 @@
 }
 .stats {
   display: flex;
+  align-items: center;
   margin-top: 28px;
   width: 100%;
 }
@@ -112,6 +113,9 @@
   gap: 10px;
   padding: 0 20px;
   border-right: 1px solid var(--arn-color-border-strong);
+}
+.stats > button {
+  flex-shrink: 0;
 }
 .stats > :first-child {
   padding-left: 0;
@@ -287,11 +291,8 @@
   gap: 8px;
 }
 .compactBooks .bookCard {
-  flex-basis: calc((100% - 24px) / 4);
+  flex-basis: max(104px, calc((100% - 24px) / 4));
   padding: 0;
-}
-.compactBooks h3 {
-  font-size: 11px;
 }
 .carouselButton {
   position: absolute;

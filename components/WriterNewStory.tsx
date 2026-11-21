@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight, faBookOpen, faChevronDown, faCommentDots, faImage, faXmark, faPen, faPlus, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faBookOpen, faChevronDown, faCommentDots, faImage, faXmark, faPen, faPlus, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import CompactPageHeader from "@/components/CompactPageHeader";
 import { readWriterDrafts, writerDraftsKey, type WriterDraft } from "@/data/writer-drafts";
 import styles from "./WriterNewStory.module.css";
 
@@ -136,13 +137,7 @@ export default function WriterNewStory() {
   }
 
   return <div className={styles.page}>
-    <header className={styles.topbar}>
-      <Link href="/write" className={styles.back} aria-label="กลับ Writer Studio"><FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" /></Link>
-      <Link href="/write" className={styles.brand}><Image src="/images/arnspace-logo.webp" alt="ARN SPACE" width={166} height={56} priority /></Link>
-      <span className={styles.divider} aria-hidden="true" />
-      <span className={styles.workspace}><FontAwesomeIcon icon={faBookOpen} aria-hidden="true" /> Writer Studio</span>
-      <span className={styles.topbarTitle}>สร้างนิยายใหม่</span>
-    </header>
+    <CompactPageHeader backHref="/write" backLabel="กลับ Writer Studio" context="Writer Studio" title="สร้างนิยายใหม่" />
 
     <main className={styles.main}>
       <nav className={styles.breadcrumb} aria-label="เส้นทางหน้า"><Link href="/write">Writer Studio</Link><span aria-hidden="true">/</span><span aria-current="page">สร้างนิยายใหม่</span></nav>

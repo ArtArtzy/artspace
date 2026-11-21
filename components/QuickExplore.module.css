@@ -1,0 +1,79 @@
+.explore {
+  background: radial-gradient(ellipse at top left, color-mix(in srgb, var(--mode-accent) 11%, transparent), transparent 58%), var(--arn-color-surface);
+}
+
+.explore[data-mode="novel"],
+.modeButton[data-mode="novel"] {
+  --mode-accent: var(--arn-accent-novel);
+}
+
+.explore[data-mode="fanfic"],
+.modeButton[data-mode="fanfic"] {
+  --mode-accent: var(--arn-accent-fanfic);
+}
+
+.explore[data-mode="cartoon"],
+.modeButton[data-mode="cartoon"] {
+  --mode-accent: var(--arn-accent-cartoon);
+}
+
+.modeButton:hover,
+.genreLink:hover {
+  border-color: color-mix(in srgb, var(--mode-accent) 55%, var(--arn-color-border));
+  color: var(--arn-color-text-primary);
+}
+
+.modeButton[aria-pressed="true"] {
+  border-color: var(--mode-accent);
+  background: color-mix(in srgb, var(--mode-accent) 16%, var(--arn-color-surface-raised));
+  color: var(--arn-color-text-primary);
+  box-shadow: inset 0 -2px var(--mode-accent);
+}
+
+.modeButton:focus-visible,
+.genreLink:focus-visible {
+  outline: 2px solid var(--mode-accent);
+  outline-offset: 2px;
+}
+
+.genresHeading {
+  border-color: var(--mode-accent);
+  color: var(--arn-color-text-primary);
+}
+
+.genreIcon {
+  background: color-mix(in srgb, var(--arn-color-surface-raised) 88%, transparent);
+}
+
+.artwork {
+  z-index: -2;
+}
+
+.genreLink::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, var(--arn-color-canvas) 15%, color-mix(in srgb, var(--arn-color-canvas) 90%, transparent) 48%, color-mix(in srgb, var(--arn-color-canvas) 45%, transparent));
+  content: "";
+}
+
+@media (768px <= width < 1280px) {
+  .explore .genreList {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+}
+
+@media (1280px <= width < 1536px) {
+  .genreList > li:nth-child(n + 9) {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .genreLink::before {
+    background: linear-gradient(to top, var(--arn-color-canvas), color-mix(in srgb, var(--arn-color-canvas) 84%, transparent) 27%, color-mix(in srgb, var(--arn-color-canvas) 12%, transparent) 74%);
+  }
+}

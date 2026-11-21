@@ -6,13 +6,15 @@ import Footer from "@/components/Footer";
 import ReadDiscovery from "@/components/ReadDiscovery";
 import ReadHero from "@/components/ReadHero";
 import type { ReadModeId } from "@/components/ReadSubMenu";
-import TopMenu, { authStateChangedEvent } from "@/components/TopMenu";
+import TopMenu from "@/components/TopMenu";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
+import useHomeAuth from "@/components/useHomeAuth";
 import { categoryBooks } from "@/data/categoryBooks";
 import styles from "@/app/GuestHome.module.css";
 
 type ReadModePageProps = {
   mode: ReadModeId;
+  category?: string;
 };
 
 const selectedGenresStorageKey = "arnspace-selected-genres";
@@ -39,37 +41,19 @@ function readStoredGenres() {
   }
 }
 
-export default function ReadModePage({ mode }: ReadModePageProps) {
+export default function ReadModePage({ mode, category }: ReadModePageProps) {
+  const requestedCategory = category && (category === "ทั้งหมด" || Object.prototype.hasOwnProperty.call(categoryBooks, category))
+    ? category
+    : undefined;
   const [followedCategories, setFollowedCategories] = useState(["วาย", "ยูริ", "ลึกลับ", "สยองขวัญ"]);
-  const [selectedCategory, setSelectedCategory] = useState("ทั้งหมด");
+  const [selectedCategory, setSelectedCategory] = useState(requestedCategory ?? "ทั้งหมด");
   const [selectedGenres, setSelectedGenres] = useState<string[]>(defaultGenreSelection);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const isLoggedIn = useHomeAuth();
 
   useEffect(() => {
-    const syncAuthState = () => {
-      const loggedIn = window.localStorage.getItem("arnspace-authenticated") !== "false";
-      const requestedCategory = new URLSearchParams(window.location.search).get("category");
-      const hasRequestedCategory = requestedCategory === "ทั้งหมด"
-        || (requestedCategory !== null && Object.prototype.hasOwnProperty.call(categoryBooks, requestedCategory));
-      const nextCategory = hasRequestedCategory && requestedCategory
-        ? requestedCategory
-        : loggedIn
-          ? "หมวดของฉัน"
-          : "ทั้งหมด";
-
-      setIsLoggedIn(loggedIn);
-      setSelectedCategory(nextCategory);
-      setSelectedGenres(readStoredGenres());
-    };
-
-    syncAuthState();
-    window.addEventListener("storage", syncAuthState);
-    window.addEventListener(authStateChangedEvent, syncAuthState);
-    return () => {
-      window.removeEventListener("storage", syncAuthState);
-      window.removeEventListener(authStateChangedEvent, syncAuthState);
-    };
-  }, []);
+    setSelectedCategory(requestedCategory ?? (isLoggedIn ? "หมวดของฉัน" : "ทั้งหมด"));
+    setSelectedGenres(readStoredGenres());
+  }, [isLoggedIn, requestedCategory]);
 
   const toggleFollowedCategory = (category: string) => {
     setFollowedCategories((current) => current.includes(category) ? current.filter((item) => item !== category) : [...current, category]);
@@ -91,14 +75,14 @@ export default function ReadModePage({ mode }: ReadModePageProps) {
     window.localStorage.setItem(selectedGenresStorageKey, JSON.stringify(nextGenres));
   };
 
-  const isGuest = isLoggedIn === false;
+  const isGuest = isLoggedIn !== true;
 
   return (
-    <main className={`ds-page-shell min-h-screen pt-[82px] ${isGuest ? styles.page : ""}`} data-guest-read={isGuest ? "true" : undefined}>
-      <TopMenu fixed showGuestMobileMenu={isGuest} />
+    <main className={`ds-page-shell min-h-screen pt-[82px] ${isGuest ? styles.page : styles.memberPage}`} data-read-catalog data-guest-read={isGuest ? "true" : undefined}>
+      <TopMenu fixed showMobileMenu />
       <UnbuiltPageGuard>
         <ReadHero activeMode={mode} />
-        <div className={isLoggedIn === null ? "invisible" : undefined}>
+        <div className={isLoggedIn === null && !requestedCategory ? "invisible" : undefined}>
           <CategoryFilter onSelect={selectCategory} onSelectGenres={selectGenres} selected={selectedCategory} selectedGenres={selectedGenres} myCategoryCount={followedCategories.length} showMyCategory={isLoggedIn === true} stickyOffset="read" />
           <ReadDiscovery
             followedCategories={followedCategories}
@@ -110,7 +94,7 @@ export default function ReadModePage({ mode }: ReadModePageProps) {
             showFollowedCategories={isLoggedIn === true}
           />
         </div>
-        <Footer />
+        <Footer responsive={!isGuest} />
       </UnbuiltPageGuard>
     </main>
   );

@@ -2,15 +2,25 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { categoryBooks, fanficFandomByCategory, getCategorySections, type CategoryBook } from "@/data/categoryBooks";
 import { discoverySections } from "@/data/discoverySections";
 import { homeBanners } from "@/data/homeBanners";
-import StoryMetadata from "@/components/StoryMetadata";
+import { findCatalogBook, getCatalogBookMode } from "@/data/novelDetails";
+import BookCardInfo, { BookCompletedBadge } from "@/components/BookCardInfo";
+import CommunitySection from "@/components/CommunitySection";
+import QuickExplore from "@/components/QuickExplore";
+import HomeViewAllLink from "@/components/HomeViewAllLink";
+import CompactPageHeader from "@/components/CompactPageHeader";
+import Footer from "@/components/Footer";
+import useHomeAuth from "@/components/useHomeAuth";
+import useReadingHistory from "@/components/useReadingHistory";
+import type { ReadModeId } from "@/components/ReadSubMenu";
+import homeStyles from "@/app/GuestHome.module.css";
 import { resolveStoryStatus } from "@/data/storyStatus";
 import { followedContentWriters, recommendedWriters, type RecommendedWriter } from "@/components/writerData";
 
-type Book = CategoryBook;
+type Book = CategoryBook & { latestUpdate?: string; linkTitle?: string; readMode?: ReadModeId };
 
 type DiscoverySection = {
   title: string;
@@ -44,7 +54,6 @@ const continueSectionIcons: Record<string, SimpleTitleIconName> = {
 
 const trendingSectionIcons: Record<string, SimpleTitleIconName> = {
   "กำลังมาแรง": "flame",
-  "Top 20 ยอดนิยม": "chart",
   "เรื่องใหม่ น่าจับตา": "note",
   "เรื่องจบแล้ว อ่านยาวได้เลย": "check",
   "มาแรงในหมวดที่คุณชอบ": "star",
@@ -124,6 +133,13 @@ function getBookMode(book: Book) {
 
 const guestBookMix = ["novel", "fanfic", "novel", "cartoon"] as const;
 const guestMetricValue = (value: string) => Number.parseFloat(value) * (value.endsWith("M") ? 1_000_000 : value.endsWith("K") ? 1_000 : 1);
+const catalogByViews = Object.values(categoryBooks).flat()
+  .sort((a, b) => guestMetricValue(b.views) - guestMetricValue(a.views));
+const catalogStatus = (book: Book) => resolveStoryStatus({ ...book, title: getDisplayBookTitle(book) });
+const newCatalogBooks = catalogByViews.filter(book => catalogStatus(book) === "ongoing")
+  .sort((a, b) => Number(a.episodes) - Number(b.episodes));
+const completedCatalogBooks = catalogByViews.filter(book => catalogStatus(book) === "completed");
+
 function buildGuestTrendingSections(): DiscoverySection[] {
   const usedTitles = new Set(homeBanners.map(banner => banner.title));
   const usedCovers = new Set<string>();
@@ -145,26 +161,21 @@ function buildGuestTrendingSections(): DiscoverySection[] {
     return books;
   };
 
-  const popularBooks = Object.values(categoryBooks).flat()
-    .sort((a, b) => guestMetricValue(b.views) - guestMetricValue(a.views));
-  const rankedBooks = new Set(takeBooks(popularBooks, 20));
-  const newBooks = popularBooks.filter(book => resolveStoryStatus({ ...book, title: getDisplayBookTitle(book) }) === "ongoing")
-    .sort((a, b) => Number(a.episodes) - Number(b.episodes));
-  const completedBooks = popularBooks.filter(book => resolveStoryStatus({ ...book, title: getDisplayBookTitle(book) }) === "completed");
-  const completedCandidates = [...completedBooks.filter(book => book.format === "chat"), ...completedBooks];
-  const featuredNewBooks = takeBooks(newBooks);
+  const rankedBooks = new Set(takeBooks(catalogByViews, 20));
+  const completedCandidates = [...completedCatalogBooks.filter(book => book.format === "chat"), ...completedCatalogBooks];
+  const featuredNewBooks = takeBooks(newCatalogBooks);
   const featuredCompletedBooks = takeBooks(completedCandidates);
 
   return [
     {
       title: "Top 20 ยอดนิยม",
       subtitle: "นิยาย แฟนฟิค และการ์ตูนยอดนิยม เรียงตามยอดอ่าน",
-      books: popularBooks.filter(book => rankedBooks.has(book)),
+      books: catalogByViews.filter(book => rankedBooks.has(book)),
     },
     {
       title: "เรื่องใหม่ น่าจับตา",
       subtitle: "เริ่มติดตามเรื่องน่าอ่านที่ยังมีตอนไม่มาก",
-      books: [...featuredNewBooks, ...takeBooks(newBooks)],
+      books: [...featuredNewBooks, ...takeBooks(newCatalogBooks)],
     },
     {
       title: "เรื่องจบแล้ว อ่านยาวได้เลย",
@@ -175,6 +186,7 @@ function buildGuestTrendingSections(): DiscoverySection[] {
 }
 
 const guestTrendingSections = buildGuestTrendingSections();
+const [homeRanking, homeNewStories, homeCompletedStories] = guestTrendingSections;
 
 const followingSections: DiscoverySection[] = [
   {
@@ -391,11 +403,38 @@ const latestReading = {
 };
 
 const newEpisodeStories = [
-  { title: "Not Just Friends (BTS)", author: "purplemoon", episode: "ตอนที่ 59", time: "1 ชั่วโมงที่แล้ว", image: "/images/book-not-just-friends.webp" },
-  { title: "Sky of Tomorrow", author: "AkiStudio", episode: "ตอนที่ 27", time: "3 ชั่วโมงที่แล้ว", image: "/images/book-sky-tomorrow.webp" },
-  { title: "Love in Parallel (Harry Potter)", author: "felixs", episode: "ตอนที่ 45", time: "เมื่อวาน", image: "/images/book-love-parallel.webp" },
-  { title: "The Villain's Side (Harry Potter)", author: "sorayoru", episode: "ตอนที่ 40", time: "เมื่อวาน", image: "/images/book-villains-side.webp" },
+  { title: "Not Just Friends (BTS)", author: "purplemoon", episode: 59, time: "1 ชั่วโมงที่แล้ว", image: "/images/book-not-just-friends.webp" },
+  { title: "Sky of Tomorrow", author: "AkiStudio", episode: 27, time: "3 ชั่วโมงที่แล้ว", image: "/images/book-sky-tomorrow.webp" },
+  { title: "Love in Parallel (Harry Potter)", author: "felixs", episode: 45, time: "เมื่อวาน", image: "/images/book-love-parallel.webp" },
+  { title: "The Villain's Side (Harry Potter)", author: "sorayoru", episode: 40, time: "เมื่อวาน", image: "/images/book-villains-side.webp" },
 ];
+
+const discoveryBooks = discoverySections.flatMap((section) => section.books);
+const latestHomeUpdates = [
+  ...newEpisodeStories,
+  { title: "Pixel Heart", episode: 23, time: "2 วันที่แล้ว" },
+  { title: "พันธนาการทิวลิป", episode: 37, time: "2 วันที่แล้ว" },
+  { title: "แสงระหว่างบรรทัด", episode: 43, time: "3 วันที่แล้ว" },
+  { title: "สอนใจในหน้าร้อน", episode: 29, time: "3 วันที่แล้ว" },
+];
+const latestUpdatedBooks = latestHomeUpdates.flatMap((story) => {
+  const book = discoveryBooks.find(({ title }) => title === story.title);
+  return book ? [{ ...book, episodes: String(story.episode), latestUpdate: story.time }] : [];
+});
+
+const moreLatestUpdates = [
+  { title: "แฟนฟิควาย: หน้าต่างวันฝนตก", time: "4 วันที่แล้ว" },
+  { title: "การ์ตูนโรแมนติก: ประภาคารสีส้ม", time: "4 วันที่แล้ว" },
+  { title: "จดหมายใต้แสงดาว", time: "4 วันที่แล้ว" },
+  { title: "การ์ตูนวาย: ทางกลับบ้านใต้ฝนดาว", time: "5 วันที่แล้ว" },
+  { title: "แฟนฟิคโรแมนติก: ตั๋วเที่ยวเดียว", time: "5 วันที่แล้ว" },
+  { title: "มังกรแห่งเกาะลอยฟ้า", time: "5 วันที่แล้ว" },
+  { title: "Our Classroom (SEVENTEEN)", time: "6 วันที่แล้ว" },
+  { title: "จดหมายจากห้องปิดตาย", time: "6 วันที่แล้ว" },
+].flatMap(({ title, time }) => {
+  const book = findCatalogBook(title);
+  return book ? [{ ...book, latestUpdate: time }] : [];
+});
 
 const latestReadingNotes = [
   { title: "ดอกไม้ที่หอมหวานกว่าคืน", author: "Pixel Heart", episode: "12", lastRead: "อ่านจบเมื่อ 1 วันที่แล้ว", image: "/images/book-pixel-heart.webp" },
@@ -412,21 +451,39 @@ const popularRangeOptions: Array<{ id: PopularRange; label: string }> = [
   { id: "month", label: "30 วัน" },
 ];
 
-function getUniqueBooks(books: Book[]) {
+function getUniqueBooks(books: Book[], limit?: number) {
   const seen = new Set<string>();
 
   return books.filter((book) => {
     if (seen.has(book.title)) return false;
     seen.add(book.title);
     return true;
-  }).slice(0, 10);
+  }).slice(0, limit);
 }
 
 const popularRankingBooks: Record<PopularRange, Book[]> = {
-  today: getUniqueBooks([...sections[0].books ?? [], ...sections[2].books ?? [], ...sections[1].books ?? []]),
-  week: getUniqueBooks([...sections[2].books ?? [], ...sections[1].books ?? [], ...sections[0].books ?? []]),
-  month: getUniqueBooks([...sections[1].books ?? [], ...sections[3].books ?? [], ...sections[2].books ?? []]),
+  today: getUniqueBooks([...sections[0].books ?? [], ...sections[2].books ?? [], ...sections[1].books ?? []], 10),
+  week: getUniqueBooks([...sections[2].books ?? [], ...sections[1].books ?? [], ...sections[0].books ?? []], 10),
+  month: getUniqueBooks([...sections[1].books ?? [], ...sections[3].books ?? [], ...sections[2].books ?? []], 10),
 };
+
+const homeContinueBooks = getUniqueBooks(continueSections.slice(0, 2).flatMap(section => section.books ?? [])).slice(0, 8);
+const homeForYouBooks = getUniqueBooks(forYouSections.slice(0, 2).flatMap(section => section.books ?? [])).slice(0, 8);
+
+const homeCollectionPath = "/read?homeSection=";
+const recentlyOpenedSection = "recently-opened";
+type HomeCollection = { title: string; books: Book[]; membersOnly: boolean; publicCards: boolean };
+
+const homeCollections = {
+  "continue-reading": { title: "อ่านต่อ", books: getUniqueBooks(continueSections.slice(0, 3).flatMap(section => section.books ?? [])), membersOnly: true, publicCards: false },
+  "for-you": { title: "สำหรับคุณ", books: getUniqueBooks(forYouSections.flatMap(section => section.books ?? [])), membersOnly: true, publicCards: false },
+  trending: { title: "กำลังมาแรง", books: getUniqueBooks([...popularRankingBooks.week, ...catalogByViews], 60), membersOnly: false, publicCards: true },
+  "new-stories": { title: "เรื่องใหม่", books: getUniqueBooks([...(homeNewStories.books ?? []), ...newCatalogBooks]), membersOnly: false, publicCards: true },
+  "completed-stories": { title: "เรื่องจบแล้ว", books: getUniqueBooks([...(homeCompletedStories.books ?? []), ...completedCatalogBooks]), membersOnly: false, publicCards: true },
+  "latest-updates": { title: "อัปเดตล่าสุด", books: [...latestUpdatedBooks, ...moreLatestUpdates], membersOnly: false, publicCards: true },
+} satisfies Record<string, HomeCollection>;
+
+type HomeCollectionId = keyof typeof homeCollections;
 
 const trendingWriters: RecommendedWriter[] = recommendedWriters.slice(0, 5).map((writer, index) => ({
   ...writer,
@@ -801,7 +858,7 @@ function NewEpisodesCard() {
             <div className="min-w-0 flex-1">
               <h3 className="sidebar-item-title truncate transition group-hover:text-white" title={story.title}>{story.title}</h3>
               <p className="sidebar-meta mt-1 truncate text-white/50">{story.author}</p>
-              <p className="sidebar-meta mt-1 truncate text-white/50">{story.episode} · {story.time}</p>
+              <p className="sidebar-meta mt-1 truncate text-white/50">ตอนที่ {story.episode} · {story.time}</p>
             </div>
           </Link>
         ))}
@@ -1261,9 +1318,8 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGues
   const displayTitle = isGuest
     ? getDisplayBookTitle(book, fanficFandomByCategory[book.category] ?? "Original Universe")
     : statusTitle;
-  const mode = getBookMode(book);
+  const mode = book.readMode ?? getBookMode(book);
   const bookMode = bookModes[mode];
-  const isCartoon = mode === "cartoon";
   const isChat = book.format === "chat";
   const rankLabel = rank === undefined ? "" : `อันดับ ${rank}, `;
   const progressValues = [60, 42, 74, 55, 88, 35];
@@ -1275,7 +1331,7 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGues
     <Link
       aria-label={isGuest ? `${rankLabel}เปิดเรื่อง ${displayTitle}, ${bookMode.label}${isChat ? ", แบบแชท" : ""}` : `เปิดเรื่อง ${book.title}`}
       className="group relative block min-w-0 cursor-pointer rounded-[9px] border border-transparent p-1 transition duration-300 hover:-translate-y-1 hover:border-white/[0.12] hover:bg-white/[0.025] hover:shadow-[0_12px_26px_rgba(19,230,104,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]"
-      href={`${isGuest ? bookMode.href : "/read"}?title=${encodeURIComponent(book.title)}`}
+      href={`${isGuest ? bookMode.href : "/read"}?title=${encodeURIComponent(book.linkTitle ?? book.title)}`}
     >
       <div className="relative aspect-[2/3] overflow-hidden rounded-[7px] bg-[#18201c]">
         <Image src={book.image} alt={`ปกหนังสือ ${isGuest ? displayTitle : book.title}`} fill sizes="(max-width: 767px) 50vw, (max-width: 1279px) 33vw, (max-width: 1400px) 17vw, 220px" className="object-cover transition duration-500 group-hover:scale-105" />
@@ -1283,27 +1339,10 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGues
         {rank !== undefined && (
           <span aria-hidden="true" data-book-rank={rank} className="absolute left-ds-2 top-ds-2 z-30 inline-grid min-w-6 place-items-center rounded-ds-sm border border-arn-border-strong bg-arn-canvas px-ds-1 py-ds-1 text-ds-meta font-semibold tabular-nums text-arn-text">{rank}</span>
         )}
-        {isGuest && resolveStoryStatus({ title: statusTitle, episodes: book.episodes, status: book.status }) === "completed" && (
-          <span className="absolute right-ds-2 top-ds-2 z-30 rounded-ds-sm bg-arn-accent px-ds-2 py-ds-1 text-ds-meta font-medium text-arn-accent-ink">จบ</span>
-        )}
+        <BookCompletedBadge book={{ title: statusTitle, episodes: book.episodes, status: book.status }} />
       </div>
-      <h3 data-book-title className="mt-2 truncate text-[13px] font-medium leading-5 text-white" title={displayTitle}>
-        {isGuest && mode !== "novel" && (
-          <svg aria-hidden="true" data-book-mode={mode} className={`mr-ds-1 inline-block h-4 w-4 align-middle ${isCartoon ? "text-section-cartoon" : "text-section-fanfic"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <circle cx="12" cy="12" r="9" />
-            <path d={isCartoon ? "M15 8.7a4.4 4.4 0 1 0 0 6.6" : "M15 7.8h-5.5v8.4m0-4.2H14"} strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
-        {isGuest && isChat && (
-          <svg aria-hidden="true" data-book-format="chat" className="mr-ds-1 inline-block h-4 w-4 align-middle text-arn-accent-soft" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
-            <path d="M11 18.5h2" strokeLinecap="round" />
-          </svg>
-        )}
-        {displayTitle}
-      </h3>
-      <p data-book-author className="truncate text-[11px] text-white/45">{book.author}</p>
-      {showReadingProgress ? (
+      <BookCardInfo title={displayTitle} author={book.author} mode={book.readMode ?? getCatalogBookMode(book)} format={book.format} stats={book} />
+      {showReadingProgress && (
         <div className="mt-2.5 space-y-1.5">
           <p className="text-[12px] font-medium text-white/80">ตอนที่ {currentEpisode} / {totalEpisodes}</p>
           <div className="flex items-center gap-2">
@@ -1313,9 +1352,8 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGues
             <span className="shrink-0 text-[12px] font-medium text-white/75">{progress}%</span>
           </div>
         </div>
-      ) : (
-        <StoryMetadata title={displayTitle} episodes={book.episodes} views={book.views} likes={book.likes} status={book.status} showStatus={!isGuest} />
       )}
+      {book.latestUpdate && <p className="mt-ds-1 text-ds-caption text-arn-muted">อัปเดต {book.latestUpdate}</p>}
       <div data-book-overlay className="pointer-events-none absolute inset-1 z-20 flex flex-col justify-end rounded-[7px] bg-gradient-to-t from-[#07100c] via-[#07100c]/90 to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
         <h3 className="break-words text-[14px] font-semibold leading-5 text-white">{displayTitle}</h3>
         <p className="mt-0.5 line-clamp-6 text-[11px] leading-[1.45] text-white/70">{hoverDescriptions[book.category] ?? "เรื่องราวที่คัดสรรมาให้คุณได้ออกเดินทาง พร้อมความลับและตัวละครมากมายที่รอให้คุณทำความรู้จัก"}</p>
@@ -1325,12 +1363,149 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGues
   );
 }
 
+function HomeBookSection({ id, title, subtitle, books, icon, ranked = false, publicCards = true, showProgress = false, singleDesktopRow = false }: {
+  id: string;
+  title: string;
+  subtitle: string;
+  books: Book[];
+  icon: SimpleTitleIconName;
+  ranked?: boolean;
+  publicCards?: boolean;
+  showProgress?: boolean;
+  singleDesktopRow?: boolean;
+}) {
+  return (
+    <section aria-labelledby={`${id}-title`} id={id}>
+      <div className="mb-ds-3 flex items-end justify-between gap-ds-3">
+        <div className="min-w-0">
+          <h2 className="flex items-center gap-ds-2 text-ds-h2" id={`${id}-title`}>
+            <SimpleTitleIcon className="h-6 w-6 shrink-0" name={icon} />
+            {title}
+          </h2>
+          <p className="mt-ds-1 text-ds-body-sm text-arn-muted">{subtitle}</p>
+        </div>
+        {!ranked && <HomeViewAllLink href={homeCollectionPath + id} title={title} />}
+      </div>
+      <div className={`${homeStyles.swipeRow} grid-cols-6 gap-ds-3 xl:grid`} data-home-book-grid="true" data-home-ranking={ranked ? "true" : undefined} data-home-single-row={singleDesktopRow || undefined}>
+        {books.map((book, index) => (
+          <BookCard
+            key={book.readMode ? `${book.readMode}:${book.title}` : book.title}
+            book={book}
+            isGuest={publicCards}
+            progressIndex={index}
+            rank={ranked ? index + 1 : undefined}
+            showReadingProgress={showProgress}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function HomeBookDiscovery({ isGuest }: { isGuest: boolean }) {
+  const recentBooks = useReadingHistory();
+
+  return (
+    <>
+      <div className="mx-auto max-w-[1400px] space-y-ds-8 bg-arn-canvas px-ds-2 pb-ds-8 pt-ds-6 text-arn-text" id="discover">
+        {!isGuest && (
+          <>
+            <HomeBookSection id="continue-reading" title="อ่านต่อ" subtitle={continueSections[0].subtitle} books={homeContinueBooks} icon="bookmark" publicCards={false} showProgress singleDesktopRow />
+            <HomeBookSection id="for-you" title="สำหรับคุณ" subtitle={forYouSections[0].subtitle} books={homeForYouBooks} icon="sparkle" publicCards={false} singleDesktopRow />
+          </>
+        )}
+        <HomeBookSection id="trending" title="กำลังมาแรง" subtitle="เรื่องมาแรงประจำสัปดาห์จากข้อมูลตัวอย่าง" books={popularRankingBooks.week.slice(0, 8)} icon="flame" publicCards={false} singleDesktopRow />
+        <HomeBookSection id="top-20" title="Top 20 ยอดนิยม" subtitle="นิยาย แฟนฟิค และการ์ตูน เรียงตามยอดอ่านจากข้อมูลตัวอย่าง" books={homeRanking.books ?? []} icon="chart" ranked />
+        <QuickExplore />
+        <HomeBookSection id="new-stories" title="เรื่องใหม่" subtitle={homeNewStories.subtitle} books={homeNewStories.books ?? []} icon="note" />
+        <HomeBookSection id="completed-stories" title="เรื่องจบแล้ว" subtitle={homeCompletedStories.subtitle} books={homeCompletedStories.books ?? []} icon="check" />
+        <HomeBookSection id="latest-updates" title="อัปเดตล่าสุด" subtitle="เรื่องที่เพิ่งลงตอนใหม่" books={latestUpdatedBooks} icon="bell" singleDesktopRow />
+        <HomeBookSection id={recentlyOpenedSection} title="อ่านล่าสุด" subtitle="เรื่องที่คุณเปิดล่าสุด เรียงจากใหม่ไปเก่า" books={recentBooks.slice(0, 8)} icon="clock" singleDesktopRow />
+      </div>
+      <CommunitySection />
+    </>
+  );
+}
+
+const homeCollectionPageSize = 24;
+
+function homeCollectionHref(section: string, page: number) {
+  return homeCollectionPath + encodeURIComponent(section) + (page > 1 ? `&page=${page}` : "");
+}
+
+function HomeCollectionPagination({ section, page, pageCount }: { section: string; page: number; pageCount: number }) {
+  const pageNumbers = Array.from(new Set([1, page - 1, page, page + 1, pageCount]))
+    .filter(number => number >= 1 && number <= pageCount)
+    .sort((a, b) => a - b);
+  const linkClass = "ds-button-secondary inline-flex min-h-11 min-w-11 items-center justify-center px-ds-2 text-ds-body-sm";
+  const pageHref = (number: number) => `${homeCollectionHref(section, number)}#home-collection-title`;
+
+  return (
+    <nav aria-label="เลือกหน้ารายการเรื่อง" className="mt-ds-8 flex flex-wrap items-center justify-center gap-ds-2">
+      {page > 1 && <Link aria-label="หน้าก่อนหน้า" className={linkClass} href={pageHref(page - 1)}>←</Link>}
+      {pageNumbers.map((number, index) => (
+        <Fragment key={number}>
+          {index > 0 && number - pageNumbers[index - 1] > 1 && <span aria-hidden="true" className="text-arn-muted">…</span>}
+          {number === page ? (
+            <span aria-current="page" aria-label={`หน้า ${number}`} className="inline-grid min-h-11 min-w-11 place-items-center rounded-ds-md border border-arn-border-strong bg-arn-raised px-ds-2 text-ds-body-sm font-semibold text-arn-accent">{number}</span>
+          ) : (
+            <Link aria-label={`หน้า ${number}`} className={linkClass} href={pageHref(number)}>{number}</Link>
+          )}
+        </Fragment>
+      ))}
+      {page < pageCount && <Link aria-label="หน้าถัดไป" className={linkClass} href={pageHref(page + 1)}>→</Link>}
+    </nav>
+  );
+}
+
+export function HomeBookCollection({ section, page = 1 }: { section: string; page?: number }) {
+  const isLoggedIn = useHomeAuth();
+  const isReadingHistory = section === recentlyOpenedSection;
+  const recentBooks = useReadingHistory(isReadingHistory);
+  const collection: HomeCollection | undefined = isReadingHistory
+    ? { title: "อ่านล่าสุด", books: recentBooks, membersOnly: false, publicCards: true }
+    : Object.prototype.hasOwnProperty.call(homeCollections, section) ? homeCollections[section as HomeCollectionId] : undefined;
+  const showBooks = collection && (!collection.membersOnly || isLoggedIn === true);
+  const title = collection?.title ?? "ไม่พบหมวดนี้";
+  const bookCount = collection?.books.length ?? 0;
+  const pageCount = Math.max(1, Math.ceil(bookCount / homeCollectionPageSize));
+  const currentPage = Math.min(page, pageCount);
+  const offset = (currentPage - 1) * homeCollectionPageSize;
+
+  return (
+    <div data-home-page className={`ds-page-shell min-h-screen ${isLoggedIn ? homeStyles.memberPage : homeStyles.page}`}>
+      <CompactPageHeader backHref={collection ? `/#${section}` : "/"} backLabel="กลับหน้าหลัก" brandHref="/" context="หน้ารวมเรื่อง" title={title} />
+      <main className="mx-auto max-w-[1400px] px-ds-4 py-ds-8 md:px-ds-6" aria-labelledby="home-collection-title">
+        <h1 className="scroll-mt-ds-4 text-ds-h2 md:text-ds-h1" id="home-collection-title">{title}</h1>
+        {showBooks && bookCount === 0 ? (
+          <p className="ds-card mt-ds-6 p-ds-4 text-ds-body-sm text-arn-muted">ยังไม่มีเรื่องในหมวดนี้</p>
+        ) : showBooks ? (
+          <>
+            <p className="mt-ds-2 text-ds-body-sm text-arn-muted">แสดง {offset + 1}–{Math.min(offset + homeCollectionPageSize, bookCount)} จาก {bookCount} เรื่อง</p>
+            <div className="mt-ds-6 grid grid-cols-2 gap-ds-3 md:grid-cols-3 xl:grid-cols-7 2xl:grid-cols-8">
+              {collection.books.slice(offset, offset + homeCollectionPageSize).map((book, index) => (
+                <BookCard book={book} isGuest={collection.publicCards} key={book.readMode ? `${book.readMode}:${book.title}` : book.title} progressIndex={offset + index} showReadingProgress={section === "continue-reading"} />
+              ))}
+            </div>
+            {pageCount > 1 && <HomeCollectionPagination section={section} page={currentPage} pageCount={pageCount} />}
+          </>
+        ) : collection?.membersOnly && isLoggedIn === false ? (
+          <Link className="ds-button-primary mt-ds-4 inline-flex min-h-11 items-center px-ds-4" href={`/login?returnTo=${encodeURIComponent(homeCollectionHref(section, currentPage))}`}>เข้าสู่ระบบเพื่อดูรายการ</Link>
+        ) : collection ? (
+          <p role="status" className="mt-ds-4 text-ds-body-sm text-arn-muted">กำลังโหลดรายการ</p>
+        ) : null}
+      </main>
+      <Footer responsive />
+    </div>
+  );
+}
+
 export default function BookDiscovery({ selectedCategory, showSidebar = true, isGuest = false }: { selectedCategory: string; showSidebar?: boolean; isGuest?: boolean }) {
   const homeFilterLabels = ["สำหรับคุณ", "อ่านต่อ", "กำลังมาแรง", "จากที่ติดตาม", "เรื่องจบแล้ว"];
   const homeSections: Record<string, DiscoverySection[]> = {
-    "สำหรับคุณ": forYouSections,
+    "สำหรับคุณ": [homeRanking, ...forYouSections],
     "อ่านต่อ": continueSections,
-    "กำลังมาแรง": isGuest ? guestTrendingSections : trendingSections,
+    "กำลังมาแรง": isGuest ? guestTrendingSections : [homeRanking, ...trendingSections],
     "จากที่ติดตาม": followingSections,
     "เรื่องจบแล้ว": completedSections,
   };
@@ -1345,8 +1520,8 @@ export default function BookDiscovery({ selectedCategory, showSidebar = true, is
       <div className={`grid gap-6 ${showSidebar ? "grid-cols-[minmax(0,1fr)_290px]" : "grid-cols-1"}`}>
         <div className="space-y-8">
           {visibleSections.map((section, sectionIndex) => {
-            const isRanking = isGuest && section.title === "Top 20 ยอดนิยม";
-            const sectionIcon = selectedCategory === "สำหรับคุณ"
+            const isRanking = section === homeRanking;
+            const sectionIcon = isRanking ? "chart" : selectedCategory === "สำหรับคุณ"
               ? forYouSectionIcons[section.title]
               : selectedCategory === "อ่านต่อ"
                 ? continueSectionIcons[section.title]
@@ -1358,7 +1533,7 @@ export default function BookDiscovery({ selectedCategory, showSidebar = true, is
                       ? completedSectionIcons[section.title]
                     : undefined;
 
-            const hideViewAll = selectedCategory === "กำลังมาแรง"
+            const hideViewAll = isRanking || selectedCategory === "กำลังมาแรง"
               || (selectedCategory === "สำหรับคุณ" && ["คัดมาให้คุณ", 'เพราะคุณอ่าน "Sky of Tomorrow"', "เรื่องที่น่าจะชอบ"].includes(section.title))
               || (selectedCategory === "อ่านต่อ" && ["ใกล้อ่านจบ", "กลับไปเรื่องโปรด", "อัปเดตจากเรื่องที่กำลังอ่าน"].includes(section.title));
 
@@ -1383,7 +1558,7 @@ export default function BookDiscovery({ selectedCategory, showSidebar = true, is
                       key={book.title}
                       book={book}
                       progressIndex={bookIndex}
-                      isGuest={isGuest}
+                      isGuest={isGuest || isRanking}
                       rank={isRanking ? bookIndex + 1 : undefined}
                       showReadingProgress={selectedCategory === "อ่านต่อ" ? sectionIndex === 0 : selectedCategory === "สำหรับคุณ" && section.title === "อ่านต่อ"}
                     />

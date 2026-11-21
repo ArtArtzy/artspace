@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import TopMenu from "@/components/TopMenu";
 import Footer from "@/components/Footer";
 import WriterProjects from "@/components/WriterProjects";
+import DesktopOnlyNotice from "@/components/DesktopOnlyNotice";
 
 export const metadata: Metadata = {
   title: "เรื่องของฉัน | Writer Studio | ARN SPACE",
@@ -9,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function WriterProjectsPage() {
-  return <div className="ds-page-shell min-h-screen"><TopMenu /><WriterProjects /><Footer /></div>;
+  return <div className="ds-page-shell min-h-screen"><TopMenu /><WriterProjects /><Footer /><DesktopOnlyNotice /></div>;
 }

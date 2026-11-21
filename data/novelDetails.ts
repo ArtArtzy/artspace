@@ -44,7 +44,7 @@ function displayTitle(book: CategoryBook) {
     .replace(/\s·\s(?:บทพิเศษ|ฤดูใหม่|ความทรงจำอีกด้าน|หลังวันนั้น)$/, "");
 }
 
-function readMode(book: CategoryBook): ReadModeId {
+export function getCatalogBookMode(book: Pick<CategoryBook, "title">): ReadModeId {
   if (book.title.startsWith("การ์ตูน")) return "cartoon" as const;
   if (book.title.startsWith("แฟนฟิค") || /\([^()]+\)\s*$/.test(book.title))
     return "fanfic" as const;
@@ -93,26 +93,34 @@ const chapterNames = [
   "ความจริงที่ถูกซ่อนไว้",
 ];
 
-export function getNovelDetails(
+export function findCatalogBook(
   requestedTitle: string,
   requestedMode?: ReadModeId,
 ) {
   const title = requestedTitle.trim().slice(0, 160);
-  const source = catalog.find(
+  return catalog.find(
     (book) =>
       (book.title === title ||
         displayTitle(book) === title ||
         (requestedMode === "fanfic" &&
           `${displayTitle(book)} (${fanficFandomByCategory[book.category] ?? "Original Universe"})` ===
             title)) &&
-      (!requestedMode || readMode(book) === requestedMode),
+      (!requestedMode || getCatalogBookMode(book) === requestedMode),
   );
-  const book = source ?? {
+}
+
+export function getCatalogBookOrFallback(requestedTitle: string, requestedMode?: ReadModeId): CategoryBook {
+  const title = requestedTitle.trim().slice(0, 160);
+  return findCatalogBook(title, requestedMode) ?? {
     ...discoverySections[0].books[1],
     title,
     author: "AkiStudio",
   };
-  const mode = requestedMode ?? readMode(book);
+}
+
+export function getNovelDetails(requestedTitle: string, requestedMode?: ReadModeId) {
+  const book = getCatalogBookOrFallback(requestedTitle, requestedMode);
+  const mode = requestedMode ?? getCatalogBookMode(book);
   const writer = recommendedWriters.find(
     (item) => item.name.toLowerCase() === book.author.toLowerCase(),
   );
@@ -123,7 +131,7 @@ export function getNovelDetails(
     (item) =>
       item.category === book.category &&
       item.title !== book.title &&
-      readMode(item) === mode,
+      getCatalogBookMode(item) === mode,
   );
   const relatedBooks = Array.from(
     new Map(
@@ -152,9 +160,10 @@ export function getNovelDetails(
   return {
     ...book,
     title: displayTitle(book),
+    catalogTitle: book.title,
     mode,
     storageTitle: requestedTitle,
-    subtitle: title === "Sky of Tomorrow" ? "ท้องฟ้าแห่งวันพรุ่งนี้" : "",
+    subtitle: requestedTitle.trim().slice(0, 160) === "Sky of Tomorrow" ? "ท้องฟ้าแห่งวันพรุ่งนี้" : "",
     status,
     rating: "4.8",
     reviewCount: 326,

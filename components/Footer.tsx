@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useId, useState } from "react";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
 const linkGroups = [
@@ -80,40 +83,63 @@ const socials: { label: string; slug: string; image: string }[] = [
 ];
 
 export default function Footer({ responsive = false }: { responsive?: boolean } = {}) {
+  const groupIdPrefix = useId();
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
   const columns = responsive
-    ? "grid-cols-2 px-ds-4 md:grid-cols-3 min-[1101px]:grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] min-[1101px]:px-2"
+    ? "grid-cols-2 px-ds-4 md:grid-cols-3 md:max-xl:gap-ds-3 md:max-xl:py-ds-4 lg:max-xl:grid-cols-6 xl:grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] xl:px-2"
     : "grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] px-2";
 
   return (
     <UnbuiltPageGuard>
       <footer className="border-t border-arn-border-strong bg-arn-surface text-arn-text">
-      <div data-home-footer-grid className={`mx-auto grid max-w-[1400px] gap-6 py-6 ${columns}`}>
-        <div className={`flex items-start ${responsive ? "col-span-full min-[1101px]:col-span-1" : ""}`}>
-          <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[166px]" height={80} src="/images/arnspace-logo.webp" width={238} />
+      <div data-home-footer-grid data-responsive-footer={responsive || undefined} className={`mx-auto grid max-w-[1400px] gap-6 py-6 xl:gap-y-ds-4 xl:max-2xl:grid-cols-[166px_repeat(5,minmax(0,1fr))] ${columns}`}>
+        <div className={`flex items-start ${responsive ? "col-span-full min-w-0 md:col-span-1" : ""}`}>
+          <Image alt="ARN SPACE — Read Write Belong" className="h-auto max-w-full w-[166px]" height={80} src="/images/arnspace-logo.webp" width={238} />
         </div>
 
-        {linkGroups.map((group) => (
-          <div className="min-w-0" key={group.title}>
-            <h2 className="mb-2 text-[12px] font-semibold text-white/90">{group.title}</h2>
-            <nav aria-label={group.title} className="space-y-1">
-              {group.links.map((link) => (
-                  <a className={`text-[11px] leading-4 text-white/55 transition hover:text-[#2ee77b] ${responsive ? "flex min-h-11 items-center min-[1101px]:min-h-0" : "block truncate"}`} href={footerHrefs[link] ?? "/about"} key={link}>
-                  {link}
-                </a>
-              ))}
-            </nav>
-          </div>
-        ))}
+        {linkGroups.map((group, index) => {
+          const isExpanded = expandedGroup === group.title;
+          const groupId = `${groupIdPrefix}-group-${index}`;
 
-        <div data-home-footer-social className={`flex min-w-0 flex-col ${responsive ? "col-span-full items-start min-[1101px]:col-span-1 min-[1101px]:items-end" : "items-end"}`}>
-          <div className={`flex items-center text-white/80 ${responsive ? "flex-wrap gap-ds-1 min-[1101px]:gap-4" : "gap-4"}`}>
+          return (
+            <div className="min-w-0" key={group.title}>
+              <h2 className={`mb-2 text-[12px] font-semibold text-white/90 xl:mb-ds-1 xl:text-ds-body xl:font-semibold xl:text-arn-text ${responsive ? "md:max-xl:mb-0 md:max-xl:text-ds-h3 md:max-xl:text-arn-text" : ""}`}>
+                <span className={responsive ? "md:max-xl:hidden" : undefined}>{group.title}</span>
+                {responsive && (
+                  <button
+                    aria-controls={groupId}
+                    aria-expanded={isExpanded}
+                    className="hidden min-h-11 w-full items-center justify-between gap-ds-1 rounded-ds-sm border-b border-arn-border text-left hover:text-arn-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-arn-accent md:max-xl:flex"
+                    onClick={() => setExpandedGroup((current) => current === group.title ? null : group.title)}
+                    type="button"
+                  >
+                    {group.title}
+                    <svg aria-hidden="true" className={`h-4 w-4 shrink-0 text-arn-muted ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24">
+                      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                    </svg>
+                  </button>
+                )}
+              </h2>
+              <nav aria-label={group.title} className={`space-y-1 xl:space-y-0 ${responsive ? "md:max-xl:space-y-0" : ""} ${responsive && !isExpanded ? "md:max-xl:hidden" : ""}`} id={groupId}>
+                {group.links.map((link) => (
+                  <a className={`text-[11px] leading-4 text-white/55 transition hover:text-[#2ee77b] xl:text-ds-body-sm xl:text-arn-muted ${responsive ? "flex min-h-11 items-center md:max-xl:text-ds-body md:max-xl:text-arn-muted xl:min-h-0" : "block truncate xl:whitespace-normal"}`} href={footerHrefs[link] ?? "/about"} key={link}>
+                    {link}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          );
+        })}
+
+        <div data-home-footer-social className={`flex min-w-0 flex-col xl:max-2xl:col-span-full xl:max-2xl:items-center ${responsive ? "col-span-full items-start md:max-xl:flex-row md:max-xl:justify-between md:max-xl:gap-ds-2 2xl:col-span-1 2xl:items-end" : "items-end"}`}>
+          <div className={`flex items-center text-white/80 xl:max-2xl:justify-center ${responsive ? "flex-wrap gap-ds-1 xl:gap-4" : "gap-4"}`}>
             {socials.map((social) => (
-              <a aria-label={social.label} className={`transition hover:text-[#2ee77b] ${responsive ? "grid h-11 w-11 place-items-center min-[1101px]:h-auto min-[1101px]:w-auto" : ""}`} href={`/social/${social.slug}`} key={social.label}>
+              <a aria-label={social.label} className={`transition hover:text-[#2ee77b] ${responsive ? "grid h-11 w-11 place-items-center xl:h-auto xl:w-auto" : ""}`} href={`/social/${social.slug}`} key={social.label}>
                 <Image alt="" className="h-[18px] w-[18px] object-contain transition-transform hover:scale-110" height={18} src={social.image} unoptimized width={18} />
               </a>
             ))}
           </div>
-          <p className="mt-5 text-right text-[10px] text-white/45">© 2026 ARN SPACE. All rights reserved.</p>
+          <p className={`mt-5 text-right text-[10px] text-white/45 xl:mt-ds-2 xl:text-ds-meta xl:text-arn-subtle xl:max-2xl:text-center ${responsive ? "md:max-xl:mt-0 md:max-xl:self-center md:max-xl:text-ds-meta md:max-xl:text-arn-subtle" : ""}`}>© 2026 ARN SPACE. All rights reserved.</p>
         </div>
       </div>
       </footer>

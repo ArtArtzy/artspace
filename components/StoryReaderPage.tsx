@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import DesktopOnlyNotice from "@/components/DesktopOnlyNotice";
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { ReadModeId } from "@/components/ReadSubMenu";
 import type { NovelDetails } from "@/data/novelDetails";
+import { recordStoryOpen } from "@/data/readingHistory";
 import styles from "./StoryReaderPage.module.css";
 
 type Chapter = NovelDetails["episodes"][number];
@@ -85,6 +87,10 @@ function ChatTranscript({ chat }: { chat: NonNullable<Chapter["chat"]> }) {
 }
 
 export default function StoryReaderPage({ novel, episode }: { novel: NovelDetails; episode: Chapter }) {
+  useEffect(() => {
+    recordStoryOpen({ title: novel.catalogTitle, openedTitle: novel.storageTitle, mode: novel.mode });
+  }, [novel.catalogTitle, novel.storageTitle, novel.mode]);
+
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -126,7 +132,8 @@ export default function StoryReaderPage({ novel, episode }: { novel: NovelDetail
   };
 
   return (
-    <main className={styles.reader} data-theme={preferences.theme} data-mobile-chat={episode.chat ? "true" : undefined} style={{ "--reader-size": `${preferences.size}px` } as CSSProperties}>
+    <main className={styles.reader} data-theme={preferences.theme} style={{ "--reader-size": `${preferences.size}px` } as CSSProperties}>
+      {!episode.chat && <DesktopOnlyNotice />}
       <div className={styles.backdrop} style={{ backgroundImage: `linear-gradient(90deg, var(--reader-paper) 0%, color-mix(in srgb, var(--reader-paper) 88%, transparent) 22%, color-mix(in srgb, var(--reader-paper) 90%, transparent) 78%, var(--reader-paper) 100%), linear-gradient(0deg, var(--reader-paper), transparent 55%, var(--reader-paper)), url("${novel.image}")` }} />
       <header className={styles.topbar}>
         <Link href={backHref} className={styles.back} aria-label="กลับไปหน้ารายละเอียด"><Icon name="back" /></Link>

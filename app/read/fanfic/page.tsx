@@ -5,7 +5,7 @@ import { getNovelDetails } from "@/data/novelDetails";
 export default async function FanficPage({
   searchParams,
 }: {
-  searchParams: Promise<{ title?: string | string[] }>;
+  searchParams: Promise<{ title?: string | string[]; category?: string | string[] }>;
 }) {
   const query = await searchParams;
   const title = Array.isArray(query.title) ? query.title[0] : query.title;
@@ -13,5 +13,5 @@ export default async function FanficPage({
     return (
       <NovelDetailPage key={title} novel={getNovelDetails(title, "fanfic")} />
     );
-  return <ReadModePage mode="fanfic" />;
+  return <ReadModePage mode="fanfic" category={typeof query.category === "string" ? query.category : undefined} />;
 }

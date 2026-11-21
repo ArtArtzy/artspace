@@ -15,6 +15,7 @@ import CommunityWritersSidebar from "@/components/CommunityWritersSidebar";
 import Footer from "@/components/Footer";
 import PageTitleBar from "@/components/PageTitleBar";
 import TopMenu from "@/components/TopMenu";
+import DesktopOnlyNotice from "@/components/DesktopOnlyNotice";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 
 function HomeIcon() {
@@ -78,6 +79,7 @@ function CommunityPageContent() {
 
   return (
     <main className="ds-page-shell min-h-screen pt-[82px]">
+      <DesktopOnlyNotice />
       <TopMenu fixed />
 
       <UnbuiltPageGuard>

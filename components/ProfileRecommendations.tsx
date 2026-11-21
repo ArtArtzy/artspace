@@ -5,9 +5,11 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faHeart, faMagnifyingGlass, faPen } from '@fortawesome/free-solid-svg-icons';
 import { profileReviews } from '@/data/profile-reviews';
+import { findCatalogBook, getCatalogBookMode } from '@/data/novelDetails';
+import BookCardInfo from '@/components/BookCardInfo';
 import styles from './ProfileRecommendations.module.css';
 
-const books = profileReviews.map(book => ({ id: book.image, title: book.title, image: book.image }));
+const books = profileReviews.map(book => ({ id: book.image, title: book.title, image: book.image, catalogBook: findCatalogBook(book.title) }));
 type Recommendation = { bookId: string; comment: string };
 const defaults: Recommendation[] = books.slice(0, 3).map((book, index) => ({ bookId: book.id, comment: [
   'โลกแฟนตาซีที่อ่านแล้วหลุดเข้าไปได้เลย ใครชอบปริศนาและการผจญภัย อยากให้ลองเรื่องนี้',
@@ -62,7 +64,7 @@ export default function ProfileRecommendations({ preview }: { preview: boolean }
         const book = books.find(book => book.id === item.bookId)!;
         return <article key={index} className={styles.card}>
           <div className={styles.cover}><Image src={book.image} alt={`ปก ${book.title}`} width={160} height={232} sizes="(max-width: 600px) 80px, 120px" /></div>
-          <div className={styles.details}><h3 className="text-ds-body font-semibold">{book.title}</h3>{item.comment && <p className={`text-ds-body-sm text-arn-muted ${styles.comment}`}>{item.comment}</p>}
+          <div className={styles.details}><BookCardInfo title={book.title} author={book.catalogBook?.author} mode={book.catalogBook && getCatalogBookMode(book.catalogBook)} format={book.catalogBook?.format} stats={book.catalogBook} compact />{item.comment && <p className={`text-ds-body-sm text-arn-muted ${styles.comment}`}>{item.comment}</p>}
             {!preview && <button type="button" className={styles.edit} aria-label={`แก้ไขเรื่องที่ ${index + 1}: ${book.title}`} onClick={event => { trigger.current = event.currentTarget; setEditingIndex(index); setDraft({ ...item }); setQuery(''); setPage(0); dialog.current?.showModal(); }}><FontAwesomeIcon icon={faPen} aria-hidden="true" />แก้ไขเรื่องนี้</button>}
           </div>
         </article>;

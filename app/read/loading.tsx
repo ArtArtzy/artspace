@@ -1,10 +1,10 @@
-import TopMenu from "@/components/TopMenu";
+import CompactPageHeader from "@/components/CompactPageHeader";
 import Footer from "@/components/Footer";
 
 export default function ReadLoading() {
   return (
-    <main className="ds-page-shell min-h-screen pt-[82px]">
-      <TopMenu fixed />
+    <main className="ds-page-shell min-h-screen" data-read-catalog>
+      <CompactPageHeader backHref="/" backLabel="กลับหน้าหลัก" context="อ่านเรื่อง" title="กำลังโหลด" />
       <div
         className="mx-auto max-w-[1400px] px-8 py-12"
         role="status"
@@ -15,7 +15,7 @@ export default function ReadLoading() {
         </p>
         <div
           aria-hidden="true"
-          className="grid animate-pulse grid-cols-[240px_1fr] gap-8 motion-reduce:animate-none"
+          className="grid animate-pulse grid-cols-[96px_minmax(0,1fr)] gap-ds-4 motion-reduce:animate-none md:grid-cols-[240px_minmax(0,1fr)] md:gap-ds-8"
         >
           <div className="aspect-[2/3] rounded-ds-lg bg-arn-raised" />
           <div className="space-y-5">
@@ -25,7 +25,7 @@ export default function ReadLoading() {
           </div>
         </div>
       </div>
-      <Footer />
+      <Footer responsive />
     </main>
   );
 }

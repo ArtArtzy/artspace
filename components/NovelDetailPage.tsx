@@ -14,10 +14,14 @@ import {
 } from "react";
 import TopMenu from "@/components/TopMenu";
 import Footer from "@/components/Footer";
+import DesktopOnlyNotice from "@/components/DesktopOnlyNotice";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
 import BookshelfToggleButton from "@/components/BookshelfToggleButton";
+import BookCardInfo, { BookCompletedBadge } from "@/components/BookCardInfo";
+import StoryMetadata from "@/components/StoryMetadata";
 import type { CategoryBook } from "@/data/categoryBooks";
 import type { NovelDetails } from "@/data/novelDetails";
+import { recordStoryOpen } from "@/data/readingHistory";
 import styles from "./NovelDetailPage.module.css";
 
 type IconName =
@@ -215,13 +219,9 @@ function BookRow({
                 sizes={compact ? "90px" : "(min-width: 1200px) 180px, 150px"}
                 className="object-cover transition duration-300 group-hover:scale-[1.03]"
               />
+              <BookCompletedBadge book={book} />
             </div>
-            <h3 className="book-card-title mt-2 truncate group-hover:text-arn-accent-soft">
-              {book.title}
-            </h3>
-            <p className="mt-1 text-ds-caption text-arn-subtle">
-              {book.category}
-            </p>
+            <BookCardInfo title={book.title} author={book.author} mode={mode} format={book.format} stats={book} />
           </Link>
         ))}
       </div>
@@ -300,6 +300,10 @@ function formatDate(value: string) {
 }
 
 export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
+  useEffect(() => {
+    recordStoryOpen({ title: novel.catalogTitle, openedTitle: novel.storageTitle, mode: novel.mode });
+  }, [novel.catalogTitle, novel.storageTitle, novel.mode]);
+
   const router = useRouter();
   const [tab, setTab] = useState<"episodes" | "about" | "reviews">("episodes");
   const [expanded, setExpanded] = useState(false);
@@ -432,7 +436,8 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
   };
 
   return (
-    <main className={`ds-page-shell min-h-screen pt-[82px] ${styles.page}`} data-mobile-chat={isChat ? "true" : undefined}>
+    <main className={`ds-page-shell min-h-screen pt-[82px] ${styles.page}`}>
+      {!isChat && <DesktopOnlyNotice />}
       {isChat ? (
         <>
           <div className="hidden min-[1101px]:block"><TopMenu fixed activeReadMode={novel.mode} /></div>
@@ -535,28 +540,9 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
                         <small>({reviewCount} รีวิว)</small>
                       </span>
                     </button>
-                    <div>
-                      <Icon name="eye" />
-                      <span>
-                        <strong>{novel.views}</strong>
-                        <small>อ่าน</small>
-                      </span>
-                    </div>
-                    <div>
-                      <Icon
-                        name="heart"
-                        filled
-                        className="text-[var(--arn-status-danger)]"
-                      />
-                      <span>
-                        <strong>{novel.likes}</strong>
-                        <small>คนเก็บเรื่องนี้</small>
-                      </span>
-                    </div>
+                    <StoryMetadata episodes={String(novel.episodes.length)} views={novel.views} likes={novel.likes} />
                   </div>
                   <p className="mt-6 text-ds-body-sm text-arn-muted">
-                    {novel.episodes.length} ตอน{" "}
-                    <span className="mx-2 text-arn-faint">•</span>
                     {novel.status === "ongoing"
                       ? "อัปเดตล่าสุด 2 วันที่แล้ว"
                       : "จบครบทุกตอน พร้อมอ่าน"}

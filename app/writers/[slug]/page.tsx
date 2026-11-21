@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import TopMenu from "@/components/TopMenu";
+import DesktopOnlyNotice from "@/components/DesktopOnlyNotice";
 import { getWriterProfile } from "@/components/writerData";
 
 type WriterProfilePageProps = {
@@ -16,6 +17,7 @@ export default async function WriterProfilePage({ params }: WriterProfilePagePro
 
   return (
     <main className="ds-page-shell min-h-screen">
+      <DesktopOnlyNotice />
       <TopMenu />
       <section className="mx-auto max-w-[1400px] px-5 pb-16 pt-[112px] sm:px-8">
         <Link className="mb-7 inline-flex items-center gap-2 text-sm text-white/55 transition hover:text-[#2ee77b]" href="/writers">

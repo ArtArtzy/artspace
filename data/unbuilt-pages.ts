@@ -148,13 +148,6 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
     status: "ยังไม่ได้ทำ",
   },
   {
-    code: "WRITERS-LIST-001",
-    name: "หน้ารวมนักเขียน",
-    url: "/writers",
-    trigger: "เมนูนักเขียน หรือดูทั้งหมดใน Section นักเขียนแนะนำ",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
     code: "FOOTER-ABOUT-001",
     name: "หน้าเกี่ยวกับ ARN SPACE",
     url: "/about",

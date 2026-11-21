@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
+import PointerSparkles from "@/components/PointerSparkles";
 import "./globals.css";
 
 const prompt = Prompt({
@@ -11,10 +12,6 @@ const prompt = Prompt({
 export const metadata: Metadata = {
   title: "ARN SPACE",
   description: "ARN SPACE — Read, Write, Belong.",
-  icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
-  },
 };
 
 export default function RootLayout({
@@ -26,6 +23,7 @@ export default function RootLayout({
     <html lang="th">
       <body className={`${prompt.variable} font-sans`}>
         {children}
+        <PointerSparkles />
       </body>
     </html>
   );

@@ -1,0 +1,17 @@
+.notice {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .notice {
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background: var(--arn-color-canvas);
+    color: var(--arn-color-text-primary);
+    text-align: center;
+  }
+}
