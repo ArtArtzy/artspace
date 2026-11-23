@@ -1,80 +1,96 @@
+"use client";
+
+import { faCalendarDays, faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
+import useCommunityEventActivity from "@/components/useCommunityEventActivity";
+import useHomeAuth from "@/components/useHomeAuth";
+import {
+  communityEventHref,
+  communityEvents,
+  communityEventsHref,
+  eventNumber,
+  formatCommunityEventDate,
+  formatCommunityEventDay,
+  getNextCommunityEventMilestones,
+  type CommunityEvent,
+} from "@/data/communityEvents";
 
-const schedule = [
-  { slug: "september-writing-challenge", date: "วันนี้", title: "September Writing Challenge", detail: "1 - 30 กันยายน 2568", color: "bg-[#12df8a]" },
-  { slug: "favorite-writer-vote", date: "15 ก.ย.", title: "โหวตนักเขียนที่คุณรัก", detail: "15 - 25 กันยายน 2568", color: "bg-[#5aa9ff]" },
-  { slug: "writer-ama", date: "28 ก.ย.", title: "AMA กับนักเขียน", detail: "28 กันยายน 2568", extra: "เวลา 20:00 น.", color: "bg-white" },
-  { slug: "short-story-challenge", date: "1 ต.ค.", title: "ประกวดเรื่องสั้น September Writing Challenge", detail: "1 ตุลาคม 2568", color: "bg-white" },
-];
+const milestones = getNextCommunityEventMilestones().slice(0, 5);
 
-const joinedEvents = [
-  { title: "September Writing Challenge", date: "1 - 30 กันยายน 2568", progress: "เขียนแล้ว 12,500 / 30,000 คำ", percent: "42%", width: "42%", image: "/images/community/community-writing-challenge.webp" },
-  { title: "Readathon เดือนกันยายน", date: "1 - 30 กันยายน 2568", progress: "อ่านแล้ว 3 / 5 เล่ม", percent: "60%", width: "60%", image: "/images/community/community-tree.webp" },
-];
+function JoinedEventCard({ event, progress }: { event: CommunityEvent; progress: number }) {
+  const { goal } = event;
+  const percent = goal ? Math.round(progress / goal.target * 100) : 0;
 
-function SidebarCard({ children }: { children: React.ReactNode }) {
-  return <section className="ds-card p-3">{children}</section>;
-}
-
-function CardHeader({ title, showAll = true }: { title: string; showAll?: boolean }) {
   return (
-    <div className="mb-2.5 flex items-center gap-2">
-      <h2 className="sidebar-title">{title}</h2>
-      {showAll && <Link className="sidebar-link ml-auto transition hover:text-[#8affc0]" href="/community/events">ดูทั้งหมด →</Link>}
-    </div>
+    <li className="rounded-ds-md border border-arn-border bg-arn-raised p-ds-3">
+      <Link href={communityEventHref(event.slug)} className="flex items-center gap-ds-3 font-semibold text-arn-text hover:text-arn-accent">
+        <Image src={event.image} alt="" width={54} height={44} className="aspect-[5/4] shrink-0 rounded-ds-sm object-cover" />
+        <span>{event.title}</span>
+      </Link>
+      {goal && (
+        <div className="mt-ds-3">
+          <div className="flex flex-wrap justify-between gap-x-ds-2 text-arn-muted">
+            <span>{eventNumber.format(progress)} / {eventNumber.format(goal.target)} {goal.unit}</span>
+            <span className="font-medium text-arn-accent">{percent}%</span>
+          </div>
+          <progress max={goal.target} value={progress} aria-label={`ความคืบหน้า ${event.title}`} className="mt-ds-2 block h-2 w-full appearance-none overflow-hidden rounded-full bg-arn-soft [&::-moz-progress-bar]:bg-arn-accent [&::-webkit-progress-bar]:bg-arn-soft [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-arn-accent" />
+        </div>
+      )}
+      <p className="mt-ds-3 flex items-center gap-ds-2 text-arn-muted"><FontAwesomeIcon icon={faCalendarDays} /> {goal ? "สิ้นสุด" : "วันที่จัด"} {formatCommunityEventDate(goal ? event.endsOn : event.startsOn)}</p>
+    </li>
   );
 }
 
 export default function CommunityEventsSidebar() {
+  const isLoggedIn = useHomeAuth();
+  const activity = useCommunityEventActivity();
+  const joinedEvents = communityEvents.filter(event => activity[event.slug]);
+
   return (
-    <aside aria-label="ข้อมูลกิจกรรมเพิ่มเติม" className="space-y-3">
-      <SidebarCard>
-        <CardHeader showAll={false} title="กำหนดการถัดไป" />
-        <div className="relative pl-1">
-          <div aria-hidden="true" className="absolute bottom-4 left-[10.5px] top-3 w-px bg-white/20" />
-          <div className="space-y-0">
-            {schedule.map((item) => (
-              <Link className="relative grid grid-cols-[58px_minmax(0,1fr)] gap-2 border-b border-white/[0.06] py-2.5 transition hover:bg-white/[0.025] last:border-b-0" href={`/community/events/${item.slug}`} key={`${item.date}-${item.title}`}>
-                <span className={`relative z-10 mt-0.5 h-3.5 w-3.5 rounded-full border-2 border-[#0d1a15] shadow-[0_0_0_2px_rgba(255,255,255,.08)] ${item.color}`} />
-                <div className="-ml-7 pl-7">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[10px] font-medium text-white/85">{item.date}</span>
-                  </div>
-                  <p className="mt-1 text-[11px] font-medium leading-[1.35] text-white/90">{item.title}</p>
-                  <p className="mt-0.5 text-[10px] text-white/50">{item.detail}</p>
-                  {item.extra && <p className="text-[10px] text-white/50">{item.extra}</p>}
-                </div>
-              </Link>
-            ))}
+    <aside aria-label="ข้อมูลกิจกรรม" className="space-y-ds-4 text-sm">
+      <section className="ds-card p-ds-4" aria-labelledby="my-community-events">
+        <h2 id="my-community-events" className="flex items-center gap-ds-2 text-ds-h3">
+          <FontAwesomeIcon icon={faUserGroup} className="text-arn-accent" /> กิจกรรมของฉัน
+        </h2>
+        {isLoggedIn ? (
+          <ul className="mt-ds-3 space-y-ds-3">
+            {joinedEvents.map(event => <JoinedEventCard key={event.slug} event={event} progress={activity[event.slug].progress} />)}
+          </ul>
+        ) : (
+          <div className="mt-ds-3 rounded-ds-md border border-arn-border bg-arn-raised p-ds-4">
+            <p className="text-ds-body text-arn-muted">เข้าสู่ระบบเพื่อดูกิจกรรมที่เข้าร่วมและความคืบหน้าของคุณ</p>
+            <Link href={`/login?returnTo=${encodeURIComponent(communityEventsHref)}`} className="ds-button-primary mt-ds-3 inline-flex min-h-10 items-center px-ds-4 text-sm">เข้าสู่ระบบ</Link>
           </div>
-        </div>
-      </SidebarCard>
+        )}
+      </section>
 
-      <SidebarCard>
-        <CardHeader showAll={false} title="กิจกรรมของคุณ" />
-        <div className="space-y-3">
-          {joinedEvents.map((event) => (
-            <div className="flex gap-2.5" key={event.title}>
-              <div className="relative h-14 w-12 shrink-0 overflow-hidden rounded border border-white/10 bg-[#14221c]">
-                <Image alt={`ภาพกิจกรรม ${event.title}`} className="object-cover" fill sizes="48px" src={event.image} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="sidebar-item-title truncate font-medium text-white/90">{event.title}</p>
-                <p className="sidebar-caption mt-1">▣ {event.date}</p>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full bg-[#12df8a]" style={{ width: event.width }} />
-                </div>
-                <div className="mt-1 flex items-center justify-between gap-2">
-                  <span className="sidebar-caption truncate">{event.progress}</span>
-                  <span className="sidebar-meta shrink-0 text-white/75">{event.percent}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </SidebarCard>
-
+      <section className="ds-card p-ds-4" aria-labelledby="community-event-schedule">
+        <h2 id="community-event-schedule" className="flex items-center gap-ds-2 text-ds-h3">
+          <FontAwesomeIcon icon={faCalendarDays} className="text-arn-accent" /> กำหนดการถัดไป
+        </h2>
+        <ol className="mt-ds-3 border-l border-arn-border-strong">
+          {milestones.map(({ event, day, time, label }) => {
+            const displayDate = formatCommunityEventDay(day);
+            return (
+              <li key={event.slug} className="relative ml-ds-3 border-b border-arn-border last:border-b-0 before:absolute before:-left-[16px] before:top-[22px] before:size-[7px] before:rounded-full before:bg-arn-accent">
+                <Link href={communityEventHref(event.slug)} className="grid grid-cols-[3rem_minmax(0,1fr)] items-start gap-ds-3 py-ds-3 hover:text-arn-accent">
+                  <time dateTime={day} className="grid justify-items-center rounded-ds-md border border-arn-border bg-arn-raised px-1 py-1.5 leading-tight text-arn-text">
+                    <span className="text-ds-h3">{displayDate.day}</span>
+                    <span className="text-arn-muted">{displayDate.month}</span>
+                  </time>
+                  <div className="space-y-1">
+                    <p className="font-medium text-arn-accent">{label}</p>
+                    <p className="font-semibold">{event.title}</p>
+                    {time && <p className="text-arn-muted">{time}</p>}
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
     </aside>
   );
 }

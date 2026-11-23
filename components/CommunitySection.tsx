@@ -11,12 +11,14 @@ export function WriterGrid({ showAll = false }: { showAll?: boolean }) {
   return (
     <div className={showAll ? "grid grid-cols-2 gap-ds-3 md:grid-cols-3 xl:grid-cols-6" : `${homeStyles.swipeRow} ${homeStyles.writerGrid} grid-cols-6 gap-3 xl:grid`} id="writers">
       {homeRecommendedWriters.map((writer) => (
-        <Link className="group min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-3 text-center transition hover:-translate-y-1 hover:border-[#1ec765]/60 hover:bg-[#12231a] hover:shadow-[0_12px_30px_rgba(0,0,0,.2)]" href={`/writers/${writer.slug}`} key={writer.slug}>
-          <div className="relative mx-auto h-[72px] w-[72px] overflow-hidden rounded-full bg-arn-raised">
-            <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="rounded-full object-cover" fill sizes="72px" src={writer.image} />
+        <Link className={`group grid min-w-0 rounded-2xl text-center transition hover:-translate-y-1 ${showAll ? "" : "max-md:border-x max-md:border-transparent max-md:px-ds-1"}`} href={`/writers/${writer.slug}`} key={writer.slug}>
+          <div className="min-w-0 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-3 transition group-hover:border-[#1ec765]/60 group-hover:bg-[#12231a] group-hover:shadow-[0_12px_30px_rgba(0,0,0,.2)]">
+            <div className="relative mx-auto h-[72px] w-[72px] overflow-hidden rounded-full bg-arn-raised">
+              <Image alt={`รูปโปรไฟล์ ${writer.name}`} className="rounded-full object-cover" fill sizes="72px" src={writer.image} />
+            </div>
+            <h3 className="mt-2 truncate text-ds-body font-medium text-white" title={writer.name}>{writer.name}</h3>
+            <p className="line-clamp-2 break-words text-ds-body-sm text-arn-muted" title={writer.featuredStory}>{writer.featuredStory}</p>
           </div>
-          <h3 className="mt-2 truncate text-ds-body font-medium text-white" title={writer.name}>{writer.name}</h3>
-          <p className="line-clamp-2 break-words text-ds-body-sm text-arn-muted" title={writer.featuredStory}>{writer.featuredStory}</p>
         </Link>
       ))}
     </div>

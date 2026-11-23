@@ -16,6 +16,7 @@ import styles from './ReaderProfile.module.css';
 import ProfileCorner from './ProfileCorner';
 import ProfileRecommendations from './ProfileRecommendations';
 import { profileReviews as reviews } from '@/data/profile-reviews';
+import { maxReaderDisplayNameLength, maxSelectedGenres, readReaderDisplayName, readStoredGenres, readerDisplayNameKey, selectedGenresStorageKey } from '@/data/reader-preferences';
 
 const badges = [
   { name: 'นักวิจารณ์ดาวรุ่ง', image: '/images/badges/rising-reviewer-cute-v2.webp', icon: faStar, tone: 'gold', earned: true, detail: 'ได้รับแล้ว · 12 ต.ค. 2026', progress: 100 },
@@ -120,6 +121,11 @@ export default function ReaderProfile() {
   const editTrigger = useRef<HTMLElement | null>(null);
   const switcher = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const name = readReaderDisplayName();
+    const genres = readStoredGenres()?.slice(0, maxSelectedGenres);
+    setProfile(current => ({ ...current, name: name ?? current.name, genres: genres ?? current.genres }));
+  }, []);
+  useEffect(() => {
     if (!switcherOpen) return;
     function closeOutside(event: MouseEvent) { if (!switcher.current?.contains(event.target as Node)) setSwitcherOpen(false); }
     function closeEscape(event: KeyboardEvent) { if (event.key === 'Escape') setSwitcherOpen(false); }
@@ -134,11 +140,16 @@ export default function ReaderProfile() {
   ];
   const activeIdentity = identities.find(item => item.id === selectedIdentity) || identities[0];
   function openEdit(trigger: HTMLElement) { editTrigger.current = trigger; setDraft({ ...profile, genres: [...profile.genres] }); dialog.current?.showModal(); }
+  function saveGenres(genres: string[]) {
+    setProfile(current => ({ ...current, genres }));
+    try { window.localStorage.setItem(selectedGenresStorageKey, JSON.stringify(genres)); } catch { /* Keep changes for this visit. */ }
+  }
   function saveProfile(event: React.FormEvent) {
     event.preventDefault();
     const next = { ...draft, name: draft.name.trim() };
     if (!next.name) return;
     setProfile(next);
+    try { window.localStorage.setItem(readerDisplayNameKey, next.name); } catch { /* Keep changes for this visit. */ }
     dialog.current?.close();
   }
   return (
@@ -182,7 +193,7 @@ export default function ReaderProfile() {
             <aside className="space-y-4">
               <ProfileCorner preview={preview} />
               {!preview && <section className={'ds-card ' + styles.section}><div className={styles.sectionTitle}><h2 className="text-ds-h3"><FontAwesomeIcon icon={faEnvelope} />กล่องข้อความส่วนตัว</h2><button className={styles.textLink} onClick={event => openDetail(event.currentTarget, 'กล่องข้อความ', 'กล่องข้อความตัวอย่าง · เลือกข้อความในรายการเพื่อเปิดอ่าน ยังไม่มีการส่งข้อความจริง')}>ไปยังกล่องข้อความ<FontAwesomeIcon icon={faChevronRight} /></button></div><div>{messages.map(message => <button type="button" key={message.name} className={styles.messageRow} onClick={event => { setReadMessages(current => [...current, message.name]); openDetail(event.currentTarget, message.name, message.body); }}>{message.image ? <Image src={message.image} alt="" width={44} height={44} className={styles.messageAvatar} /> : <span className={styles.initialAvatar}>N</span>}<span className={styles.messageContent}><span className={styles.messageMeta}><strong>{message.name}</strong><time>{message.time}</time></span><span className={styles.messagePreview}>{message.body}</span></span>{message.unread && !readMessages.includes(message.name) && <span aria-label="ยังไม่ได้อ่าน" className={styles.unreadDot} />}</button>)}</div></section>}
-              <section className={`ds-card ${styles.section}`}><div className={styles.sectionTitle}><h2 className="text-ds-h3"><FontAwesomeIcon icon={faStar} />แนวที่ชอบ</h2>{!preview && <CategoryFilter variant="profile" selected="" onSelect={() => {}} selectedGenres={profile.genres} onSelectGenres={genres => setProfile(current => ({ ...current, genres }))} />}</div><div className="flex flex-wrap gap-2">{profile.genres.map(genre => <span className={`ds-chip px-3 py-2 text-ds-body-sm ${styles.genreChip}`} key={genre}><GenreIcon label={genre} />{genre}</span>)}{profile.genres.length === 0 && <p className="text-ds-body-sm text-arn-subtle">ยังไม่ได้เลือกแนวที่ชอบ</p>}</div></section>
+              <section className={`ds-card ${styles.section}`}><div className={styles.sectionTitle}><h2 className="text-ds-h3"><FontAwesomeIcon icon={faStar} />แนวที่ชอบ</h2>{!preview && <CategoryFilter variant="profile" selected="" onSelect={() => {}} selectedGenres={profile.genres} onSelectGenres={saveGenres} />}</div><div className="flex flex-wrap gap-2">{profile.genres.map(genre => <span className={`ds-chip px-3 py-2 text-ds-body-sm ${styles.genreChip}`} key={genre}><GenreIcon label={genre} />{genre}</span>)}{profile.genres.length === 0 && <p className="text-ds-body-sm text-arn-subtle">ยังไม่ได้เลือกแนวที่ชอบ</p>}</div></section>
               {identities.length === 1 && !preview && <section className={`ds-card ${styles.promo}`}><Image src="/images/hero-writing.webp" alt="" fill sizes="(max-width: 1024px) 100vw, 440px" className="object-cover" /><div className={styles.promoContent}><FontAwesomeIcon icon={faFeatherPointed} className="mb-3 text-arn-accent" /><h2 className="text-ds-h3">อยากเริ่มเขียนเรื่องของตัวเองไหม?</h2><p className="my-3 text-ds-body-sm text-arn-muted">เปลี่ยนจินตนาการของคุณให้กลายเป็นเรื่องราว แบ่งปันผลงานกับนักอ่านมากมายบน ArnSpace</p><Link href="/write" className="ds-button-primary inline-flex gap-3 px-4 py-3">เริ่มต้นเป็นผู้เขียน<FontAwesomeIcon icon={faChevronRight} /></Link></div></section>}
             </aside>
           </div>
@@ -233,7 +244,7 @@ export default function ReaderProfile() {
         <form onSubmit={saveProfile} className="space-y-5"><h2 id="edit-reader-profile-title" className="text-ds-h2">แก้ไขโปรไฟล์ผู้อ่าน</h2>
           <p className="text-ds-body-sm text-arn-subtle">ทดลองปรับข้อมูลและเลือกภาพที่มีในตัวอย่าง</p>
           <fieldset><legend className="mb-3 text-ds-body-sm">รูปโปรไฟล์</legend><div className="flex gap-3">{['/images/profile-arn.webp', '/images/writers/kuroi.webp', '/images/writers/felixs.webp'].map((src, i) => <button type="button" key={src} aria-label={'เลือกรูปโปรไฟล์ ' + (i + 1)} aria-pressed={draft.avatar === src} className={styles.imageChoice} onClick={() => setDraft({ ...draft, avatar: src })}><Image src={src} alt="" width={48} height={48} className="h-12 w-12 rounded-full object-cover" /></button>)}</div></fieldset>
-          <fieldset><legend className="mb-3 text-ds-body-sm">ภาพแบนเนอร์</legend><div className="flex gap-3">{['/images/reader-welcome-bg.webp', '/images/hero-reading.webp'].map((src, i) => <button type="button" key={src} aria-label={'เลือกแบนเนอร์ ' + (i + 1)} aria-pressed={draft.banner === src} className={styles.imageChoice} onClick={() => setDraft({ ...draft, banner: src })}><Image src={src} alt="" width={152} height={64} className="h-16 w-full rounded-ds-sm object-cover" /></button>)}</div></fieldset><label className="block text-ds-body-sm">ชื่อที่แสดง<input required maxLength={60} className="ds-input mt-2 w-full p-3" value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label><label className="block text-ds-body-sm">ชื่อผู้ใช้<input required maxLength={40} className="ds-input mt-2 w-full p-3" value={draft.username} onChange={e => setDraft({ ...draft, username: e.target.value })} /></label><label className="block text-ds-body-sm">แนะนำตัว<textarea maxLength={200} rows={3} className="ds-input mt-2 w-full resize-y p-3" value={draft.bio} onChange={e => setDraft({ ...draft, bio: e.target.value })} /></label><div className="flex justify-end gap-3"><button type="button" className="ds-button-secondary px-4 py-3" onClick={() => dialog.current?.close()}>ยกเลิก</button><button type="submit" className="ds-button-primary px-4 py-3">บันทึกการเปลี่ยนแปลง</button></div></form>
+          <fieldset><legend className="mb-3 text-ds-body-sm">ภาพแบนเนอร์</legend><div className="flex gap-3">{['/images/reader-welcome-bg.webp', '/images/hero-reading.webp'].map((src, i) => <button type="button" key={src} aria-label={'เลือกแบนเนอร์ ' + (i + 1)} aria-pressed={draft.banner === src} className={styles.imageChoice} onClick={() => setDraft({ ...draft, banner: src })}><Image src={src} alt="" width={152} height={64} className="h-16 w-full rounded-ds-sm object-cover" /></button>)}</div></fieldset><label className="block text-ds-body-sm">ชื่อที่แสดง<input required maxLength={maxReaderDisplayNameLength} className="ds-input mt-2 w-full p-3" value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label><label className="block text-ds-body-sm">ชื่อผู้ใช้<input required maxLength={40} className="ds-input mt-2 w-full p-3" value={draft.username} onChange={e => setDraft({ ...draft, username: e.target.value })} /></label><label className="block text-ds-body-sm">แนะนำตัว<textarea maxLength={200} rows={3} className="ds-input mt-2 w-full resize-y p-3" value={draft.bio} onChange={e => setDraft({ ...draft, bio: e.target.value })} /></label><div className="flex justify-end gap-3"><button type="button" className="ds-button-secondary px-4 py-3" onClick={() => dialog.current?.close()}>ยกเลิก</button><button type="submit" className="ds-button-primary px-4 py-3">บันทึกการเปลี่ยนแปลง</button></div></form>
       </dialog>
     </div>
   );

@@ -26,8 +26,6 @@ FOOTER-RULES-001,หน้ากฎและข้อตกลง,/rules,Footer:
 FOOTER-HELP-001,หน้าศูนย์ช่วยเหลือ,/help,Footer: ศูนย์ช่วยเหลือ,ยังไม่ได้ทำ
 FOOTER-CONTACT-001,หน้าติดต่อเรา,/contact,Footer: ติดต่อเรา,ยังไม่ได้ทำ
 SOCIAL-LINK-001,หน้าลิงก์โซเชียลของ ARN SPACE,/social/:network,ไอคอน Social ใน Footer,ยังไม่ได้ทำ
-COMMUNITY-RULES-001,หน้ากติกาชุมชน,/community/rules,ปุ่มกติกาชุมชนใน Hero ชุมชน,ยังไม่ได้ทำ
-COMMUNITY-CREATE-POST-001,หน้าสร้างโพสต์ชุมชน,/community/create-post,ปุ่มสร้างโพสต์ใน Hero ชุมชน,ยังไม่ได้ทำ
 COMMUNITY-EVENTS-LIST-001,หน้ารวมกิจกรรมชุมชน,/community/events,ดูรายละเอียดหรือดูทั้งหมดของกิจกรรม,ยังไม่ได้ทำ
 COMMUNITY-EVENT-RULES-001,หน้ากติกาการเข้าร่วมกิจกรรม,/community/events/rules,ดูรายละเอียดกติกาการเข้าร่วมกิจกรรม,ยังไม่ได้ทำ
 COMMUNITY-EVENT-001,หน้ารายละเอียดกิจกรรมชุมชน,/community/events/:slug,ปุ่มเข้าร่วม/ดูรายละเอียดกิจกรรม หรือกิจกรรมใน Sidebar,ยังไม่ได้ทำ

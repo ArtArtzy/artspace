@@ -3,7 +3,7 @@
   width: 100%;
   max-width: 1400px;
   margin-inline: auto;
-  background: var(--arn-color-surface-raised);
+  background: var(--arn-color-canvas);
   color: var(--arn-color-text-primary);
 }
 
@@ -11,14 +11,60 @@
   position: relative;
   display: block;
   overflow: hidden;
+  padding-bottom: 32px;
+}
+
+.banner::before {
+  position: absolute;
+  inset: auto 0 0;
+  height: 48px;
+  background: linear-gradient(transparent, var(--arn-color-canvas) 16px);
+  pointer-events: none;
+  content: "";
 }
 
 .image {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 10 / 11;
   object-fit: cover;
+  object-position: center 55%;
+}
+
+.action {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  display: grid;
+  width: 176px;
+  height: 44px;
+  place-items: center;
+  transform: translateX(-50%);
+}
+
+.actionArt {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: filter 180ms ease;
+}
+
+.actionLabel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.banner:hover .actionArt,
+.banner:focus-visible .actionArt {
+  filter: brightness(1.2);
 }
 
 .arrow,
@@ -57,10 +103,8 @@
 }
 
 .controls {
-  position: absolute;
-  right: 16px;
-  bottom: 12px;
-  left: 16px;
+  position: relative;
+  padding-block: 4px;
   /* Let clicks in the empty control area reach the arrows and banner. */
   pointer-events: none;
 }
@@ -102,18 +146,50 @@
 }
 
 @media (min-width: 768px) {
-  .image { aspect-ratio: 2 / 1; }
+  .banner { padding-bottom: 0; }
+  .banner::before { display: none; }
+  .image { aspect-ratio: 2 / 1; object-position: center; }
+  .action {
+    top: 76%;
+    bottom: auto;
+    left: var(--action-x, 23%);
+    transform: translate(-50%, -50%);
+  }
+  .banner[data-hero-slide="fantasy"] { --action-x: 25%; }
+  .banner[data-hero-slide="girllove"] { --action-x: 21%; }
+  .banner[data-hero-slide="readathon"] { --action-x: 20%; }
+  .readingBanner .action { top: 79%; left: 26%; }
   .arrow {
     top: auto;
     bottom: 12px;
     transform: none;
   }
+  .controls {
+    position: absolute;
+    right: 16px;
+    bottom: 12px;
+    left: 16px;
+    padding-block: 0;
+  }
 }
 
 @media (min-width: 1280px) {
   .image { aspect-ratio: 3 / 1; }
+  .action {
+    top: var(--action-y, 78%);
+    width: 192px;
+    height: 48px;
+  }
+  .actionLabel { @apply text-ds-body font-semibold; }
+  .readingBanner .action { left: 25%; }
+  .banner[data-hero-slide="fantasy"] { --action-x: 26%; }
+  .banner[data-hero-slide="boylove"] { --action-y: 64%; }
+  .banner[data-hero-slide="girllove"] { --action-x: 22%; --action-y: 81%; }
+  .banner[data-hero-slide="writing"] { --action-x: 22%; --action-y: 73%; }
+  .banner[data-hero-slide="readathon"] { --action-x: 21%; --action-y: 81%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dot::after { transition: none; }
+  .dot::after,
+  .actionArt { transition: none; }
 }

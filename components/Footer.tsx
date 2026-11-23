@@ -2,13 +2,18 @@
 
 import Image from "next/image";
 import { useId, useState } from "react";
+import { faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
+import { communityRooms, communitySectionHref } from "@/data/communityRooms";
 
-const linkGroups = [
-  {
-    title: "เกี่ยวกับเรา",
-    links: ["ARN SPACE", "วิสัยทัศน์", "ร่วมงานกับเรา"],
-  },
+const aboutGroup = {
+  title: "เกี่ยวกับเรา",
+  links: ["ARN SPACE", "วิสัยทัศน์", "ร่วมงานกับเรา"],
+};
+
+const linkGroups: { title: string; links: string[]; visibility?: string }[] = [
+  { ...aboutGroup, visibility: "max-xl:hidden" },
   {
     title: "สำรวจเรื่องอ่าน",
     links: ["นิยาย", "แฟนฟิค", "การ์ตูน"],
@@ -19,8 +24,9 @@ const linkGroups = [
   },
   {
     title: "ชุมชน",
-    links: ["พูดคุย", "กิจกรรม"],
+    links: [communityRooms.general.label, "กิจกรรม"],
   },
+  { ...aboutGroup, visibility: "xl:hidden" },
   {
     title: "ช่วยเหลือ",
     links: ["ศูนย์ช่วยเหลือ", "ติดต่อเรา", "นโยบายความเป็นส่วนตัว", "เงื่อนไขการใช้งาน"],
@@ -37,8 +43,8 @@ const footerHrefs: Record<string, string> = {
   "เริ่มต้นเขียน": "/write",
   "คู่มือการใช้งาน": "/help/guide",
   "กฎและข้อตกลง": "/rules",
-  "พูดคุย": "/community?section=discussion",
-  "กิจกรรม": "/community",
+  [communityRooms.general.label]: communitySectionHref("general"),
+  "กิจกรรม": communitySectionHref("events"),
   "ประกาศ": "/community",
   "ศูนย์ช่วยเหลือ": "/help",
   "ติดต่อเรา": "/contact",
@@ -46,16 +52,16 @@ const footerHrefs: Record<string, string> = {
   "เงื่อนไขการใช้งาน": "/terms",
 };
 
-function SocialIcon({ type }: { type: "chat" | "x" | "facebook" | "instagram" | "youtube" | "tiktok" }) {
-  if (type === "x") return <span aria-hidden="true" className="text-[18px] leading-none">𝕏</span>;
-  if (type === "facebook") return <span aria-hidden="true" className="text-[17px] font-bold leading-none">f</span>;
-  if (type === "tiktok") return <span aria-hidden="true" className="text-[17px] font-bold leading-none">♪</span>;
+function CompactSocialIcon({ type }: { type: (typeof socials)[number]["slug"] }) {
+  if (type === "x") return <FontAwesomeIcon aria-hidden="true" className="h-4 w-4 xl:hidden" icon={faTwitter} />;
 
   return (
-    <svg aria-hidden="true" className="h-[17px] w-[17px]" fill="none" viewBox="0 0 24 24">
-      {type === "chat" && <path d="M5 6.5h14v9H11l-4.5 3v-3H5v-9Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />}
+    <svg aria-hidden="true" className="h-[18px] w-[18px] xl:hidden" fill="none" viewBox="0 0 24 24">
+      {type === "line" && <path d="M20 11.5a8 8 0 0 1-8 8c-1.3 0-2.5-.3-3.6-.9L4 20l1.4-4.4A8 8 0 1 1 20 11.5Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />}
+      {type === "facebook" && <path d="M13.5 21v-8h3l.5-3h-3.5V8c0-1 .5-1.5 1.5-1.5h2V3.3L14.4 3c-2.7 0-4.3 1.6-4.3 4.5V10H7v3h3.1v8Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />}
       {type === "instagram" && <><rect height="14" rx="4" stroke="currentColor" strokeWidth="1.7" width="14" x="5" y="5" /><circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.7" /><circle cx="16.7" cy="7.5" fill="currentColor" r="0.8" /></>}
       {type === "youtube" && <><path d="M4.5 8.2a2 2 0 0 1 1.8-1.7c3.8-.4 7.6-.4 11.4 0a2 2 0 0 1 1.8 1.7 30 30 0 0 1 0 7.6 2 2 0 0 1-1.8 1.7c-3.8.4-7.6.4-11.4 0a2 2 0 0 1-1.8-1.7 30 30 0 0 1 0-7.6Z" stroke="currentColor" strokeWidth="1.7" /><path d="m10.5 9.7 4.5 2.3-4.5 2.3V9.7Z" fill="currentColor" /></>}
+      {type === "tiktok" && <path d="M13.5 15.5a3.5 3.5 0 1 1-3.5-3.5m3.5 3.5V3.5c1 2.5 2.8 4 5.5 4.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />}
     </svg>
   );
 }
@@ -73,28 +79,31 @@ function BrandSocialIcon({ type }: { type: "chat" | "x" | "facebook" | "instagra
   );
 }
 
-const socials: { label: string; slug: string; image: string }[] = [
+const socials = [
   { label: "LINE", slug: "line", image: "/images/sc1.svg" },
   { label: "X", slug: "x", image: "/images/sc2.svg" },
   { label: "Facebook", slug: "facebook", image: "/images/sc3.svg" },
   { label: "Instagram", slug: "instagram", image: "/images/sc4.svg" },
   { label: "YouTube", slug: "youtube", image: "/images/sc5.svg" },
   { label: "TikTok", slug: "tiktok", image: "/images/sc6.svg" },
-];
+] as const;
 
 export default function Footer({ responsive = false }: { responsive?: boolean } = {}) {
   const groupIdPrefix = useId();
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
-  const columns = responsive
-    ? "grid-cols-2 px-ds-4 md:grid-cols-3 md:max-xl:gap-ds-3 md:max-xl:py-ds-4 lg:max-xl:grid-cols-6 xl:grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] xl:px-2"
-    : "grid-cols-[210px_repeat(5,minmax(0,1fr))_240px] px-2";
-
   return (
     <UnbuiltPageGuard>
       <footer className="border-t border-arn-border-strong bg-arn-surface text-arn-text">
-      <div data-home-footer-grid data-responsive-footer={responsive || undefined} className={`mx-auto grid max-w-[1400px] gap-6 py-6 xl:gap-y-ds-4 xl:max-2xl:grid-cols-[166px_repeat(5,minmax(0,1fr))] ${columns}`}>
-        <div className={`flex items-start ${responsive ? "col-span-full min-w-0 md:col-span-1" : ""}`}>
-          <Image alt="ARN SPACE — Read Write Belong" className="h-auto max-w-full w-[166px]" height={80} src="/images/arnspace-logo.webp" width={238} />
+      <div data-home-footer-grid className="mx-auto grid max-w-[1400px] grid-cols-1 px-ds-3 pb-ds-6 pt-ds-1 md:grid-cols-3 md:gap-x-ds-3 md:gap-y-ds-3 md:pb-ds-2 xl:grid-cols-[166px_repeat(5,minmax(0,1fr))] xl:gap-x-ds-6 xl:gap-y-ds-4 xl:px-ds-2 xl:py-ds-6">
+        <div className="-ml-ds-2 flex min-w-0 items-start max-xl:col-span-full xl:ml-0">
+          <Image
+            alt="ARN SPACE — Read Write Belong"
+            className="h-auto w-[200px] max-w-full md:w-[154px] xl:w-[166px]"
+            height={80}
+            sizes="(min-width: 1280px) 166px, (min-width: 768px) 154px, 200px"
+            src="/images/arnspace-logo.webp"
+            width={238}
+          />
         </div>
 
         {linkGroups.map((group, index) => {
@@ -102,27 +111,25 @@ export default function Footer({ responsive = false }: { responsive?: boolean } 
           const groupId = `${groupIdPrefix}-group-${index}`;
 
           return (
-            <div className="min-w-0" key={group.title}>
-              <h2 className={`mb-2 text-[12px] font-semibold text-white/90 xl:mb-ds-1 xl:text-ds-body xl:font-semibold xl:text-arn-text ${responsive ? "md:max-xl:mb-0 md:max-xl:text-ds-h3 md:max-xl:text-arn-text" : ""}`}>
-                <span className={responsive ? "md:max-xl:hidden" : undefined}>{group.title}</span>
-                {responsive && (
-                  <button
-                    aria-controls={groupId}
-                    aria-expanded={isExpanded}
-                    className="hidden min-h-11 w-full items-center justify-between gap-ds-1 rounded-ds-sm border-b border-arn-border text-left hover:text-arn-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-arn-accent md:max-xl:flex"
-                    onClick={() => setExpandedGroup((current) => current === group.title ? null : group.title)}
-                    type="button"
-                  >
-                    {group.title}
-                    <svg aria-hidden="true" className={`h-4 w-4 shrink-0 text-arn-muted ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24">
-                      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-                    </svg>
-                  </button>
-                )}
+            <div className={`min-w-0 max-md:border-b max-md:border-arn-border ${group.visibility ?? ""}`} key={group.visibility ?? group.title}>
+              <h2 className="text-ds-body-sm font-semibold text-arn-text xl:mb-ds-1 xl:text-ds-body xl:font-semibold">
+                <span className="max-md:hidden">{group.title}</span>
+                <button
+                  aria-controls={groupId}
+                  aria-expanded={isExpanded}
+                  className="flex min-h-[68px] w-full items-center justify-between gap-ds-1 px-ds-1 text-left hover:text-arn-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-arn-accent md:hidden"
+                  onClick={() => setExpandedGroup((current) => current === group.title ? null : group.title)}
+                  type="button"
+                >
+                  {group.title}
+                  <svg aria-hidden="true" className={`h-4 w-4 shrink-0 text-arn-muted ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24">
+                    <path d="m6 9 6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                  </svg>
+                </button>
               </h2>
-              <nav aria-label={group.title} className={`space-y-1 xl:space-y-0 ${responsive ? "md:max-xl:space-y-0" : ""} ${responsive && !isExpanded ? "md:max-xl:hidden" : ""}`} id={groupId}>
+              <nav aria-label={group.title} className={`max-md:px-ds-1 max-md:pb-ds-3 ${isExpanded ? "" : "max-md:hidden"}`} id={groupId}>
                 {group.links.map((link) => (
-                  <a className={`text-[11px] leading-4 text-white/55 transition hover:text-[#2ee77b] xl:text-ds-body-sm xl:text-arn-muted ${responsive ? "flex min-h-11 items-center md:max-xl:text-ds-body md:max-xl:text-arn-muted xl:min-h-0" : "block truncate xl:whitespace-normal"}`} href={footerHrefs[link] ?? "/about"} key={link}>
+                  <a className={`flex min-h-11 items-center text-ds-body-sm text-arn-muted transition hover:text-arn-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-arn-accent md:max-xl:min-h-6 md:max-xl:text-ds-caption md:max-xl:leading-relaxed xl:min-h-0 ${responsive ? "" : "xl:block xl:overflow-hidden xl:text-ellipsis"}`} href={footerHrefs[link] ?? "/about"} key={link}>
                     {link}
                   </a>
                 ))}
@@ -131,15 +138,17 @@ export default function Footer({ responsive = false }: { responsive?: boolean } 
           );
         })}
 
-        <div data-home-footer-social className={`flex min-w-0 flex-col xl:max-2xl:col-span-full xl:max-2xl:items-center ${responsive ? "col-span-full items-start md:max-xl:flex-row md:max-xl:justify-between md:max-xl:gap-ds-2 2xl:col-span-1 2xl:items-end" : "items-end"}`}>
-          <div className={`flex items-center text-white/80 xl:max-2xl:justify-center ${responsive ? "flex-wrap gap-ds-1 xl:gap-4" : "gap-4"}`}>
+        <div data-home-footer-social className="col-span-full flex min-w-0 flex-col items-center max-md:pt-ds-8 md:max-xl:border-t md:max-xl:border-arn-border md:max-xl:pt-ds-2">
+          <p className="text-ds-caption font-semibold md:hidden">ติดตาม ARN SPACE</p>
+          <div className={`flex items-center justify-center max-xl:text-arn-text xl:gap-ds-4 xl:text-white/80 ${responsive ? "flex-wrap" : ""}`}>
             {socials.map((social) => (
-              <a aria-label={social.label} className={`transition hover:text-[#2ee77b] ${responsive ? "grid h-11 w-11 place-items-center xl:h-auto xl:w-auto" : ""}`} href={`/social/${social.slug}`} key={social.label}>
-                <Image alt="" className="h-[18px] w-[18px] object-contain transition-transform hover:scale-110" height={18} src={social.image} unoptimized width={18} />
+              <a aria-label={social.label} className={`transition focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-arn-accent max-xl:grid max-xl:h-11 max-xl:w-11 max-xl:place-items-center md:max-xl:w-ds-8 ${responsive ? "xl:grid xl:place-items-center" : ""}`} href={`/social/${social.slug}`} key={social.label}>
+                <CompactSocialIcon type={social.slug} />
+                <Image alt="" className="hidden h-[18px] w-[18px] object-contain transition-transform hover:scale-110 xl:block" height={18} src={social.image} unoptimized width={18} />
               </a>
             ))}
           </div>
-          <p className={`mt-5 text-right text-[10px] text-white/45 xl:mt-ds-2 xl:text-ds-meta xl:text-arn-subtle xl:max-2xl:text-center ${responsive ? "md:max-xl:mt-0 md:max-xl:self-center md:max-xl:text-ds-meta md:max-xl:text-arn-subtle" : ""}`}>© 2026 ARN SPACE. All rights reserved.</p>
+          <p className="mt-ds-2 text-center text-ds-caption text-arn-muted max-md:w-full max-md:border-t max-md:border-arn-border max-md:pt-ds-4 xl:text-ds-meta xl:text-arn-subtle">© 2026 ARN SPACE. All rights reserved.</p>
         </div>
       </div>
       </footer>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFaceSmile, faXmark } from "@fortawesome/free-solid-svg-icons";
 import styles from "./WriterComments.module.css";
@@ -13,9 +13,10 @@ const groups = [
   { name: "กิจกรรมและสิ่งของ", emojis: "🎉 🎊 🎈 🎁 🎀 🎂 🏆 🥇 🥈 🥉 🎯 🎮 🎲 🧩 🎨 🎬 🎤 🎧 🎼 🎵 🎶 🎹 🎸 ⚽ 🏀 🏐 🎾 🏸 🚀 ✈️ 🚗 🚲 🏡 🏰 📚 📖 📕 📗 📘 📙 📓 📝 ✏️ 🖊️ 🖋️ 🖌️ 💡 🔍 📷 💻 📱 ⌨️ 💌 📩 📬 🔔 ⏰ ⏳ 🔑 💎 👑 ✅ ☑️ ❌ ❓ ❗ 💲 🔖" },
 ];
 
-export default function CommentEmojiPicker({ value, onChange, inputRef }: { value: string; onChange: (value: string) => void; inputRef: RefObject<HTMLTextAreaElement | null> }) {
+export default function CommentEmojiPicker({ value, onChange, inputRef, showLabel = false }: { value: string; onChange: (value: string) => void; inputRef: RefObject<HTMLTextAreaElement | null>; showLabel?: boolean }) {
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState(0);
+  const pickerId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const selection = useRef({ start: 0, end: 0 });
@@ -37,15 +38,15 @@ export default function CommentEmojiPicker({ value, onChange, inputRef }: { valu
     selection.current = { start: cursor, end: cursor };
     requestAnimationFrame(() => { inputRef.current?.focus(); inputRef.current?.setSelectionRange(cursor, cursor); });
   };
-  return <div className={styles.emojiControl} ref={containerRef}>
-    <button ref={triggerRef} type="button" aria-label="เลือกอีโมจิ" aria-expanded={open} aria-controls="comment-emoji-picker" onClick={() => {
+  return <div className={showLabel ? undefined : styles.emojiControl} ref={containerRef}>
+    <button ref={triggerRef} type="button" aria-label="เลือกอีโมจิ" aria-expanded={open} aria-controls={open ? pickerId : undefined} className={showLabel ? "ds-button-secondary min-h-11 gap-ds-2 px-ds-3 sm:min-h-9" : undefined} onClick={() => {
       if (!open) selection.current = { start: inputRef.current?.selectionStart ?? value.length, end: inputRef.current?.selectionEnd ?? value.length };
       setOpen(current => !current);
-    }}><FontAwesomeIcon icon={faFaceSmile} aria-hidden="true" /></button>
-    {open && <div id="comment-emoji-picker" className={styles.emojiPicker} role="region" aria-label="เลือกอีโมจิ">
+    }}><FontAwesomeIcon icon={faFaceSmile} aria-hidden="true" className={showLabel ? "h-4 w-4 text-arn-accent-soft" : undefined} />{showLabel && "อีโมจิ"}</button>
+    {open && <div id={pickerId} className={`${styles.emojiPicker}${showLabel ? " !bottom-full mb-ds-2 max-w-full" : ""}`} role="region" aria-label="เลือกอีโมจิ">
       <div className={styles.emojiHeading}><strong>เลือกอีโมจิ</strong><button type="button" aria-label="ปิดชุดอีโมจิ" onClick={() => { setOpen(false); triggerRef.current?.focus(); }}><FontAwesomeIcon icon={faXmark} aria-hidden="true" /></button></div>
       <div className={styles.emojiCategories} role="group" aria-label="หมวดอีโมจิ">{groups.map((group, index) => <button key={group.name} type="button" aria-pressed={category === index} onClick={() => setCategory(index)}>{group.name}</button>)}</div>
-      <div className={styles.emojiGrid}>{groups[category].emojis.split(" ").map(emoji => <button key={emoji} type="button" aria-label={`แทรก ${emoji}`} onClick={() => insert(emoji)}>{emoji}</button>)}</div>
+      <div className={`${styles.emojiGrid}${showLabel ? " !grid-cols-6 sm:!grid-cols-8" : ""}`}>{groups[category].emojis.split(" ").map(emoji => <button key={emoji} type="button" aria-label={`แทรก ${emoji}`} onClick={() => insert(emoji)}>{emoji}</button>)}</div>
     </div>}
   </div>;
 }

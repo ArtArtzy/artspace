@@ -7,7 +7,7 @@ import { categoryBooks, fanficFandomByCategory, getCategorySections, type Catego
 import { discoverySections } from "@/data/discoverySections";
 import { homeBanners } from "@/data/homeBanners";
 import { findCatalogBook, getCatalogBookMode } from "@/data/novelDetails";
-import BookCardInfo, { BookCompletedBadge } from "@/components/BookCardInfo";
+import BookCard from "@/components/BookCard";
 import CommunitySection from "@/components/CommunitySection";
 import QuickExplore from "@/components/QuickExplore";
 import HomeViewAllLink from "@/components/HomeViewAllLink";
@@ -19,6 +19,7 @@ import type { ReadModeId } from "@/components/ReadSubMenu";
 import homeStyles from "@/app/GuestHome.module.css";
 import { resolveStoryStatus } from "@/data/storyStatus";
 import { followedContentWriters, recommendedWriters, type RecommendedWriter } from "@/components/writerData";
+import useWriterFollow from "@/components/useWriterFollow";
 
 type Book = CategoryBook & { latestUpdate?: string; linkTitle?: string; readMode?: ReadModeId };
 
@@ -233,20 +234,6 @@ const completedSections: DiscoverySection[] = [
     books: mixCategoryBooks(["แฟนตาซี", "โรแมนติก", "วาย", "สยองขวัญ", "ลึกลับ", "คอมเมดี้"], 2),
   },
 ];
-
-const hoverDescriptions: Record<string, string> = {
-  โรแมนติก: "เมื่อโชคชะตาพาคนสองคนกลับมาเจอกัน ความลับในอดีตและความรู้สึกที่ยังไม่จางจะเปลี่ยนเรื่องราวครั้งนี้ไปอย่างไร",
-  วาย: "ความสัมพันธ์ที่ค่อย ๆ เติบโตท่ามกลางความเข้าใจผิดและช่วงเวลาที่หัวใจไม่กล้าพูดความจริง",
-  ยูริ: "เรื่องราวอบอุ่นหัวใจของคนสองคนที่เรียนรู้จะเปิดใจให้กัน ผ่านวันธรรมดาที่มีความหมายกว่าที่คิด",
-  แฟนตาซี: "ออกเดินทางสู่โลกกว้างที่เต็มไปด้วยเวทมนตร์ มิตรภาพ และคำทำนายที่อาจเปลี่ยนชะตาของทุกคน",
-  จีนโบราณ: "กลิ่นอายตำนานและชะตาที่ผูกพันผู้คนต่างแคว้น เมื่อความจริงใต้เงาจันทร์กำลังจะถูกเปิดเผย",
-  เกิดใหม่: "เริ่มต้นชีวิตบทใหม่พร้อมความทรงจำจากอดีต และความลับที่อาจทำให้เส้นทางครั้งนี้ไม่เหมือนเดิม",
-  ลึกลับ: "ทุกเบาะแสพาคุณเข้าใกล้ความจริงอีกก้าว แต่ยิ่งค้นหากลับยิ่งพบว่าความลับนี้อันตรายกว่าที่คิด",
-  สยองขวัญ: "ความเงียบที่ซ่อนเรื่องราวชวนขนลุกเอาไว้ และเสียงบางอย่างที่ดังขึ้นทุกครั้งเมื่อพระอาทิตย์ลับฟ้า",
-  แอ๊กชั่น: "การผจญภัยเข้มข้นที่พาทุกคนฝ่าศัตรูและอุปสรรค เพื่อไปให้ถึงความจริงที่ไม่มีใครอยากเผชิญ",
-  ไซไฟ: "เรื่องราวจากอนาคตที่พาคุณออกไปไกลกว่าดวงดาว เมื่อภารกิจครั้งนี้อาจเปลี่ยนอนาคตของมนุษยชาติ",
-  คอมเมดี้: "ความวุ่นวายชวนยิ้มที่เติมสีสันให้ทุกวัน เมื่อแผนธรรมดากลับพาทุกคนไปเจอเรื่องวุ่นเกินคาด",
-};
 
 const featuredReaderReviews = [
   {
@@ -1121,9 +1108,9 @@ function FollowedStoriesCard() {
         <Link aria-label="ดูเรื่องที่ติดตามทั้งหมด" className="sidebar-link inline-flex shrink-0 items-center gap-1 transition hover:text-[#9bffc0]" href="/read">ดูทั้งหมด <span aria-hidden="true">→</span></Link>
       </div>
 
-      <div className="mt-2 grid grid-cols-3 gap-2">
+      <div className="mt-2 grid grid-cols-3 gap-2 2xl:gap-x-ds-1">
         {followedStories.map((story) => (
-          <Link className="group min-w-0 rounded-[6px] p-1 transition hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]" href={`/read?title=${encodeURIComponent(story.title)}`} key={story.title}>
+          <Link className="group min-w-0 rounded-[6px] p-1 transition hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82] 2xl:px-0.5" href={`/read?title=${encodeURIComponent(story.title)}`} key={story.title}>
             <div className="relative aspect-[2/3] overflow-hidden rounded-[4px] bg-[#18211d]">
               <Image alt={`ปกหนังสือ ${story.title}`} className="object-contain transition duration-300 group-hover:scale-105" fill sizes="78px" src={story.image} />
             </div>
@@ -1267,10 +1254,8 @@ function CommunityTopicsCard({ title = "ชุมชนกำลังพูด�
   );
 }
 
-const initiallyFollowedWriterSlugs = new Set(["purplemoon", "moonlit"]);
-
 function WriterCard({ writer, showFollowButton = false, compact = false }: { writer: RecommendedWriter; showFollowButton?: boolean; compact?: boolean }) {
-  const [isFollowing, setIsFollowing] = useState(initiallyFollowedWriterSlugs.has(writer.slug));
+  const { followed: isFollowing, toggleFollow } = useWriterFollow(writer.name, showFollowButton);
 
   return (
     <div className={`group relative min-w-0 text-center transition duration-300 hover:-translate-y-1 hover:border-[#1ec765]/60 hover:bg-[#12231a] hover:shadow-[0_12px_30px_rgba(0,0,0,.2)] ${compact ? "rounded-[9px] border border-transparent p-1 hover:border-white/[0.12]" : "rounded-2xl border border-white/[0.08] bg-white/[0.025] p-3"}`}>
@@ -1296,7 +1281,7 @@ function WriterCard({ writer, showFollowButton = false, compact = false }: { wri
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
-            setIsFollowing((current) => !current);
+            toggleFollow();
           }}
           type="button"
         >
@@ -1313,7 +1298,7 @@ const bookModes = {
   cartoon: { label: "การ์ตูน", href: "/read/cartoon" },
 };
 
-function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGuest = false, rank }: { book: Book; showReadingProgress?: boolean; progressIndex?: number; isGuest?: boolean; rank?: number }) {
+function HomeBookCard({ book, showReadingProgress = false, progressIndex = 0, isGuest = false, rank }: { book: Book; showReadingProgress?: boolean; progressIndex?: number; isGuest?: boolean; rank?: number }) {
   const statusTitle = getDisplayBookTitle(book);
   const displayTitle = isGuest
     ? getDisplayBookTitle(book, fanficFandomByCategory[book.category] ?? "Original Universe")
@@ -1328,20 +1313,16 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGues
   const currentEpisode = Math.max(1, Math.round(totalEpisodes * (progress / 100)));
 
   return (
-    <Link
-      aria-label={isGuest ? `${rankLabel}เปิดเรื่อง ${displayTitle}, ${bookMode.label}${isChat ? ", แบบแชท" : ""}` : `เปิดเรื่อง ${book.title}`}
-      className="group relative block min-w-0 cursor-pointer rounded-[9px] border border-transparent p-1 transition duration-300 hover:-translate-y-1 hover:border-white/[0.12] hover:bg-white/[0.025] hover:shadow-[0_12px_26px_rgba(19,230,104,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29ef82]"
+    <BookCard
+      ariaLabel={isGuest ? `${rankLabel}เปิดเรื่อง ${displayTitle}, ${bookMode.label}${isChat ? ", แบบแชท" : ""}` : `เปิดเรื่อง ${book.title}`}
+      book={book}
+      coverTitle={isGuest ? displayTitle : book.title}
+      displayTitle={displayTitle}
       href={`${isGuest ? bookMode.href : "/read"}?title=${encodeURIComponent(book.linkTitle ?? book.title)}`}
+      mode={book.readMode ?? getCatalogBookMode(book)}
+      rank={rank}
+      statusTitle={statusTitle}
     >
-      <div className="relative aspect-[2/3] overflow-hidden rounded-[7px] bg-[#18201c]">
-        <Image src={book.image} alt={`ปกหนังสือ ${isGuest ? displayTitle : book.title}`} fill sizes="(max-width: 767px) 50vw, (max-width: 1279px) 33vw, (max-width: 1400px) 17vw, 220px" className="object-cover transition duration-500 group-hover:scale-105" />
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#07100c]/90 to-transparent" />
-        {rank !== undefined && (
-          <span aria-hidden="true" data-book-rank={rank} className="absolute left-ds-2 top-ds-2 z-30 inline-grid min-w-6 place-items-center rounded-ds-sm border border-arn-border-strong bg-arn-canvas px-ds-1 py-ds-1 text-ds-meta font-semibold tabular-nums text-arn-text">{rank}</span>
-        )}
-        <BookCompletedBadge book={{ title: statusTitle, episodes: book.episodes, status: book.status }} />
-      </div>
-      <BookCardInfo title={displayTitle} author={book.author} mode={book.readMode ?? getCatalogBookMode(book)} format={book.format} stats={book} />
       {showReadingProgress && (
         <div className="mt-2.5 space-y-1.5">
           <p className="text-[12px] font-medium text-white/80">ตอนที่ {currentEpisode} / {totalEpisodes}</p>
@@ -1354,12 +1335,7 @@ function BookCard({ book, showReadingProgress = false, progressIndex = 0, isGues
         </div>
       )}
       {book.latestUpdate && <p className="mt-ds-1 text-ds-caption text-arn-muted">อัปเดต {book.latestUpdate}</p>}
-      <div data-book-overlay className="pointer-events-none absolute inset-1 z-20 flex flex-col justify-end rounded-[7px] bg-gradient-to-t from-[#07100c] via-[#07100c]/90 to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
-        <h3 className="break-words text-[14px] font-semibold leading-5 text-white">{displayTitle}</h3>
-        <p className="mt-0.5 line-clamp-6 text-[11px] leading-[1.45] text-white/70">{hoverDescriptions[book.category] ?? "เรื่องราวที่คัดสรรมาให้คุณได้ออกเดินทาง พร้อมความลับและตัวละครมากมายที่รอให้คุณทำความรู้จัก"}</p>
-        <span className="mt-2 inline-flex h-8 items-center justify-center rounded-[7px] bg-[#1be27e] text-[11px] font-semibold text-[#07100b] shadow-[0_5px_16px_rgba(0,0,0,.25)]">อ่านเลย <span aria-hidden="true" className="ml-2 text-sm">→</span></span>
-      </div>
-    </Link>
+    </BookCard>
   );
 }
 
@@ -1386,9 +1362,9 @@ function HomeBookSection({ id, title, subtitle, books, icon, ranked = false, pub
         </div>
         {!ranked && <HomeViewAllLink href={homeCollectionPath + id} title={title} />}
       </div>
-      <div className={`${homeStyles.swipeRow} grid-cols-6 gap-ds-3 xl:grid`} data-home-book-grid="true" data-home-ranking={ranked ? "true" : undefined} data-home-single-row={singleDesktopRow || undefined}>
+      <div className={`${homeStyles.swipeRow} ds-book-grid grid-cols-6 gap-ds-3 xl:grid`} data-home-book-grid="true" data-home-ranking={ranked ? "true" : undefined} data-home-single-row={singleDesktopRow || undefined}>
         {books.map((book, index) => (
-          <BookCard
+          <HomeBookCard
             key={book.readMode ? `${book.readMode}:${book.title}` : book.title}
             book={book}
             isGuest={publicCards}
@@ -1482,9 +1458,9 @@ export function HomeBookCollection({ section, page = 1 }: { section: string; pag
         ) : showBooks ? (
           <>
             <p className="mt-ds-2 text-ds-body-sm text-arn-muted">แสดง {offset + 1}–{Math.min(offset + homeCollectionPageSize, bookCount)} จาก {bookCount} เรื่อง</p>
-            <div className="mt-ds-6 grid grid-cols-2 gap-ds-3 md:grid-cols-3 xl:grid-cols-7 2xl:grid-cols-8">
+            <div className="ds-book-grid mt-ds-6 grid grid-cols-2 gap-ds-3 md:grid-cols-3 xl:grid-cols-7 2xl:grid-cols-8">
               {collection.books.slice(offset, offset + homeCollectionPageSize).map((book, index) => (
-                <BookCard book={book} isGuest={collection.publicCards} key={book.readMode ? `${book.readMode}:${book.title}` : book.title} progressIndex={offset + index} showReadingProgress={section === "continue-reading"} />
+                <HomeBookCard book={book} isGuest={collection.publicCards} key={book.readMode ? `${book.readMode}:${book.title}` : book.title} progressIndex={offset + index} showReadingProgress={section === "continue-reading"} />
               ))}
             </div>
             {pageCount > 1 && <HomeCollectionPagination section={section} page={currentPage} pageCount={pageCount} />}
@@ -1549,12 +1525,12 @@ export default function BookDiscovery({ selectedCategory, showSidebar = true, is
                 </div>
                 {!hideViewAll && <Link href={section.writers ? "/writers" : getSectionHref(section.title, selectedCategory)} className="mb-1 inline-flex items-center gap-2 text-[11px] font-medium text-[#2ee77b] transition hover:text-[#9bffc0]">ดูทั้งหมด <span aria-hidden="true">→</span></Link>}
               </div>
-              <div data-home-book-grid={section.writers ? undefined : "true"} data-home-ranking={isRanking ? "true" : undefined} className={section.writers ? "grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8" : "grid grid-cols-6 gap-3"}>
+              <div data-home-book-grid={section.writers ? undefined : "true"} data-home-ranking={isRanking ? "true" : undefined} className={section.writers ? "grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-8" : "ds-book-grid grid grid-cols-6 gap-3"}>
                 {section.writers ? (
                   section.writers.map((writer) => <WriterCard compact={section.title === "นักเขียนที่ติดตาม"} key={writer.slug} writer={writer} showFollowButton={selectedCategory !== "กำลังมาแรง" && section.title === "นักเขียนมาแรง"} />)
                 ) : (
                   section.books?.map((book, bookIndex) => (
-                    <BookCard
+                    <HomeBookCard
                       key={book.title}
                       book={book}
                       progressIndex={bookIndex}

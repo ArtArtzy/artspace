@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import TopMenu from "@/components/TopMenu";
 import DesktopOnlyNotice from "@/components/DesktopOnlyNotice";
+import WriterProfileFollow from "@/components/WriterProfileFollow";
 import { getWriterProfile } from "@/components/writerData";
 
 type WriterProfilePageProps = {
@@ -18,7 +19,7 @@ export default async function WriterProfilePage({ params }: WriterProfilePagePro
   return (
     <main className="ds-page-shell min-h-screen">
       <DesktopOnlyNotice />
-      <TopMenu />
+      <TopMenu initialLoggedIn={false} />
       <section className="mx-auto max-w-[1400px] px-5 pb-16 pt-[112px] sm:px-8">
         <Link className="mb-7 inline-flex items-center gap-2 text-sm text-white/55 transition hover:text-[#2ee77b]" href="/writers">
           <span aria-hidden="true">←</span> กลับไปหน้านักเขียน
@@ -36,9 +37,7 @@ export default async function WriterProfilePage({ params }: WriterProfilePagePro
                   <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">{writer.name}</h1>
                 </div>
               </div>
-              <Link className="inline-flex h-10 items-center justify-center rounded-full border border-[#18bd55] px-6 text-sm font-medium text-[#2ee77b] transition hover:bg-[#18bd55] hover:text-[#07100b]" href="/login">
-                ติดตามนักเขียน
-              </Link>
+              <WriterProfileFollow author={writer.name} path={`/writers/${writer.slug}`} />
             </div>
             <p className="mt-7 max-w-2xl text-sm leading-7 text-white/65">{writer.bio}</p>
             {(writer.followers || writer.works) && (

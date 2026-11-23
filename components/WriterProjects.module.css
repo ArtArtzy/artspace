@@ -22,6 +22,7 @@
 .search .icon { color: var(--arn-color-text-muted); }
 .sort { padding: 8px 12px; min-height: 40px; width: 172px; font-size: 12px; }
 .projects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: stretch; }
+@media (min-width: 1536px) { .projects { column-gap: 5px; } }
 .project { display: flex; flex-direction: column; min-width: 0; padding: 10px; background: color-mix(in srgb, var(--arn-color-canvas) 92%, transparent); transition: border-color 180ms; }
 .project:hover { border-color: var(--arn-color-border-strong); }
 .projectBody { display: flex; gap: 12px; min-height: 136px; padding-bottom: 8px; border-bottom: 1px solid var(--arn-color-border); }

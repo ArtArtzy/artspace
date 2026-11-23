@@ -6,6 +6,7 @@
 .edit:hover { color: var(--arn-color-accent); }
 .edit:focus-visible { outline: 2px solid var(--arn-color-accent); outline-offset: 4px; }
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 1536px) { .grid { column-gap: 6px; } }
 .card { min-width: 0; padding: 16px; border: 1px solid var(--arn-color-border); border-radius: 8px; background: var(--arn-color-surface); }
 .cover { position: relative; width: fit-content; margin: 0 auto 16px; }
 .cover img { width: 120px; height: 174px; object-fit: cover; border-radius: 6px; }

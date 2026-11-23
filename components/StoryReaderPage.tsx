@@ -88,8 +88,8 @@ function ChatTranscript({ chat }: { chat: NonNullable<Chapter["chat"]> }) {
 
 export default function StoryReaderPage({ novel, episode }: { novel: NovelDetails; episode: Chapter }) {
   useEffect(() => {
-    recordStoryOpen({ title: novel.catalogTitle, openedTitle: novel.storageTitle, mode: novel.mode });
-  }, [novel.catalogTitle, novel.storageTitle, novel.mode]);
+    recordStoryOpen({ title: novel.catalogTitle, openedTitle: novel.storageTitle, mode: novel.mode, episode: episode.number });
+  }, [novel.catalogTitle, novel.storageTitle, novel.mode, episode.number]);
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);

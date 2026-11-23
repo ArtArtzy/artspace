@@ -242,6 +242,20 @@
     line-height: 1.5;
   }
 
+  [data-community-thread-room] :is(
+    .text-ds-body-sm,
+    .text-ds-meta,
+    .sidebar-item-title,
+    .sidebar-meta,
+    .sidebar-caption,
+    .sidebar-body,
+    .sidebar-link,
+    .ds-button-primary,
+    .ds-button-secondary
+  ) {
+    font-size: theme(fontSize.sm);
+  }
+
   .sidebar-button {
     font-size: 10px;
     font-weight: 500;
@@ -277,6 +291,12 @@ body {
   color: var(--arn-color-text-primary);
 }
 
+@media (min-width: 1280px) {
+  html:has([data-home-header]) {
+    scrollbar-gutter: stable;
+  }
+}
+
 .event-detail-page a:focus-visible {
   outline: 2px solid var(--arn-color-accent);
   outline-offset: 4px;
@@ -285,4 +305,23 @@ body {
 ::selection {
   background: var(--arn-color-accent);
   color: #ffffff;
+}
+
+@media (min-width: 1536px) {
+  .ds-book-grid {
+    @apply gap-x-1.5;
+  }
+
+  .ds-book-grid > .ds-book-card {
+    /* Halve the 5px cover inset as well as the gap between cards. */
+    padding-inline: 1.5px;
+  }
+
+  .ds-book-card > .ds-book-overlay {
+    @apply inset-0 rounded-ds-md;
+  }
+
+  .ds-book-overlay > p {
+    @apply text-ds-meta leading-normal;
+  }
 }

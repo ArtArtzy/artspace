@@ -2,23 +2,29 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import HomeBannerArt from "@/components/HomeBannerArt";
+import CommunityEventDetail from "@/components/CommunityEventDetail";
+import { communityEventDetails } from "@/data/communityEventDetails";
+import { communityEvents } from "@/data/communityEvents";
 import { homeEvents } from "@/data/homeBanners";
 import auth from "@/app/login/Login.module.css";
 
 type EventPageProps = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return homeEvents.map(event => ({ slug: event.slug }));
+  return [...homeEvents, ...communityEvents].map(event => ({ slug: event.slug }));
 }
 
 export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const event = homeEvents.find(item => item.slug === slug);
+  const event = communityEvents.find(item => item.slug === slug) ?? homeEvents.find(item => item.slug === slug);
   return { title: `${event?.title ?? "กิจกรรม"} | ARN SPACE`, description: event?.description };
 }
 
 export default async function EventPage({ params }: EventPageProps) {
   const { slug } = await params;
+  const communityEvent = communityEvents.find(item => item.slug === slug);
+  if (communityEvent) return <CommunityEventDetail event={communityEvent} details={communityEventDetails[communityEvent.slug]} />;
+
   const event = homeEvents.find(item => item.slug === slug);
   if (!event) notFound();
 

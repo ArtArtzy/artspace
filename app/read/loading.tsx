@@ -1,10 +1,24 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import CompactPageHeader from "@/components/CompactPageHeader";
 import Footer from "@/components/Footer";
+import TopMenu from "@/components/TopMenu";
+import useHomeAuth from "@/components/useHomeAuth";
+import styles from "@/app/GuestHome.module.css";
 
 export default function ReadLoading() {
+  const isEpisode = usePathname() === "/read/episode";
+  const isLoggedIn = useHomeAuth();
+  const catalogLayout = isLoggedIn ? styles.memberPage : styles.page;
+
   return (
-    <main className="ds-page-shell min-h-screen" data-read-catalog>
-      <CompactPageHeader backHref="/" backLabel="กลับหน้าหลัก" context="อ่านเรื่อง" title="กำลังโหลด" />
+    <main className={`ds-page-shell min-h-screen ${isEpisode ? "" : `pt-[82px] ${catalogLayout}`}`} data-read-catalog>
+      {isEpisode ? (
+        <CompactPageHeader backHref="/" backLabel="กลับหน้าหลัก" context="อ่านเรื่อง" title="กำลังโหลด" />
+      ) : (
+        <TopMenu fixed initialLoggedIn={false} showMobileMenu />
+      )}
       <div
         className="mx-auto max-w-[1400px] px-8 py-12"
         role="status"

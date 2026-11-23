@@ -5,10 +5,11 @@ import { getCatalogBookOrFallback } from "@/data/novelDetails";
 import { readReadingHistory, readingHistoryChangedEvent, readingHistoryKey, sampleReadingHistory } from "@/data/readingHistory";
 
 function toBooks(history: ReturnType<typeof readReadingHistory>) {
-  return history.map(({ title, openedTitle, mode }) => ({
+  return history.map(({ title, openedTitle, mode, episode }) => ({
     ...getCatalogBookOrFallback(title, mode),
     linkTitle: openedTitle,
     readMode: mode,
+    resumeEpisode: episode,
   }));
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import HeroCarousel from "@/components/HeroCarousel";
+import HomeReaderSetup from "@/components/HomeReaderSetup";
 import { HomeBookDiscovery } from "@/components/BookDiscovery";
 import Footer from "@/components/Footer";
 import PageTitleBar from "@/components/PageTitleBar";
@@ -15,8 +16,9 @@ export default function Home() {
   return (
     <main className={`ds-page-shell min-h-screen pt-[82px] ${isGuest ? styles.page : styles.memberPage}`} data-home-page data-guest-home={isGuest ? "true" : undefined}>
       <TopMenu fixed initialLoggedIn={false} />
+      {!isGuest && <HomeReaderSetup />}
       <UnbuiltPageGuard>
-        <HeroCarousel includeDesktopAction={isGuest} />
+        <HeroCarousel />
         <PageTitleBar variant="home" />
         <HomeBookDiscovery isGuest={isGuest} />
         <Footer responsive />

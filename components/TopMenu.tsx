@@ -5,8 +5,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { unbuiltPages, type UnbuiltPage } from "@/data/unbuilt-pages";
+import { readerSetupHiddenKey, readerSetupPendingKey } from "@/data/reader-preferences";
 import UnbuiltPageModal from "@/components/UnbuiltPageModal";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
+import { rememberGuestAuthState, setStoredAuthState, useStoredAuthState } from "@/components/useHomeAuth";
 import type { ReadModeId } from "@/components/ReadSubMenu";
 
 function SearchIcon() {
@@ -42,9 +44,9 @@ function HeartIcon() {
   );
 }
 
-function MenuBookIcon() {
+function MenuBookIcon({ active }: { active: boolean }) {
   return (
-    <svg aria-hidden="true" className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24">
+    <svg aria-hidden="true" className={`h-[18px] w-[18px] shrink-0 ${active ? "" : "invisible hidden xl:block"}`} fill="none" viewBox="0 0 24 24">
       <path d="M4.5 5.5h5.2a2.3 2.3 0 0 1 2.3 2.3v11a2.3 2.3 0 0 0-2.3-2.3H4.5v-11ZM19.5 5.5h-5.2A2.3 2.3 0 0 0 12 7.8v11a2.3 2.3 0 0 1 2.3-2.3h5.2v-11Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
     </svg>
   );
@@ -190,9 +192,6 @@ const links = [
   { label: "ชุมชน", href: "/community" },
 ];
 
-const authStorageKey = "arnspace-authenticated";
-export const authStateChangedEvent = "arnspace-auth-change";
-
 type TopMenuProps = {
   fixed?: boolean;
   sticky?: boolean;
@@ -208,7 +207,8 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
   const [pendingUnbuiltPage, setPendingUnbuiltPage] = useState<{ page: UnbuiltPage; href: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(initialLoggedIn);
+  const storedAuth = useStoredAuthState();
+  const isLoggedIn = storedAuth ?? initialLoggedIn;
   const notificationRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const profileRef = useRef<HTMLDivElement>(null);
@@ -230,29 +230,22 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
     if (page) setPendingUnbuiltPage({ page, href: `/search?q=${encodeURIComponent(query)}` });
   };
 
-  useEffect(() => {
-    const syncAuthState = () => {
-      try {
-        const storedAuthState = window.localStorage.getItem(authStorageKey);
-        if (storedAuthState !== null) {
-          setIsLoggedIn(storedAuthState === "true");
-        } else {
-          setIsLoggedIn(initialLoggedIn);
-          window.localStorage.setItem(authStorageKey, String(initialLoggedIn));
-        }
-      } catch {
-        setIsLoggedIn(initialLoggedIn);
-      }
-    };
+  const handleLogout = () => {
+    setIsLogoutConfirmOpen(false);
+    setIsNotificationsOpen(false);
+    setIsProfileOpen(false);
+    window.localStorage.removeItem(readerSetupHiddenKey);
+    try {
+      window.sessionStorage.removeItem(readerSetupPendingKey);
+    } catch {
+      // Session storage is optional in the mock login flow.
+    }
+    setStoredAuthState(false);
+  };
 
-    syncAuthState();
-    window.addEventListener("storage", syncAuthState);
-    window.addEventListener(authStateChangedEvent, syncAuthState);
-    return () => {
-      window.removeEventListener("storage", syncAuthState);
-      window.removeEventListener(authStateChangedEvent, syncAuthState);
-    };
-  }, [initialLoggedIn]);
+  useEffect(() => {
+    if (storedAuth === undefined && !initialLoggedIn) rememberGuestAuthState();
+  }, [initialLoggedIn, storedAuth]);
 
   useEffect(() => {
     if (!isNotificationsOpen && !isProfileOpen && !isLogoutConfirmOpen) return;
@@ -281,36 +274,36 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
   return (
     <UnbuiltPageGuard>
       <header className={`${fixed ? "fixed inset-x-0 top-0 z-50" : sticky ? "sticky top-0 z-50" : ""} border-b border-arn-border bg-arn-canvas text-arn-text`}>
-      <div data-home-header className="mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-8 xl:gap-ds-4">
-        <a data-home-logo aria-label="ARN SPACE หน้าหลัก" className="-ml-4 flex shrink-0 items-center" href="/">
-          <Image alt="ARN SPACE — Read Write Belong" className="h-auto w-[238px] xl:w-44 2xl:w-[238px]" height={80} priority src="/images/arnspace-logo.webp" width={238} />
-        </a>
+      <div data-home-header className={`mx-auto flex h-[82px] max-w-[1400px] items-center gap-8 px-ds-8 xl:gap-ds-4 ${isLoggedIn ? "" : "xl:max-w-screen-2xl xl:px-ds-6 2xl:px-ds-8"}`}>
+        <Link data-home-logo aria-label="ARN SPACE หน้าหลัก" className={`-ml-4 flex shrink-0 items-center ${isLoggedIn ? "" : "xl:ml-0"}`} href="/">
+          <Image alt="ARN SPACE — Read Write Belong" className={`h-auto w-[238px] xl:w-44 ${isLoggedIn ? "2xl:w-[238px]" : "2xl:w-[200px]"}`} height={80} priority src="/images/arnspace-logo.webp" width={238} />
+        </Link>
 
-        <nav data-home-desktop-nav aria-label="เมนูหลัก" className="flex h-full items-center gap-2 xl:gap-ds-1">
+        <nav data-home-desktop-nav aria-label="เมนูหลัก" className={`flex h-full items-center gap-2 xl:gap-ds-1 ${isLoggedIn ? "" : "2xl:gap-ds-3"}`}>
           {links.map((link) => {
             const isActive = isLinkActive(link.href);
 
             return (
-              <a aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-ds-body font-semibold transition-colors xl:min-w-16 xl:whitespace-nowrap xl:px-ds-2 2xl:text-ds-h3 ${isActive ? "border-arn-border-strong bg-arn-raised text-arn-accent shadow-ds-glow" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.label}>
-                {isActive && <MenuBookIcon />}
+              <Link aria-current={isActive ? "page" : undefined} className={`relative flex h-[64px] min-w-[88px] items-center justify-center gap-2 rounded-[7px] border px-3 text-ds-body font-semibold transition-colors xl:min-w-16 xl:whitespace-nowrap xl:px-ds-2 2xl:text-ds-h3 ${isActive ? "border-arn-border-strong bg-arn-raised text-arn-accent shadow-ds-glow" : "border-transparent text-white/85 hover:text-white"}`} href={link.href} key={link.href}>
+                <MenuBookIcon active={isActive} />
                 <span>{link.label}</span>
                 <span className={`absolute bottom-0.5 left-2 right-2 block h-0.5 rounded-full ${isActive ? "bg-arn-accent" : "opacity-0"}`} />
-              </a>
+              </Link>
             );
           })}
         </nav>
 
         <div data-home-desktop-actions className="ml-auto flex min-w-0 items-center gap-4 xl:gap-ds-3">
-          <form className="w-[270px] xl:w-[405px]" onSubmit={handleSearchSubmit}>
+          <form className={`w-[270px] ${isLoggedIn ? "xl:w-[405px]" : "xl:w-[264px]"}`} onSubmit={handleSearchSubmit}>
             <label className="ds-input flex h-10 w-full items-center gap-2 px-3 text-white/55">
             <span className="shrink-0"><SearchIcon /></span>
             <input aria-label="ค้นหา" className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/35" onChange={(event) => setSearchQuery(event.target.value)} placeholder="ค้นหาเรื่อง นามปากกา" type="search" value={searchQuery} />
             </label>
           </form>
 
-          <a aria-label="เขียนเรื่อง" aria-current={pathname === "/write" ? "page" : undefined} className={`group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-[#41ee91] transition ${pathname === "/write" ? "border-[#20d976] bg-[#123722] shadow-[0_0_16px_rgba(32,217,118,.2)]" : "border-[#20d976] bg-transparent hover:bg-[#123722]"}`} href="/write" title="เขียนเรื่อง">
+          <Link aria-label="เขียนเรื่อง" aria-current={pathname === "/write" ? "page" : undefined} className={`group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-[#41ee91] transition ${pathname === "/write" ? "border-[#20d976] bg-[#123722] shadow-[0_0_16px_rgba(32,217,118,.2)]" : "border-[#20d976] bg-transparent hover:bg-[#123722]"}`} href="/write" title="เขียนเรื่อง">
             <PenIcon />
-          </a>
+          </Link>
 
           {isLoggedIn ? (
             <>
@@ -348,7 +341,12 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
         </div>
         {(pathname === "/" || showMobileMenu) && (
           <div data-home-mobile-controls className="hidden">
-            {!isLoggedIn && <Link className="ds-button-primary inline-flex min-h-11 items-center justify-center px-ds-3 text-ds-body-sm font-medium" href="/login">เข้าสู่ระบบ</Link>}
+            {!isLoggedIn && (
+              <Link className="ds-button-primary inline-flex min-h-11 items-center justify-center px-ds-3 text-ds-body-sm font-medium md:whitespace-nowrap" href="/login">
+                <span className="md:hidden">เข้าสู่ระบบ</span>
+                <span className="hidden md:inline">เข้าสู่ระบบ/สมัครสมาชิก</span>
+              </Link>
+            )}
             <details
               data-home-mobile-menu
               onKeyDown={(event) => {
@@ -379,7 +377,7 @@ export default function TopMenu({ fixed = false, sticky = false, initialLoggedIn
           </div>
         )}
       </div>
-      {isLogoutConfirmOpen && <LogoutConfirmModal onCancel={() => setIsLogoutConfirmOpen(false)} onConfirm={() => { setIsLogoutConfirmOpen(false); setIsNotificationsOpen(false); setIsProfileOpen(false); setIsLoggedIn(false); window.localStorage.setItem(authStorageKey, "false"); window.dispatchEvent(new Event(authStateChangedEvent)); }} />}
+      {isLogoutConfirmOpen && <LogoutConfirmModal onCancel={() => setIsLogoutConfirmOpen(false)} onConfirm={handleLogout} />}
       {pendingUnbuiltPage && <UnbuiltPageModal href={pendingUnbuiltPage.href} onClose={() => setPendingUnbuiltPage(null)} page={pendingUnbuiltPage.page} />}
       </header>
     </UnbuiltPageGuard>

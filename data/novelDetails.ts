@@ -51,6 +51,10 @@ export function getCatalogBookMode(book: Pick<CategoryBook, "title">): ReadModeI
   return "novel" as const;
 }
 
+export function getCatalogBooksByMode(mode: ReadModeId) {
+  return catalog.filter((book) => getCatalogBookMode(book) === mode);
+}
+
 const genreSynopses: Record<string, string> = {
   แฟนตาซี:
     "เมื่อหมู่เกาะลอยฟ้าเริ่มร่วงหล่นจากท้องฟ้าทีละแห่ง ‘เรน’ เด็กหนุ่มผู้ซ่อมเข็มทิศในเมืองชายขอบ ได้รับจดหมายจากพ่อที่หายตัวไปเมื่อสิบปีก่อน จดหมายนั้นพาเขาไปพบกับ ‘ลูนา’ นักอ่านแผนที่ดวงดาว ผู้เชื่อว่าดินแดนเหนือเมฆยังซ่อนวันพรุ่งนี้เอาไว้ ทั้งคู่จึงออกเดินทางตามเส้นทางที่ไม่มีอยู่บนแผนที่ โดยไม่รู้ว่าทุกครั้งที่ใช้เข็มทิศ ความทรงจำหนึ่งจะหายไปตลอดกาล",

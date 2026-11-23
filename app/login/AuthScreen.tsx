@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { setStoredAuthState } from "@/components/useHomeAuth";
+import { readerSetupPendingKey } from "@/data/reader-preferences";
 import AuthShell from "./AuthShell";
 import { MailIcon, LockIcon, EyeIcon, ArrowIcon, GoogleIcon, LineIcon, FacebookIcon, AppleIcon } from "./AuthIcons";
 import styles from "./Login.module.css";
@@ -16,7 +18,12 @@ export default function AuthScreen({ forgot = false, source, home, registered = 
   const context = `from=${source}&returnTo=${encodeURIComponent(home)}`;
   const loginHref = `/login?${context}`;
   const mockLogin = () => {
-    window.localStorage.setItem("arnspace-authenticated", "true");
+    setStoredAuthState(true);
+    try {
+      window.sessionStorage.setItem(readerSetupPendingKey, "true");
+    } catch {
+      // Login can still continue when session storage is unavailable.
+    }
     router.push(home);
   };
   const submit = (event: FormEvent<HTMLFormElement>) => {

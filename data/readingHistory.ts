@@ -1,7 +1,7 @@
 import type { ReadModeId } from "@/components/ReadSubMenu";
 import { getCatalogBookMode } from "@/data/novelDetails";
 
-type OpenedStory = { title: string; openedTitle: string; mode: ReadModeId };
+type OpenedStory = { title: string; openedTitle: string; mode: ReadModeId; episode?: number };
 
 export const readingHistoryKey = "arnspace-reading-history";
 export const readingHistoryChangedEvent = "arnspace-reading-history-change";
@@ -48,7 +48,13 @@ function readStoredHistory(): OpenedStory[] {
       const key = storyKey(entry);
       if (seen.has(key)) continue;
       seen.add(key);
-      stories.push({ title: entry.title, openedTitle: entry.openedTitle, mode: entry.mode });
+      const episode = entry.episode;
+      stories.push({
+        title: entry.title,
+        openedTitle: entry.openedTitle,
+        mode: entry.mode,
+        episode: typeof episode === "number" && Number.isSafeInteger(episode) && episode > 0 ? episode : undefined,
+      });
       if (stories.length === historyLimit) break;
     }
     return stories;
@@ -65,12 +71,16 @@ export function readReadingHistory(): OpenedStory[] {
 }
 
 export function recordStoryOpen(story: OpenedStory) {
-  const { title, mode } = story;
+  const { title } = story;
   const entry = { ...story, openedTitle: story.openedTitle.length <= 160 ? story.openedTitle : title };
   if (!isOpenedStory(entry)) return;
   try {
     const history = readStoredHistory();
-    const next = [entry, ...history.filter(opened => opened.title !== title || opened.mode !== mode)].slice(0, historyLimit);
+    const previous = history.find((opened) => storyKey(opened) === storyKey(entry));
+    const next = [
+      { ...entry, episode: entry.episode ?? previous?.episode },
+      ...history.filter((opened) => storyKey(opened) !== storyKey(entry)),
+    ].slice(0, historyLimit);
     window.localStorage.setItem(readingHistoryKey, JSON.stringify(next));
     window.dispatchEvent(new Event(readingHistoryChangedEvent));
   } catch {

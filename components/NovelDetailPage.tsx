@@ -22,6 +22,7 @@ import StoryMetadata from "@/components/StoryMetadata";
 import type { CategoryBook } from "@/data/categoryBooks";
 import type { NovelDetails } from "@/data/novelDetails";
 import { recordStoryOpen } from "@/data/readingHistory";
+import useWriterFollow from "@/components/useWriterFollow";
 import styles from "./NovelDetailPage.module.css";
 
 type IconName =
@@ -194,6 +195,12 @@ function BookRow({
   mode: NovelDetails["mode"];
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  function scrollBooks(direction: number) {
+    const row = ref.current;
+    if (!row) return;
+    const gap = Number.parseFloat(window.getComputedStyle(row).columnGap);
+    row.scrollBy({ left: direction * (row.clientWidth + gap), behavior: "smooth" });
+  }
   const modePath = {
     novel: "/read",
     fanfic: "/read/fanfic",
@@ -230,24 +237,14 @@ function BookRow({
           <button
             className={`${styles.carouselButton} ${styles.carouselPrevious}`}
             aria-label="ดูนิยายก่อนหน้า"
-            onClick={() =>
-              ref.current?.scrollBy({
-                left: -(ref.current.clientWidth + 20),
-                behavior: "smooth",
-              })
-            }
+            onClick={() => scrollBooks(-1)}
           >
             <Icon name="chevron" className="rotate-180" />
           </button>
           <button
             className={`${styles.carouselButton} ${styles.carouselNext}`}
             aria-label="ดูนิยายถัดไป"
-            onClick={() =>
-              ref.current?.scrollBy({
-                left: ref.current.clientWidth + 20,
-                behavior: "smooth",
-              })
-            }
+            onClick={() => scrollBooks(1)}
           >
             <Icon name="chevron" />
           </button>
@@ -311,7 +308,7 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("latest");
   const [liked, setLiked] = useState(false);
-  const [followed, setFollowed] = useState(false);
+  const { followed, toggleFollow } = useWriterFollow(novel.author);
   const [episode, setEpisode] = useState<
     NovelDetails["episodes"][number] | null
   >(null);
@@ -327,10 +324,6 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
 
   useEffect(() => {
     setLiked(readStored<boolean>(`${stateKey}:liked`, false) === true);
-    setFollowed(
-      readStored<boolean>(`arnspace-follow-writer:${novel.author}`, false) ===
-        true,
-    );
     const saved = readStored<unknown>(`${stateKey}:reviews`, []);
     if (Array.isArray(saved))
       setUserReviews(
@@ -994,10 +987,7 @@ export default function NovelDetailPage({ novel }: { novel: NovelDetails }) {
                   type="button"
                   aria-pressed={followed}
                   className="ds-button-secondary w-full gap-2 text-arn-accent"
-                  onClick={() => {
-                    setFollowed(!followed);
-                    save(`arnspace-follow-writer:${novel.author}`, !followed);
-                  }}
+                  onClick={toggleFollow}
                 >
                   {followed && <Icon name="check" className="!h-4 !w-4" />}
                   {followed ? "กำลังติดตาม" : "ติดตาม"}

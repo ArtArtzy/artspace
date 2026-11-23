@@ -1,4 +1,5 @@
 import { homeEvents } from "@/data/homeBanners";
+import { communityEvents, communityEventHref, pastCommunityEventsHref } from "@/data/communityEvents";
 import { getWriterProfile } from "@/components/writerData";
 
 export type UnbuiltPage = {
@@ -204,20 +205,6 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
     status: "ยังไม่ได้ทำ",
   },
   {
-    code: "COMMUNITY-RULES-001",
-    name: "หน้ากติกาชุมชน",
-    url: "/community/rules",
-    trigger: "ปุ่มกติกาชุมชนใน Hero ชุมชน",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
-    code: "COMMUNITY-CREATE-POST-001",
-    name: "หน้าสร้างโพสต์ชุมชน",
-    url: "/community/create-post",
-    trigger: "ปุ่มสร้างโพสต์ใน Hero ชุมชน",
-    status: "ยังไม่ได้ทำ",
-  },
-  {
     code: "COMMUNITY-EVENTS-LIST-001",
     name: "หน้ารวมกิจกรรมชุมชน",
     url: "/community/events",
@@ -311,7 +298,8 @@ export const unbuiltPages: readonly UnbuiltPage[] = [
 ];
 
 export function findUnbuiltPage(pathname: string, searchParams: URLSearchParams) {
-  if (homeEvents.some(event => pathname === `/community/events/${event.slug}`)) return undefined;
+  if (pathname === pastCommunityEventsHref) return undefined;
+  if ([...homeEvents, ...communityEvents].some(event => pathname === communityEventHref(event.slug))) return undefined;
   const writerSlug = pathname.match(/^\/writers\/([^/]+)\/?$/)?.[1];
   if (writerSlug && getWriterProfile(writerSlug)) return undefined;
 

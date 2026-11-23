@@ -270,8 +270,9 @@
   padding: 2px 8px;
 }
 .bookRow {
+  --book-row-gap: 24px;
   display: flex;
-  gap: 24px;
+  column-gap: var(--book-row-gap);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -282,17 +283,31 @@
 .bookCard {
   display: block;
   min-width: 0;
-  flex: 0 0 calc((100% - 72px) / 4);
+  flex: 0 0 calc((100% - 3 * var(--book-row-gap)) / 4);
   scroll-snap-align: start;
   padding: 4px;
   border-radius: 8px;
 }
 .compactBooks {
-  gap: 8px;
+  --book-row-gap: 8px;
 }
 .compactBooks .bookCard {
-  flex-basis: max(104px, calc((100% - 24px) / 4));
+  flex-basis: max(104px, calc((100% - 3 * var(--book-row-gap)) / 4));
   padding: 0;
+}
+
+@media (min-width: 1536px) {
+  .bookRow {
+    --book-row-gap: 12px;
+  }
+
+  .bookRow:not(.compactBooks) .bookCard {
+    padding-inline: 2px;
+  }
+
+  .compactBooks {
+    --book-row-gap: 4px;
+  }
 }
 .carouselButton {
   position: absolute;

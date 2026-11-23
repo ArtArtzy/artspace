@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type Category = {
   label: string;
@@ -44,6 +45,10 @@ const categories: Category[] = [
   ...genreCategories.filter((category) => !category.menuOnly && category.label !== "ไซไฟ" && category.label !== "คอมเมดี้"),
   { label: "ปรับแต่ง", color: "text-[#45ee83]", icon: "more", special: true, genreMenu: true },
 ];
+
+export const selectableGenreLabels = genreCategories
+  .filter((category) => category.label !== "ทั้งหมด" && !category.requiresVerification)
+  .map((category) => category.label);
 
 export const defaultGenreSelection = genreCategories
   .filter((category) => category.label !== "ทั้งหมด")
@@ -262,13 +267,13 @@ function CategoryIcon({ type }: { type: Category["icon"] }) {
 
 export type CategoryFilterProps = {
   selected: string;
-  onSelect: (category: string) => void;
+  onSelect?: (category: string) => void;
   onSelectGenres?: (categories: string[]) => void;
   selectedGenres?: string[];
-  myCategoryCount?: number;
   showMyCategory?: boolean;
   variant?: "categories" | "home" | "profile";
   stickyOffset?: "menu" | "read" | "page-banner";
+  favoritesLabel?: string;
 };
 
 export function GenreIcon({ label }: { label: string }) {
@@ -276,22 +281,24 @@ export function GenreIcon({ label }: { label: string }) {
   return category ? <span className={category.color}><CategoryIcon type={category.icon} /></span> : null;
 }
 
-export default function CategoryFilter({ selected, onSelect, onSelectGenres, selectedGenres = [], myCategoryCount = 0, showMyCategory = false, variant = "categories", stickyOffset = "menu" }: CategoryFilterProps) {
+export default function CategoryFilter({ selected, onSelect, onSelectGenres, selectedGenres = [], showMyCategory = false, variant = "categories", stickyOffset = "menu", favoritesLabel }: CategoryFilterProps) {
+  const isStandalone = variant === "profile" || Boolean(favoritesLabel);
+  const useDefaultGenres = !favoritesLabel && selectedGenres.length === 0;
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [isGenreMenuOpen, setIsGenreMenuOpen] = useState(false);
-  const [draftGenres, setDraftGenres] = useState<string[]>(orderGenresWithProtectedLast(selectedGenres.length > 0 ? selectedGenres : defaultGenreSelection));
+  const [draftGenres, setDraftGenres] = useState<string[]>(orderGenresWithProtectedLast(useDefaultGenres ? defaultGenreSelection : selectedGenres));
   const [draggedGenreIndex, setDraggedGenreIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (isGenreMenuOpen) {
-      setDraftGenres(orderGenresWithProtectedLast(selectedGenres.length > 0 ? selectedGenres : defaultGenreSelection));
+      setDraftGenres(orderGenresWithProtectedLast(useDefaultGenres ? defaultGenreSelection : selectedGenres));
     }
-  }, [isGenreMenuOpen, selectedGenres]);
+  }, [isGenreMenuOpen, selectedGenres, useDefaultGenres]);
 
   useEffect(() => {
-    if (!isGenreMenuOpen || variant !== "profile") return;
-    const previousFocus = document.activeElement as HTMLElement | null;
+    if (!isGenreMenuOpen || variant === "home") return;
+    const previousFocus = triggerRef.current ?? document.activeElement as HTMLElement | null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     modalRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
@@ -356,7 +363,7 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
   };
 
   const applyGenres = () => {
-    if (draftGenres.length === 0) return;
+    if (draftGenres.length === 0 && !favoritesLabel) return;
     onSelectGenres?.(orderGenresWithProtectedLast(draftGenres));
     setIsGenreMenuOpen(false);
   };
@@ -385,8 +392,8 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
   };
 
   return (
-    <section aria-label={variant === "home" ? "เลือกการสำรวจ" : "เลือกหมวดหมู่"} className={variant === "profile" ? "contents" : `${stickyOffset === "read" || stickyOffset === "page-banner" ? "top-[142px] mt-0" : "top-[82px] mt-3"} sticky z-40 mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-arn-canvas px-2 pb-[18px] pt-1 shadow-[0_8px_20px_rgba(0,0,0,.24)]`} id={variant === "profile" ? undefined : "category-filter"}>
-      {variant === "profile" ? <button ref={triggerRef} type="button" aria-haspopup="dialog" className="text-ds-meta text-arn-accent-soft hover:text-arn-text" onClick={() => setIsGenreMenuOpen(true)}>แก้ไข</button> : <div className={`flex w-full flex-nowrap gap-2 overflow-hidden ${variant === "home" ? "grid grid-cols-5" : ""}`}>
+    <section aria-label={variant === "home" ? "เลือกการสำรวจ" : "เลือกหมวดหมู่"} className={isStandalone ? "contents" : `${stickyOffset === "read" || stickyOffset === "page-banner" ? "top-[142px] mt-0" : "top-[82px] mt-3"} sticky z-40 mx-auto w-full max-w-[1400px] scroll-mt-[158px] bg-arn-canvas px-2 pb-[18px] pt-1 shadow-[0_8px_20px_rgba(0,0,0,.24)]`} id={isStandalone ? undefined : "category-filter"}>
+      {isStandalone ? <button ref={triggerRef} type="button" aria-haspopup="dialog" className={favoritesLabel ? "ds-button-secondary min-h-11 px-ds-4 text-ds-body-sm" : "text-ds-meta text-arn-accent-soft hover:text-arn-text"} onClick={() => setIsGenreMenuOpen(true)}>{favoritesLabel ?? "แก้ไข"}</button> : <div className={`flex w-full flex-nowrap gap-2 overflow-hidden ${variant === "home" ? "grid grid-cols-5" : ""}`}>
         {orderedVisibleCategories.map((category) => {
           const isSelected = selected === category.label;
           const buttonClass = variant === "home"
@@ -412,7 +419,7 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
               aria-pressed={isSelected}
               className={buttonClass}
               key={category.label}
-              onClick={() => category.genreMenu ? setIsGenreMenuOpen(true) : onSelect(category.label)}
+              onClick={() => category.genreMenu ? setIsGenreMenuOpen(true) : onSelect?.(category.label)}
               type="button"
             >
               {variant === "home" ? (
@@ -436,13 +443,13 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
         })}
       </div>}
 
-      {isGenreMenuOpen && variant !== "home" && (
+      {isGenreMenuOpen && variant !== "home" && createPortal(
         <div ref={modalRef} aria-labelledby="genre-preferences-title" aria-modal="true" className="fixed inset-0 z-[80] flex items-center justify-center bg-[#020504]/75 px-4 py-6 backdrop-blur-[3px]" role="dialog">
           <div className="max-h-[min(720px,calc(100vh-48px))] w-full max-w-[680px] overflow-y-auto rounded-[14px] border border-[#1d6146] bg-[#0d1512] p-4 shadow-[0_20px_80px_rgba(0,0,0,.55)] sm:p-5" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 id="genre-preferences-title" className="text-[20px] font-semibold text-white">เลือกหมวดที่คุณสนใจ</h2>
-                <p className="mt-1 text-[12px] text-white/50">เลือกได้สูงสุด 10 หมวด เพื่อปรับรายการนิยายให้ตรงกับคุณ</p>
+                <p className="mt-1 text-[12px] text-white/50">เลือกได้สูงสุด 10 หมวด เพื่อปรับรายการเรื่องให้ตรงกับคุณ</p>
               </div>
               <button aria-label="ปิดหน้าต่างเลือกหมวด" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 text-lg text-white/60 transition hover:border-white/25 hover:text-white" onClick={() => setIsGenreMenuOpen(false)} type="button">×</button>
             </div>
@@ -500,8 +507,8 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
                   {draftGenres.map((label, index) => (
                     <div
                       className={`flex min-w-0 cursor-grab items-center gap-2 rounded-[7px] border border-[#1b5944] bg-[#102a1e] px-2 py-2 transition active:cursor-grabbing ${draggedGenreIndex === index ? "opacity-50" : ""}`}
-                      tabIndex={variant === "profile" ? 0 : undefined}
-                      aria-label={variant === "profile" ? `${label} ลำดับ ${index + 1} ใช้ปุ่มลูกศรขึ้นลงเพื่อเรียง` : undefined}
+                      tabIndex={isStandalone ? 0 : undefined}
+                      aria-label={isStandalone ? `${label} ลำดับ ${index + 1} ใช้ปุ่มลูกศรขึ้นลงเพื่อเรียง` : undefined}
                       onKeyDown={event => { if (event.key === "ArrowUp" || event.key === "ArrowDown") { event.preventDefault(); moveGenre(index, event.key === "ArrowUp" ? -1 : 1); } }}
                       draggable
                       key={label}
@@ -527,11 +534,12 @@ export default function CategoryFilter({ selected, onSelect, onSelectGenres, sel
               <p className="text-[11px] text-white/45">เลือกแล้ว {draftGenres.length}/10 หมวด</p>
               <div className="flex gap-2">
                 <button className="rounded-[7px] border border-white/10 px-3 py-2 text-[11px] text-white/60 transition hover:border-white/25 hover:text-white" onClick={() => setIsGenreMenuOpen(false)} type="button">ยกเลิก</button>
-                <button className="rounded-[7px] bg-[#1be27e] px-4 py-2 text-[11px] font-semibold text-[#07100b] transition hover:bg-[#62f5a7] disabled:cursor-not-allowed disabled:opacity-40" disabled={draftGenres.length === 0} onClick={applyGenres} type="button">ใช้หมวดที่เลือก</button>
+                <button className="rounded-[7px] bg-[#1be27e] px-4 py-2 text-[11px] font-semibold text-[#07100b] transition hover:bg-[#62f5a7] disabled:cursor-not-allowed disabled:opacity-40" disabled={draftGenres.length === 0 && !favoritesLabel} onClick={applyGenres} type="button">ใช้หมวดที่เลือก</button>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </section>
   );

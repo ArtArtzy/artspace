@@ -3,26 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
-import CommunityDiscussion from "@/components/CommunityDiscussion";
-import CommunityDiscussionSidebar from "@/components/CommunityDiscussionSidebar";
+import { Suspense } from "react";
 import CommunityEvents from "@/components/CommunityEvents";
 import CommunityEventsSidebar from "@/components/CommunityEventsSidebar";
-import CommunityFeed from "@/components/CommunityFeed";
+import CommunityFeed, { communityThreadsByRoom } from "@/components/CommunityFeed";
 import CommunitySidebar from "@/components/CommunitySidebar";
-import CommunityWriters from "@/components/CommunityWriters";
-import CommunityWritersSidebar from "@/components/CommunityWritersSidebar";
 import Footer from "@/components/Footer";
 import PageTitleBar from "@/components/PageTitleBar";
 import TopMenu from "@/components/TopMenu";
 import DesktopOnlyNotice from "@/components/DesktopOnlyNotice";
 import UnbuiltPageGuard from "@/components/UnbuiltPageGuard";
+import useHomeAuth from "@/components/useHomeAuth";
+import { communityCreateHref, communityRooms, communitySectionHref } from "@/data/communityRooms";
+import { normalizeCommunityTag } from "@/data/communityTags";
+import { useLocalCommunityThreads } from "@/data/localCommunityThreads";
 
-function HomeIcon() {
+function BookIcon() {
   return (
     <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="m3 10 9-7 9 7" />
-      <path d="M5 9.5V20h14V9.5M9 20v-6h6v6" />
+      <path d="M12 6c-2-2-5-2.5-9-2v14c4-.5 7 0 9 2 2-2 5-2.5 9-2V4c-4-.5-7 0-9 2Zm0 0v14" />
     </svg>
   );
 }
@@ -36,11 +35,19 @@ function ChatIcon() {
   );
 }
 
-function PenIcon() {
+function HeartIcon() {
   return (
     <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="m14.5 5.5 4 4M4 20l1.4-5.2L15.8 4.4a2.1 2.1 0 0 1 3 3L8.4 17.8 4 20Z" />
-      <path d="M13 7.5 16.5 11" />
+      <path d="M12 20s-8.5-4.9-8.5-10.5A4.5 4.5 0 0 1 12 7.4a4.5 4.5 0 0 1 8.5 2.1C20.5 15.1 12 20 12 20Z" />
+    </svg>
+  );
+}
+
+function PanelsIcon() {
+  return (
+    <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M4 11h16m-9 0v9" />
     </svg>
   );
 }
@@ -55,89 +62,78 @@ function CalendarIcon() {
 }
 
 const communityLinks = [
-  { id: "home", label: "สำหรับคุณ", icon: HomeIcon },
-  { id: "discussion", label: "พูดคุย", icon: ChatIcon },
-  { id: "writers", label: "ห้องนักเขียน", icon: PenIcon },
+  { id: "general", label: communityRooms.general.label, icon: ChatIcon },
+  { id: "novel", label: communityRooms.novel.label, icon: BookIcon },
+  { id: "fanfic", label: communityRooms.fanfic.label, icon: HeartIcon },
+  { id: "cartoon", label: communityRooms.cartoon.label, icon: PanelsIcon },
   { id: "events", label: "กิจกรรม", icon: CalendarIcon },
 ] as const;
 
 function CommunityPageContent() {
   const searchParams = useSearchParams();
-  const [activeSection, setActiveSection] = useState<(typeof communityLinks)[number]["id"]>("home");
-  const [discussionFilter, setDiscussionFilter] = useState("ทั้งหมด");
   const requestedSection = searchParams.get("section");
-  const requestedDiscussionFilter = searchParams.get("filter");
-
-  useEffect(() => {
-    if (communityLinks.some(({ id }) => id === requestedSection)) {
-      setActiveSection(requestedSection as (typeof communityLinks)[number]["id"]);
-    } else {
-      setActiveSection("home");
-    }
-    setDiscussionFilter(requestedDiscussionFilter ?? "ทั้งหมด");
-  }, [requestedDiscussionFilter, requestedSection]);
+  const isLoggedIn = useHomeAuth();
+  const localThreads = useLocalCommunityThreads();
+  const activeSection = communityLinks.find(({ id }) => id === requestedSection)?.id
+    ?? (requestedSection === "writers" ? "novel" : "general");
+  const createHref = activeSection === "events" ? null : communityCreateHref(activeSection);
+  const createAction = createHref && (
+    <Link
+      className="ds-button-primary min-h-11 shrink-0 px-ds-4"
+      href={isLoggedIn ? createHref : `/login?returnTo=${encodeURIComponent(createHref)}`}
+    >
+      + ตั้งกระทู้ใหม่
+    </Link>
+  );
+  const tag = normalizeCommunityTag(searchParams.get("tag") ?? "");
+  const requestedPage = Number(searchParams.get("page"));
+  const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+  const threads = activeSection === "events" ? [] : [
+    ...(localThreads ?? []).filter(({ room }) => room === activeSection),
+    ...communityThreadsByRoom[activeSection],
+  ];
 
   return (
-    <main className="ds-page-shell min-h-screen pt-[82px]">
-      <DesktopOnlyNotice />
-      <TopMenu fixed />
-
-      <UnbuiltPageGuard>
-      <section className="mx-auto max-w-[1400px] overflow-hidden bg-[#101a16]">
-        <div className="relative min-h-[300px] sm:min-h-[360px]">
-          <Image
-            src="/images/community-hero.webp"
-            alt="บรรยากาศห้องอ่านหนังสือของชุมชน ArnSpace"
-            fill
-            priority
-            sizes="(max-width: 1400px) 100vw, 1400px"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,13,10,.88)_0%,rgba(5,13,10,.62)_38%,rgba(5,13,10,.12)_75%,rgba(5,13,10,.42)_100%)]" />
-          <div className="relative flex min-h-[300px] items-end px-6 py-8 sm:min-h-[360px] sm:px-10 sm:py-10">
-            <div className="max-w-[540px]">
-              <p className="mb-2 text-xs font-medium uppercase tracking-[0.28em] text-section-community">ARN SPACE</p>
-              <h2 className="font-sans text-4xl font-bold tracking-tight text-white drop-shadow-md sm:text-6xl">ชุมชน ArnSpace</h2>
-              <p className="mt-3 max-w-[500px] text-sm leading-6 text-white/80 sm:text-base">
-                พื้นที่ของคนอ่าน คนเขียน และเรื่องราวที่เราอยากคุยต่อ
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href="/community/create-post"
-                  className="inline-flex h-11 items-center justify-center rounded-full bg-section-community px-6 text-sm font-semibold text-arn-accent-ink shadow-ds-glow transition hover:bg-arn-accent-soft"
-                >
-                  + สร้างโพสต์
-                </Link>
-                <Link
-                  href="/community/rules"
-                  className="inline-flex h-11 items-center justify-center rounded-full border border-white/70 bg-black/20 px-6 text-sm font-medium text-white backdrop-blur-sm transition hover:border-section-community hover:text-arn-accent-soft"
-                >
-                  กติกาชุมชน
-                </Link>
-              </div>
-            </div>
+    <UnbuiltPageGuard>
+      <section
+        aria-labelledby="community-hero-title"
+        className={`relative mx-auto aspect-[10/11] overflow-hidden bg-arn-surface md:aspect-[2/1] xl:aspect-[3/1] ${isLoggedIn ? "max-w-[1400px]" : "max-w-screen-2xl"}`}
+        data-community-hero
+      >
+        <Image
+          src="/images/community/community-hero-reading-room.webp"
+          alt="นักอ่านแบ่งปันเรื่องราวกันที่โต๊ะหนังสือในห้องสมุด"
+          className="object-cover object-[76%_center] md:object-center"
+          fill
+          preload
+          sizes={isLoggedIn ? "(max-width: 1400px) 100vw, 1400px" : "(max-width: 1536px) 100vw, 1536px"}
+        />
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-arn-canvas via-arn-canvas/20 to-transparent md:bg-gradient-to-r md:from-arn-canvas/80" />
+        <div className="absolute inset-0 flex items-end p-ds-6 md:items-center md:px-ds-12">
+          <div className="max-w-[34rem]">
+            <h2 className="text-3xl font-bold leading-tight text-arn-text sm:text-4xl xl:text-5xl 2xl:text-ds-display" id="community-hero-title">
+              ชุมชน <span className="whitespace-nowrap">ARN Space</span>
+            </h2>
+            <p className="mt-ds-3 text-ds-body text-arn-text">พื้นที่ของคนอ่าน คนเขียน และเรื่องราวที่เราอยากคุยต่อ</p>
           </div>
         </div>
-
       </section>
 
       <PageTitleBar variant="community" />
 
       <div className="sticky top-[142px] z-40 bg-arn-canvas shadow-[0_8px_20px_rgba(0,0,0,.24)]">
         <nav id="community-content" aria-label="เมนูชุมชน" className="mx-auto max-w-[1400px] border-t border-arn-border bg-arn-canvas px-2 pb-[18px] pt-1">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+          <div className="grid grid-cols-2 gap-ds-2 md:grid-cols-5 md:gap-ds-3">
             {communityLinks.map(({ id, label, icon: Icon }) => (
               <Link
-                key={label}
-                href={id === "discussion" ? "#community-discussion" : "#community-content"}
-                onClick={(event) => {
-                  event.preventDefault();
-                  setActiveSection(id);
-                }}
-                className={`flex h-[58px] min-w-0 items-center justify-center gap-2 rounded-[7px] border px-2 py-2 text-sm transition ${
+                key={id}
+                href={communitySectionHref(id)}
+                scroll={false}
+                aria-current={activeSection === id ? "page" : undefined}
+                className={`flex h-[58px] min-w-0 items-center justify-center gap-ds-2 rounded-ds-md border px-ds-2 py-ds-2 text-ds-body-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arn-accent ${
                   activeSection === id
-                    ? "border-section-community bg-[linear-gradient(145deg,#102d19,#102017)] text-section-community shadow-ds-glow"
-                    : "border-white/[0.08] bg-[#151817] text-white/75 hover:border-white/20 hover:bg-[#1a1f1c] hover:text-white"
+                    ? "border-section-community bg-arn-raised text-section-community shadow-ds-glow"
+                    : "border-arn-border bg-arn-surface-soft text-arn-muted hover:border-arn-border-strong hover:text-arn-text"
                 }`}
               >
                 <Icon />
@@ -148,23 +144,28 @@ function CommunityPageContent() {
         </nav>
       </div>
 
-      <section className="mx-auto grid max-w-[1400px] gap-4 px-2 pb-12 pt-6 lg:grid-cols-[minmax(0,1fr)_330px] lg:gap-5">
+      <section className="mx-auto grid max-w-[1400px] scroll-mt-[220px] gap-4 px-2 pb-12 pt-6 lg:grid-cols-[minmax(0,1fr)_330px] lg:gap-5" data-community-thread-room={activeSection === "events" ? undefined : activeSection} id="community-room-content">
         <div className="ds-community-content min-w-0">
-          {activeSection === "discussion" ? <CommunityDiscussion initialFilter={discussionFilter} onFilterChange={setDiscussionFilter} /> : activeSection === "writers" ? <CommunityWriters /> : activeSection === "events" ? <CommunityEvents /> : <CommunityFeed />}
+          {activeSection === "events" ? <CommunityEvents /> : (
+            <CommunityFeed headerAction={createAction} page={page} posts={threads} room={activeSection} tag={tag} />
+          )}
         </div>
-        {activeSection === "writers" ? <CommunityWritersSidebar /> : activeSection === "events" ? <CommunityEventsSidebar /> : <CommunitySidebar discussionFilter={discussionFilter} showDiscussionThreads={activeSection === "discussion"} />}
+        {activeSection === "events" ? <CommunityEventsSidebar /> : <CommunitySidebar posts={threads} room={activeSection} tag={tag} />}
       </section>
 
       <Footer />
-      </UnbuiltPageGuard>
-    </main>
+    </UnbuiltPageGuard>
   );
 }
 
 export default function CommunityPage() {
   return (
-    <Suspense fallback={<main className="ds-page-shell min-h-screen pt-[82px]" aria-busy="true" />}>
-      <CommunityPageContent />
-    </Suspense>
+    <main className="ds-page-shell min-h-screen pt-[82px]">
+      <DesktopOnlyNotice />
+      <TopMenu fixed initialLoggedIn={false} />
+      <Suspense fallback={<div aria-busy="true" />}>
+        <CommunityPageContent />
+      </Suspense>
+    </main>
   );
 }
